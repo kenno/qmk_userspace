@@ -219,11 +219,9 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
             case OS_WINDOWS:
                 xprintf("Windows Detected\n");
                 break;
-#    if 0
             case OS_WINDOWS_UNSURE:
                 xprintf("Windows? Detected\n");
                 break;
-#    endif
             case OS_MACOS:
                 xprintf("MacOS Detected\n");
                 os_detection_config = (os_detection_config_t){
@@ -238,7 +236,6 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
                     .unicode_input_mode = UNICODE_MODE_MACOS,
                 };
                 break;
-#    if 0
             case OS_PS5:
                 xprintf("PlayStation 5 Detected\n");
                 os_detection_config.unicode_input_mode = UNICODE_MODE_LINUX;
@@ -247,7 +244,6 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
                 xprintf("Nintend Switch/Quest 2 Detected\n");
                 os_detection_config.unicode_input_mode = UNICODE_MODE_LINUX;
                 break;
-#    endif
             default:
                 xprintf("Unknown OS Detected\n");
                 break;
@@ -413,20 +409,16 @@ const char *os_variant_to_string(os_variant_t os_detected) {
     switch (os_detected) {
         case OS_WINDOWS:
             return "Windows";
-#    if 0
         case OS_WINDOWS_UNSURE:
             return "Windows?";
-#    endif
         case OS_MACOS:
             return "MacOS";
         case OS_IOS:
             return "iOS";
-#    if 0
         case OS_PS5:
             return "PS5";
         case OS_HANDHELD:
             return "Handheld";
-#    endif
         case OS_LINUX:
             return "Linux";
         default:
