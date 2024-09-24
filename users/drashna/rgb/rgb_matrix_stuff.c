@@ -123,7 +123,7 @@ void set_color_custom(int index, uint8_t red, uint8_t green, uint8_t blue) {
     led_array[index].b = blue;
 }
 void set_color_all_custom(uint8_t red, uint8_t green, uint8_t blue) {
-    for (int i = 0; i < WS2812_LED_COUNT; i++) {
+    for (int i = 0; i < RGBLIGHT_LED_COUNT; i++) {
         set_color_custom(i, red, green, blue);
     }
 }
