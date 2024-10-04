@@ -20,7 +20,7 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
         ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
             OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
         endif
-
+        SRC += $(USER_PATH)/ft6x36.c
     endif
 endif
 

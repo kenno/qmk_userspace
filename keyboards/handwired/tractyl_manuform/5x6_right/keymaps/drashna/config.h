@@ -44,3 +44,6 @@
 #define SPLIT_USB_TIMEOUT               500
 #define SPLIT_WATCHDOG_TIMEOUT          700
 #define AUDIO_INIT_DELAY
+
+#define FT6X36_RESET_PIN     B15
+#define FT6X36_INTERRUPT_PIN B14

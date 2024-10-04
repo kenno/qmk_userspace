@@ -179,6 +179,8 @@ void housekeeping_task_quantum_painter(void) {
         qp_backlight_enable();
     }
 #endif
+    bool ft6x36_task(void);
+    ft6x36_task();
 }
 void keyboard_post_init_quantum_painter(void) {
 #if defined(BACKLIGHT_ENABLE)
@@ -196,6 +198,9 @@ void keyboard_post_init_quantum_painter(void) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     init_display_ili9341();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
+
+    bool ft6x36_init(void);
+    ft6x36_init();
 }
 
 void suspend_power_down_quantum_painter(void) {
