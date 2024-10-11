@@ -35,14 +35,14 @@ bool painter_render_side(void);
 void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset,
                           bool color_side);
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                             uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, HSV* hsv);
+                             uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, hsv_t* hsv);
 void painter_render_console(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                            uint16_t display_width, bool force_redraw, HSV* hsv, uint8_t start, uint8_t end);
+                            uint16_t display_width, bool force_redraw, hsv_t* hsv, uint8_t start, uint8_t end);
 void painter_render_scan_rate(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               bool force_redraw, dual_hsv_t* curr_hsv);
 void painter_render_rgb(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
                         dual_hsv_t* curr_hsv, const char* title, const char* (*get_rgb_mode)(void),
-                        HSV (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val);
+                        hsv_t (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val);
 void painter_render_lock_state(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                bool force_redraw, dual_hsv_t* curr_hsv, uint8_t disabled_val);
 void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
@@ -72,7 +72,7 @@ bool painter_render_menu(painter_device_t display, painter_font_handle_t font, u
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);
 void       painter_sethsv_noeeprom(uint8_t hue, uint8_t sat, uint8_t val, bool primary);
-HSV        painter_get_hsv(bool primary);
+hsv_t      painter_get_hsv(bool primary);
 uint8_t    painter_get_hue(bool primary);
 uint8_t    painter_get_sat(bool primary);
 uint8_t    painter_get_val(bool primary);

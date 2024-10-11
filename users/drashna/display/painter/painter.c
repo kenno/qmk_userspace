@@ -97,7 +97,7 @@ void painter_init_assets(void) {
  * @param hsv hsv value to render with
  */
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                             uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, HSV* hsv) {
+                             uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, hsv_t* hsv) {
 #ifdef RTC_ENABLE
 
     bool rtc_redraw = false;
@@ -190,11 +190,11 @@ void painter_render_scan_rate(painter_device_t device, painter_font_handle_t fon
  */
 void painter_render_rgb(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
                         dual_hsv_t* curr_hsv, const char* title, const char* (*get_rgb_mode)(void),
-                        HSV (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val) {
+                        hsv_t (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val) {
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
     char buf[22] = {0};
     if (force_redraw) {
-        HSV rgb_hsv = get_rgb_hsv();
+        hsv_t rgb_hsv = get_rgb_hsv();
         qp_drawtext_recolor(device, x, y, font, title, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0,
                             0, 0);
         y += font->line_height + 4;
@@ -412,7 +412,9 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     uint16_t       width     = offset + max_width;
     uint16_t       height    = 320;
 
-    HSV hsv = painter_get_hsv(color_side);
+
+    hsv_t hsv = painter_get_hsv(color_side);
+
     // frame top
     qp_drawimage_recolor(device, xpos + 1, 2, frame_top, hsv.h, hsv.s, hsv.v, 0, 0, 0);
     // lines for frame sides
@@ -1138,7 +1140,7 @@ dual_hsv_t painter_get_dual_hsv(void) {
  * @param write_to_eeprom save changes to eeprom?
  */
 void painter_sethsv_eeprom_helper(uint8_t hue, uint8_t sat, uint8_t val, bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     hsv->h   = hue;
     hsv->s   = sat;
     hsv->v   = val;
@@ -1174,7 +1176,7 @@ void painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary) {
  *
  * @return HSV
  */
-HSV painter_get_hsv(bool primary) {
+hsv_t painter_get_hsv(bool primary) {
     return primary ? userspace_config.painter.hsv.primary : userspace_config.painter.hsv.secondary;
 }
 
@@ -1211,7 +1213,7 @@ uint8_t painter_get_val(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_increase_hue_helper(bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(qadd8(hsv->h, PAINTER_HUE_STEP), hsv->s, hsv->v, write_to_eeprom, primary);
 }
 
@@ -1235,7 +1237,7 @@ void painter_increase_hue(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_decrease_hue_helper(bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(qsub8(hsv->h, PAINTER_HUE_STEP), hsv->s, hsv->v, write_to_eeprom, primary);
 }
 
@@ -1259,7 +1261,7 @@ void painter_decrease_hue(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_increase_sat_helper(bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, qadd8(hsv->s, PAINTER_SAT_STEP), hsv->v, write_to_eeprom, primary);
 }
 
@@ -1283,7 +1285,7 @@ void painter_increase_sat(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_decrease_sat_helper(bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, qsub8(hsv->s, PAINTER_SAT_STEP), hsv->v, write_to_eeprom, primary);
 }
 
@@ -1307,7 +1309,7 @@ void painter_decrease_sat(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_increase_val_helper(bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, hsv->s, qadd8(hsv->v, PAINTER_VAL_STEP), write_to_eeprom, primary);
 }
 
@@ -1331,7 +1333,7 @@ void painter_increase_val(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_decrease_val_helper(bool write_to_eeprom, bool primary) {
-    HSV* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, hsv->s, qsub8(hsv->v, PAINTER_VAL_STEP), write_to_eeprom, primary);
 }
 
