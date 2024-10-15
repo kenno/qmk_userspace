@@ -47,7 +47,11 @@ extern bool keylogger_has_changed;
 #    if defined(OLED_ENABLE) && !defined(QUANTUM_PAINTER_ENABLE)
 #        define DISPLAY_CONSOLE_LOG_LINE_LENGTH 20
 #    else // OLED_ENABLE && !QUANTUM_PAINTER_ENABLE
-#        define DISPLAY_CONSOLE_LOG_LINE_LENGTH 38
+#        if defined(QUANTUM_PAINTER_ILI9488_SPI_ENABLE)
+#            define DISPLAY_CONSOLE_LOG_LINE_LENGTH 51
+#        else // QUANTUM_PAINTER_ILI9488_SPI_ENABLE
+#            define DISPLAY_CONSOLE_LOG_LINE_LENGTH 38
+#        endif // QUANTUM_PAINTER_ILI9488_SPI_ENABLE
 #    endif // OLED_ENABLE && !QUANTUM_PAINTER_ENABLE
 #endif     // DISPLAY_CONSOLE_LOG_LINE_LENGTH
 extern bool  console_log_needs_redraw, console_has_redrawn;

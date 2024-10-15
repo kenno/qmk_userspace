@@ -11,6 +11,10 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
             OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ILI9341
             SRC += $(USER_PATH)/display/painter/ili9341_display.c
         endif
+        ifeq ($(strip $(QUANTUM_PAINTER_DRIVERS)),ili9488_spi)
+            OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ILI9488
+            SRC += $(USER_PATH)/display/painter/ili9488_display.c
+        endif
 	    QUANTUM_PAINTER_DRIVERS += surface
 
         SRC += $(USER_PATH)/display/painter/painter.c \

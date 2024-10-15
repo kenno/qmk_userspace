@@ -12,6 +12,9 @@
 #    ifdef CUSTOM_QUANTUM_PAINTER_ILI9341
 #        include "display/painter/ili9341_display.h"
 #    endif // CUSTOM_QUANTUM_PAINTER_ILI9341
+#    ifdef CUSTOM_QUANTUM_PAINTER_ILI9488
+#        include "display/painter/ili9488_display.h"
+#    endif // CUSTOM_QUANTUM_PAINTER_ILI9488
 #endif     // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
 
 #ifdef DISPLAY_KEYLOGGER_ENABLE
