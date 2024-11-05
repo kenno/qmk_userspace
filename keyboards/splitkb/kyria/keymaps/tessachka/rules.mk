@@ -4,4 +4,4 @@ NKRO_ENABLE = yes
 WPM_ENABLE = yes
 LTO_ENABLE = no
 
-CONVERT_TO = elite_pi
+CONVERT_TO = sparkfun_pm2040
