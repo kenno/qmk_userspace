@@ -64,6 +64,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 layer_state_set_kb(layer_state);
             }
             break;
+        case LT(0, KC_NO):
+            if (record->tap.count && record->event.pressed) {
+                tap_code(KC_H); // Intercept tap function to send H
+            } else if (record->event.pressed) {
+                tap_code(KC_V); // Intercept hold function to send V
+            }
+            return false;
     }
     return true;
 }
