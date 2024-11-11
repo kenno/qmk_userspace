@@ -32,14 +32,14 @@ void  render_character_set(painter_device_t display, uint16_t* x_offset, uint16_
 bool render_painter_side(void);
 void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset);
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                             uint16_t display_width, bool force_redraw, hsv_t* hsv);
+                             uint16_t display_width, bool force_redraw, HSV* hsv);
 void painter_render_console(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                            bool force_redraw, hsv_t* hsv, uint8_t start, uint8_t end);
+                            bool force_redraw, HSV* hsv, uint8_t start, uint8_t end);
 void painter_render_scan_rate(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               bool force_redraw, dual_hsv_t* curr_hsv);
 void painter_render_rgb(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
                         dual_hsv_t* curr_hsv, const char* title, const char* (*get_rgb_mode)(void),
-                        hsv_t (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val);
+                        HSV (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val);
 void painter_render_lock_state(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                bool force_redraw, dual_hsv_t* curr_hsv, uint8_t disabled_val);
 void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
