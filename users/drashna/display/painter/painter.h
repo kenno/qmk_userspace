@@ -14,6 +14,8 @@ typedef struct {
     const uint8_t* data;
     const char*    name;
 } painter_image_array_t;
+extern painter_image_array_t screen_saver_image[];
+extern const uint8_t         screensaver_image_size;
 
 void housekeeping_task_quantum_painter(void);
 void keyboard_post_init_quantum_painter(void);
@@ -26,6 +28,26 @@ char* truncate_text(const char* text, uint16_t max_width, painter_font_handle_t 
 void  render_character_set(painter_device_t display, uint16_t* x_offset, uint16_t* max_pos, uint16_t* ypos,
                            painter_font_handle_t font, uint8_t hue_fg, uint8_t sat_fg, uint8_t val_fg, uint8_t hue_bg,
                            uint8_t sat_bg, uint8_t val_bg);
+
+bool render_painter_side(void);
+void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset);
+void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                             uint16_t display_width, bool force_redraw, hsv_t* hsv);
+void painter_render_console(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                            bool force_redraw, hsv_t* hsv, uint8_t start, uint8_t end);
+void painter_render_scan_rate(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                              bool force_redraw, dual_hsv_t* curr_hsv);
+void painter_render_rgb(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
+                        dual_hsv_t* curr_hsv, const char* title, const char* (*get_rgb_mode)(void),
+                        hsv_t (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val);
+void painter_render_lock_state(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                               bool force_redraw, dual_hsv_t* curr_hsv, uint8_t disabled_val);
+void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
+                        dual_hsv_t* curr_hsv);
+void painter_render_haptic(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                           bool force_redraw, dual_hsv_t* curr_hsv);
+void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
+                         dual_hsv_t* curr_hsv);
 
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);
