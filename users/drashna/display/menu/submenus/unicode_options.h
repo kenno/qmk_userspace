@@ -3,7 +3,7 @@
 
 #ifdef UNICODE_COMMON_ENABLE
 
-static bool menu_handler_unicode(menu_input_t input) {
+bool menu_handler_unicode(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             unicode_input_mode_step_reverse();
@@ -16,7 +16,7 @@ static bool menu_handler_unicode(menu_input_t input) {
     }
 }
 
-void display_handler_unicode(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_unicode(char *text_buffer, size_t buffer_len) {
     switch (get_unicode_input_mode()) {
         case UNICODE_MODE_MACOS:
             strncpy(text_buffer, "macOS", buffer_len - 1);
@@ -41,7 +41,7 @@ void display_handler_unicode(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, "Unknown", buffer_len);
 }
 
-static bool menu_handler_unicode_typing(menu_input_t input) {
+bool menu_handler_unicode_typing(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             userspace_runtime_state.unicode.typing_mode =
@@ -61,7 +61,7 @@ static bool menu_handler_unicode_typing(menu_input_t input) {
             return true;
     }
 }
-void display_handler_unicode_typing(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_unicode_typing(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, unicode_typing_mode(userspace_runtime_state.unicode.typing_mode), buffer_len);
 }
 

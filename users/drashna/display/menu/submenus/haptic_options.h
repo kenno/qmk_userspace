@@ -6,7 +6,7 @@
 
 extern haptic_config_t haptic_config;
 
-static bool menu_handler_haptic_enabled(menu_input_t input) {
+bool menu_handler_haptic_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -17,11 +17,11 @@ static bool menu_handler_haptic_enabled(menu_input_t input) {
     }
 }
 
-void display_handler_haptic_enabled(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_haptic_enabled(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", haptic_get_enable() ? "on" : "off");
 }
 
-static bool menu_handler_haptic_mode(menu_input_t input) {
+bool menu_handler_haptic_mode(menu_input_t input) {
     if (!haptic_get_enable()) {
         return false;
     }
@@ -38,7 +38,7 @@ static bool menu_handler_haptic_mode(menu_input_t input) {
     }
 }
 
-void display_handler_haptic_mode(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_haptic_mode(char *text_buffer, size_t buffer_len) {
     if (haptic_get_enable()) {
         snprintf(text_buffer, buffer_len - 1, "%s", get_haptic_drv2605l_effect_name(haptic_get_mode()));
     } else {
@@ -46,7 +46,7 @@ void display_handler_haptic_mode(char *text_buffer, size_t buffer_len) {
     }
 }
 
-static bool menu_handler_feedback_mode(menu_input_t input) {
+bool menu_handler_feedback_mode(menu_input_t input) {
     if (!haptic_get_enable()) {
         return false;
     }
@@ -60,7 +60,7 @@ static bool menu_handler_feedback_mode(menu_input_t input) {
     }
 }
 
-void display_handler_feedback_mode(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_feedback_mode(char *text_buffer, size_t buffer_len) {
     if (haptic_get_enable()) {
         switch (haptic_get_feedback()) {
             case 0:
@@ -79,7 +79,7 @@ void display_handler_feedback_mode(char *text_buffer, size_t buffer_len) {
 }
 
 #    ifdef HAPTIC_SOLENOID
-static bool menu_handler_haptic_buzz(menu_input_t input) {
+bool menu_handler_haptic_buzz(menu_input_t input) {
     if (!haptic_get_enable()) {
         return false;
     }
@@ -93,11 +93,11 @@ static bool menu_handler_haptic_buzz(menu_input_t input) {
     }
 }
 
-void display_handler_haptic_buzz(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_haptic_buzz(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%d", haptic_get_buzz());
 }
 
-static bool menu_handler_haptic_dwell(menu_input_t input) {
+bool menu_handler_haptic_dwell(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             haptic_dwell_decrease();
@@ -110,13 +110,13 @@ static bool menu_handler_haptic_dwell(menu_input_t input) {
     }
 }
 
-void display_handler_haptic_dwell(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_haptic_dwell(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%d", haptic_get_dwell());
 }
 #    endif // HAPTIC_SOLENOID
 
 #    ifdef HAPTIC_DRV2605L
-static bool menu_handler_haptic_love_mode(menu_input_t input) {
+bool menu_handler_haptic_love_mode(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -127,11 +127,11 @@ static bool menu_handler_haptic_love_mode(menu_input_t input) {
     }
 }
 
-void display_handler_haptic_love_mode(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_haptic_love_mode(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", haptic_config.cont ? "Aaah! ;)" : "off");
 }
 
-static bool menu_handler_haptic_love_intensity(menu_input_t input) {
+bool menu_handler_haptic_love_intensity(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             haptic_cont_increase();
@@ -144,7 +144,7 @@ static bool menu_handler_haptic_love_intensity(menu_input_t input) {
     }
 }
 
-void display_handler_haptic_love_intensity(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_haptic_love_intensity(char *text_buffer, size_t buffer_len) {
     if (haptic_config.cont) {
         snprintf(text_buffer, buffer_len - 1, "%d", haptic_config.amplitude);
     } else {

@@ -3,7 +3,7 @@
 // Backlight
 
 #ifdef BACKLIGHT_ENABLE
-static bool menu_handler_bl_enabled(menu_input_t input) {
+bool menu_handler_bl_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -14,11 +14,11 @@ static bool menu_handler_bl_enabled(menu_input_t input) {
     }
 }
 
-void display_handler_bl_enabled(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_bl_enabled(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", is_backlight_enabled() ? "on" : "off");
 }
 
-static bool menu_handler_bl_level(menu_input_t input) {
+bool menu_handler_bl_level(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             backlight_decrease();
@@ -31,7 +31,7 @@ static bool menu_handler_bl_level(menu_input_t input) {
     }
 }
 
-void display_handler_bl_level(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_bl_level(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%d", get_backlight_level());
 }
 

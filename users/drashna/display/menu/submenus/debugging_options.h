@@ -2,7 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Debugging
 
-static bool menu_handler_debugging_enable(menu_input_t input) {
+bool menu_handler_debugging_enable(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -13,11 +13,11 @@ static bool menu_handler_debugging_enable(menu_input_t input) {
     }
 }
 
-void display_handler_debugging_enable(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_debugging_enable(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_enable ? "enabled" : "disabled");
 }
 
-static bool menu_handler_keyboard_debugging(menu_input_t input) {
+bool menu_handler_keyboard_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -28,11 +28,11 @@ static bool menu_handler_keyboard_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_keyboard_debugging(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keyboard_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_keyboard ? "enabled" : "disabled");
 }
 
-static bool menu_handler_matrix_debugging(menu_input_t input) {
+bool menu_handler_matrix_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -43,11 +43,11 @@ static bool menu_handler_matrix_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_matrix_debugging(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_matrix_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_matrix ? "enabled" : "disabled");
 }
 
-static bool menu_handler_mouse_debugging(menu_input_t input) {
+bool menu_handler_mouse_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -58,12 +58,12 @@ static bool menu_handler_mouse_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_debugging(char *text_buffer, size_t buffer_len) {
 #if 0
+__attribute__((weak)) void display_handler_mouse_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_mouse ? "enabled" : "disabled");
 }
 
-static bool menu_handler_pointing_debugging(menu_input_t input) {
+bool menu_handler_pointing_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -74,11 +74,11 @@ static bool menu_handler_pointing_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_pointing_debugging(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_pointing_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_pointing ? "enabled" : "disabled");
 }
 
-static bool menu_handler_action_debugging(menu_input_t input) {
+bool menu_handler_action_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -89,11 +89,11 @@ static bool menu_handler_action_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_action_debugging(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_action_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_action ? "enabled" : "disabled");
 }
 
-static bool menu_handler_split_serial_debugging(menu_input_t input) {
+bool menu_handler_split_serial_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -104,11 +104,11 @@ static bool menu_handler_split_serial_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_split_serial_debugging(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_split_serial_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_serial ? "enabled" : "disabled");
 }
 
-static bool menu_handler_quantum_painter_debugging(menu_input_t input) {
+bool menu_handler_quantum_painter_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -119,7 +119,7 @@ static bool menu_handler_quantum_painter_debugging(menu_input_t input) {
     }
 }
 
-void display_handler_quantum_painter_debugging(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_quantum_painter_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_quantum_painter ? "enabled" : "disabled");
 }
 #endif

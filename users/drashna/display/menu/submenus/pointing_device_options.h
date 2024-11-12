@@ -4,7 +4,7 @@
 #ifdef POINTING_DEVICE_ENABLE
 #    include "pointing/pointing.h"
 
-static bool menu_handler_auto_mouse_enable(menu_input_t input) {
+bool menu_handler_auto_mouse_enable(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -17,12 +17,12 @@ static bool menu_handler_auto_mouse_enable(menu_input_t input) {
     }
 }
 
-void display_handler_auto_mouse_enable(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_auto_mouse_enable(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s",
              userspace_config.pointing.auto_mouse_layer_enable ? "enabled" : "disabled");
 }
 
-static bool menu_handler_auto_mouse_layer(menu_input_t input) {
+bool menu_handler_auto_mouse_layer(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             set_auto_mouse_layer((get_auto_mouse_layer() - 1) % MAX_USER_LAYERS);
@@ -35,13 +35,13 @@ static bool menu_handler_auto_mouse_layer(menu_input_t input) {
     }
 }
 
-void display_handler_auto_mouse_layer(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_auto_mouse_layer(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", layer_name(get_auto_mouse_layer()));
 }
 
 extern uint16_t mouse_jiggler_timer;
 
-static bool menu_handler_mouse_jiggler(menu_input_t input) {
+bool menu_handler_mouse_jiggler(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -54,11 +54,11 @@ static bool menu_handler_mouse_jiggler(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_jiggler(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_jiggler(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_runtime_state.pointing.mouse_jiggler_enable ? "on" : "off");
 }
 
-static bool menu_handler_mouse_jiggler_interrupt(menu_input_t input) {
+bool menu_handler_mouse_jiggler_interrupt(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -70,14 +70,14 @@ static bool menu_handler_mouse_jiggler_interrupt(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_jiggler_interrupt(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_jiggler_interrupt(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.pointing.mouse_jiggler_interrupt ? "on" : "off");
 }
 
 #    if defined(KEYBOARD_handwired_tractyl_manuform) || defined(KEYBOARD_bastardkb_charybdis)
 #        include QMK_KEYBOARD_H
 
-static bool menu_handler_dpi_config(menu_input_t input) {
+bool menu_handler_dpi_config(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             charybdis_cycle_pointer_default_dpi(false);
@@ -90,12 +90,12 @@ static bool menu_handler_dpi_config(menu_input_t input) {
     }
 }
 
-void display_handler_dpi_config(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_dpi_config(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%d", charybdis_get_pointer_default_dpi());
 }
 #    endif
 
-static bool menu_handler_mouse_accel_toggle(menu_input_t input) {
+bool menu_handler_mouse_accel_toggle(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -106,11 +106,11 @@ static bool menu_handler_mouse_accel_toggle(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_accel_toggle(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_accel_toggle(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", pointing_device_accel_get_enabled() ? "on" : "off");
 }
 
-static bool menu_handler_mouse_accel_takeoff(menu_input_t input) {
+bool menu_handler_mouse_accel_takeoff(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             pointing_device_accel_set_takeoff(pointing_device_accel_get_takeoff() -
@@ -125,11 +125,11 @@ static bool menu_handler_mouse_accel_takeoff(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_accel_takeoff(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_accel_takeoff(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%1.2f", pointing_device_accel_get_takeoff());
 }
 
-static bool menu_handler_mouse_accel_growth_rate(menu_input_t input) {
+bool menu_handler_mouse_accel_growth_rate(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             pointing_device_accel_set_growth_rate(
@@ -146,11 +146,11 @@ static bool menu_handler_mouse_accel_growth_rate(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_accel_growth_rate(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_accel_growth_rate(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%1.2f", pointing_device_accel_get_growth_rate());
 }
 
-static bool menu_handler_mouse_accel_offset(menu_input_t input) {
+bool menu_handler_mouse_accel_offset(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             pointing_device_accel_set_offset(pointing_device_accel_get_offset() -
@@ -165,11 +165,11 @@ static bool menu_handler_mouse_accel_offset(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_accel_offset(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_accel_offset(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%2.2f", pointing_device_accel_get_offset());
 }
 
-static bool menu_handler_mouse_accel_limit(menu_input_t input) {
+bool menu_handler_mouse_accel_limit(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             pointing_device_accel_set_limit(pointing_device_accel_get_limit() -
@@ -184,7 +184,7 @@ static bool menu_handler_mouse_accel_limit(menu_input_t input) {
     }
 }
 
-void display_handler_mouse_accel_limit(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_mouse_accel_limit(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%1.2f", pointing_device_accel_get_limit());
 }
 

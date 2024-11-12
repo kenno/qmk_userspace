@@ -3,7 +3,7 @@
 // Audio
 
 #ifdef AUDIO_ENABLE
-static bool menu_handler_audio_enabled(menu_input_t input) {
+bool menu_handler_audio_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -18,11 +18,11 @@ static bool menu_handler_audio_enabled(menu_input_t input) {
     }
 }
 
-void display_handler_audio_enabled(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_audio_enabled(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", audio_is_on() ? "on" : "off");
 }
 
-static bool menu_handler_music_enabled(menu_input_t input) {
+bool menu_handler_music_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -33,11 +33,11 @@ static bool menu_handler_music_enabled(menu_input_t input) {
     }
 }
 
-void display_handler_music_enabled(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_music_enabled(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", is_music_on() ? "on" : "off");
 }
 
-static bool menu_handler_audio_clicky_enabled(menu_input_t input) {
+bool menu_handler_audio_clicky_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -48,11 +48,11 @@ static bool menu_handler_audio_clicky_enabled(menu_input_t input) {
     }
 }
 
-void display_handler_audio_clicky_enabled(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_audio_clicky_enabled(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", is_clicky_on() ? "enabled" : "disabled");
 }
 
-static bool menu_handler_audio_clicky_freq(menu_input_t input) {
+bool menu_handler_audio_clicky_freq(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             clicky_freq_down();
@@ -65,12 +65,12 @@ static bool menu_handler_audio_clicky_freq(menu_input_t input) {
     }
 }
 
-void display_handler_audio_clicky_freq(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_audio_clicky_freq(char *text_buffer, size_t buffer_len) {
     extern float clicky_freq;
     snprintf(text_buffer, buffer_len - 1, "%.2f", (float)clicky_freq);
 }
 
-static bool menu_handler_gaming_song_enabled(menu_input_t input) {
+bool menu_handler_gaming_song_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -84,11 +84,11 @@ static bool menu_handler_gaming_song_enabled(menu_input_t input) {
     }
 }
 
-void display_handler_gaming_song_enabled(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_gaming_song_enabled(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.gaming.song_enable ? "enabled" : "disabled");
 }
 
-static bool menu_handler_audio_mouse_clicky(menu_input_t input) {
+bool menu_handler_audio_mouse_clicky(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -100,7 +100,7 @@ static bool menu_handler_audio_mouse_clicky(menu_input_t input) {
     }
 }
 
-void display_handler_audio_mouse_clicky(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_audio_mouse_clicky(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.pointing.audio_mouse_clicky ? "enabled" : "disabled");
 }
 

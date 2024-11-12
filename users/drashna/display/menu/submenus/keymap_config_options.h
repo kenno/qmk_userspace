@@ -1,4 +1,4 @@
-static bool menu_handler_keycode_ctrl_caps(menu_input_t input) {
+bool menu_handler_keycode_ctrl_caps(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -10,11 +10,11 @@ static bool menu_handler_keycode_ctrl_caps(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_ctrl_caps(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_ctrl_caps(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.swap_control_capslock ? "swapped" : "normal");
 }
 
-static bool menu_handler_keycode_alt_gui(menu_input_t input) {
+bool menu_handler_keycode_alt_gui(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -33,11 +33,11 @@ static bool menu_handler_keycode_alt_gui(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_alt_gui(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_alt_gui(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.swap_lalt_lgui ? "swapped" : "normal");
 }
 
-static bool menu_handler_keycode_ctrl_gui(menu_input_t input) {
+bool menu_handler_keycode_ctrl_gui(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -56,11 +56,11 @@ static bool menu_handler_keycode_ctrl_gui(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_ctrl_gui(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_ctrl_gui(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.swap_lctl_lgui ? "swapped" : "normal");
 }
 
-static bool menu_handler_keycode_disable_gui(menu_input_t input) {
+bool menu_handler_keycode_disable_gui(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -72,11 +72,11 @@ static bool menu_handler_keycode_disable_gui(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_disable_gui(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_disable_gui(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.no_gui ? "disabled" : "enabled");
 }
 
-__attribute__((unused)) static bool menu_handler_keycode_grave_esc(menu_input_t input) {
+__attribute__((unused)) bool menu_handler_keycode_grave_esc(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -88,11 +88,11 @@ __attribute__((unused)) static bool menu_handler_keycode_grave_esc(menu_input_t 
     }
 }
 
-__attribute__((unused)) void display_handler_keycode_grave_esc(char *text_buffer, size_t buffer_len) {
+__attribute__((unused, weak)) void display_handler_keycode_grave_esc(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.swap_grave_esc ? "swapped" : "normal");
 }
 
-__attribute__((unused)) static bool menu_handler_keycode_bslash_bspc(menu_input_t input) {
+__attribute__((unused)) bool menu_handler_keycode_bslash_bspc(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -104,11 +104,11 @@ __attribute__((unused)) static bool menu_handler_keycode_bslash_bspc(menu_input_
     }
 }
 
-__attribute__((unused)) void display_handler_keycode_bslash_bspc(char *text_buffer, size_t buffer_len) {
+__attribute__((unused, weak)) void display_handler_keycode_bslash_bspc(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.swap_backslash_backspace ? "swapped" : "normal");
 }
 
-static bool menu_handler_keycode_nkro(menu_input_t input) {
+bool menu_handler_keycode_nkro(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -121,11 +121,11 @@ static bool menu_handler_keycode_nkro(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_nkro(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_nkro(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.nkro ? "on" : "off");
 }
 
-static bool menu_handler_keycode_oneshot(menu_input_t input) {
+bool menu_handler_keycode_oneshot(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -137,11 +137,11 @@ static bool menu_handler_keycode_oneshot(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_oneshot(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_oneshot(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.oneshot_enable ? "on" : "off");
 }
 
-static bool menu_handler_keycode_autocorrect(menu_input_t input) {
+bool menu_handler_keycode_autocorrect(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
@@ -153,7 +153,7 @@ static bool menu_handler_keycode_autocorrect(menu_input_t input) {
     }
 }
 
-void display_handler_keycode_autocorrect(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_keycode_autocorrect(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", keymap_config.autocorrect_enable ? "on" : "off");
 }
 

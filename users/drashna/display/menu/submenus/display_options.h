@@ -7,7 +7,7 @@
 extern painter_image_array_t screen_saver_image[];
 extern const uint8_t         screensaver_image_size;
 
-static bool menu_handler_display(menu_input_t input) {
+bool menu_handler_display(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             userspace_config.painter.display_mode = (userspace_config.painter.display_mode - 1) % 4;
@@ -28,7 +28,7 @@ static bool menu_handler_display(menu_input_t input) {
     }
 }
 
-void display_handler_display(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display(char *text_buffer, size_t buffer_len) {
     switch (userspace_config.painter.display_mode) {
         case 0:
             strncpy(text_buffer, "Console", buffer_len - 1);
@@ -47,7 +47,7 @@ void display_handler_display(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, "Unknown", buffer_len);
 }
 
-static bool menu_handler_display_image(menu_input_t input) {
+bool menu_handler_display_image(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             userspace_config.painter.display_logo =
@@ -70,12 +70,12 @@ static bool menu_handler_display_image(menu_input_t input) {
     }
 }
 
-void display_handler_display_image(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_image(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, screen_saver_image[userspace_config.painter.display_logo].name, buffer_len - 1);
 }
 #endif // QUANTUM_PAINTER_ENABLE
 
-static bool menu_handler_display_rotation(menu_input_t input) {
+bool menu_handler_display_rotation(menu_input_t input) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     void init_display_ili9341_rotation(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -122,7 +122,7 @@ static bool menu_handler_display_rotation(menu_input_t input) {
     }
 }
 
-void display_handler_display_rotation(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_rotation(char *text_buffer, size_t buffer_len) {
 #ifdef DISPLAY_FULL_ROTATION_ENABLE
     switch (userspace_config.painter.rotation) {
         case 0:
@@ -146,7 +146,7 @@ void display_handler_display_rotation(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, "Unknown", buffer_len);
 }
 
-static bool menu_handler_display_inverted(menu_input_t input) {
+bool menu_handler_display_inverted(menu_input_t input) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     void init_display_ili9341_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -170,11 +170,11 @@ static bool menu_handler_display_inverted(menu_input_t input) {
     }
 }
 
-void display_handler_display_inverted(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_inverted(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, userspace_config.painter.inverted ? "Inverted" : "Normal", buffer_len - 1);
 }
 
-static bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
+bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
     switch (input) {
         case menu_input_left:
             painter_decrease_hue(painter_is_primary);
@@ -189,11 +189,11 @@ static bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary
 
 #ifdef QUANTUM_PAINTER_ENABLE
 
-void display_handler_display_hue(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
+__attribute__((weak)) void display_handler_display_hue(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
     snprintf(text_buffer, buffer_len - 1, "%d", painter_get_hue(painter_is_primary));
 }
 
-static bool menu_handler_display_sat(menu_input_t input, bool painter_is_primary) {
+bool menu_handler_display_sat(menu_input_t input, bool painter_is_primary) {
     switch (input) {
         case menu_input_left:
             painter_decrease_sat(painter_is_primary);
@@ -206,11 +206,11 @@ static bool menu_handler_display_sat(menu_input_t input, bool painter_is_primary
     }
 }
 
-void display_handler_display_sat(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
+__attribute__((weak)) void display_handler_display_sat(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
     snprintf(text_buffer, buffer_len - 1, "%d", painter_get_sat(painter_is_primary));
 }
 
-static bool menu_handler_display_val(menu_input_t input, bool painter_is_primary) {
+bool menu_handler_display_val(menu_input_t input, bool painter_is_primary) {
     switch (input) {
         case menu_input_left:
             painter_decrease_val(painter_is_primary);
@@ -223,55 +223,55 @@ static bool menu_handler_display_val(menu_input_t input, bool painter_is_primary
     }
 }
 
-void display_handler_display_val(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
+__attribute__((weak)) void display_handler_display_val(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
     snprintf(text_buffer, buffer_len - 1, "%d", painter_get_val(painter_is_primary));
 }
 
-static bool menu_handler_display_hue_primary(menu_input_t input) {
+bool menu_handler_display_hue_primary(menu_input_t input) {
     return menu_handler_display_hue(input, true);
 }
 
-void display_handler_display_hue_primary(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_hue_primary(char *text_buffer, size_t buffer_len) {
     display_handler_display_hue(text_buffer, buffer_len, true);
 }
 
-static bool menu_handler_display_sat_primary(menu_input_t input) {
+bool menu_handler_display_sat_primary(menu_input_t input) {
     return menu_handler_display_sat(input, true);
 }
 
-void display_handler_display_sat_primary(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_sat_primary(char *text_buffer, size_t buffer_len) {
     display_handler_display_sat(text_buffer, buffer_len, true);
 }
 
-static bool menu_handler_display_val_primary(menu_input_t input) {
+bool menu_handler_display_val_primary(menu_input_t input) {
     return menu_handler_display_val(input, true);
 }
 
-void display_handler_display_val_primary(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_val_primary(char *text_buffer, size_t buffer_len) {
     display_handler_display_val(text_buffer, buffer_len, true);
 }
 
-static bool menu_handler_display_hue_secondary(menu_input_t input) {
+bool menu_handler_display_hue_secondary(menu_input_t input) {
     return menu_handler_display_hue(input, false);
 }
 
-void display_handler_display_hue_secondary(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_hue_secondary(char *text_buffer, size_t buffer_len) {
     display_handler_display_hue(text_buffer, buffer_len, false);
 }
 
-static bool menu_handler_display_sat_secondary(menu_input_t input) {
+bool menu_handler_display_sat_secondary(menu_input_t input) {
     return menu_handler_display_sat(input, false);
 }
 
-void display_handler_display_sat_secondary(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_sat_secondary(char *text_buffer, size_t buffer_len) {
     display_handler_display_sat(text_buffer, buffer_len, false);
 }
 
-static bool menu_handler_display_val_secondary(menu_input_t input) {
+bool menu_handler_display_val_secondary(menu_input_t input) {
     return menu_handler_display_val(input, false);
 }
 
-void display_handler_display_val_secondary(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_val_secondary(char *text_buffer, size_t buffer_len) {
     display_handler_display_val(text_buffer, buffer_len, false);
 }
 #endif // QUANTUM_PAINTER_ENABLE
