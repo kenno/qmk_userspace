@@ -198,9 +198,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             }
         }
     } else {
-        if (screen_saver_redraw || hue_redraw) {
+        if (screen_saver_redraw) {
             hue_redraw = true;
             qp_rect(display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
+        }
+        if (hue_redraw) {
             painter_render_frame(display, font_thintel, is_keyboard_master(), 0, true);
         }
         bool transport_icon_redraw = false;
