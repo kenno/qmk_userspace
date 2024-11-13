@@ -334,17 +334,16 @@ void render_painter_totp(painter_device_t device, painter_font_handle_t font, ui
  * @param right_side A boolean indicating whether to render on the right side (true) or left side (false).
  * @param offset An optional offset value for the rendering position.
  */
-void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset) {
+void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset, bool color_side) {
     painter_image_handle_t frame_top    = qp_load_image_mem(gfx_frame_top),
                            frame_bottom = qp_load_image_mem(gfx_frame_bottom);
 
-    uint16_t width;
-    uint16_t height = 320;
+    const uint16_t max_width = 240;
+    uint16_t       xpos      = offset;
+    uint16_t       width     = offset + max_width;
+    uint16_t       height    = 320;
 
-    uint16_t xpos = offset;
-    width         = offset + 240;
-
-    HSV hsv = painter_get_hsv(right_side);
+    HSV hsv = painter_get_hsv(color_side);
     // frame top
     qp_drawimage_recolor(device, xpos + 1, 2, frame_top, hsv.h, hsv.s, hsv.v, 0, 0, 0);
     // lines for frame sides
@@ -394,10 +393,10 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     char title[50] = {0};
     snprintf(title, sizeof(title), "%s", PRODUCT);
     uint8_t title_width = qp_textwidth(font_title, title);
-    if (title_width > (185)) {
-        title_width = 185;
+    if (title_width > (max_width - 55)) {
+        title_width = max_width;
     }
-    uint8_t title_xpos = (185 - title_width) / 2;
+    uint8_t title_xpos = (max_width - title_width) / 2;
     qp_drawtext_recolor(device, xpos + title_xpos, 4, font_title,
                         truncate_text(title, title_width, font_title, false, false), 0, 0, 0, hsv.h, hsv.s, hsv.v);
 
