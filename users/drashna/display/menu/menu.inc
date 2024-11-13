@@ -65,7 +65,7 @@ deferred_token menu_deferred_token = INVALID_DEFERRED_TOKEN;
 // Root menu
 
 menu_entry_t root_entries[] = {
-    MENU_ENTRY_MULTI("Display Option", display_option_entries, display),
+    MENU_ENTRY_MULTI("Display Option", display_option_entries, display_mode_master),
 #ifdef UNICODE_COMMON_ENABLE
     MENU_ENTRY_MULTI("Unicode Settings", unicode_entries, unicode_typing),
 #endif // UNICODE_COMMON_ENABLE

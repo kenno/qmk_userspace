@@ -7,19 +7,19 @@
 extern painter_image_array_t screen_saver_image[];
 extern const uint8_t         screensaver_image_size;
 
-bool menu_handler_display(menu_input_t input) {
+bool menu_handler_display_mode_master(menu_input_t input) {
     switch (input) {
         case menu_input_left:
-            userspace_config.painter.display_mode = (userspace_config.painter.display_mode - 1) % 4;
-            if (userspace_config.painter.display_mode > 3) {
-                userspace_config.painter.display_mode = 3;
+            userspace_config.painter.display_mode_master = (userspace_config.painter.display_mode_master - 1) % 4;
+            if (userspace_config.painter.display_mode_master > 3) {
+                userspace_config.painter.display_mode_master = 3;
             }
             eeconfig_update_user_datablock(&userspace_config);
             return false;
         case menu_input_right:
-            userspace_config.painter.display_mode = (userspace_config.painter.display_mode + 1) % 4;
-            if (userspace_config.painter.display_mode > 3) {
-                userspace_config.painter.display_mode = 0;
+            userspace_config.painter.display_mode_master = (userspace_config.painter.display_mode_master + 1) % 4;
+            if (userspace_config.painter.display_mode_master > 3) {
+                userspace_config.painter.display_mode_master = 0;
             }
             eeconfig_update_user_datablock(&userspace_config);
             return false;
@@ -28,18 +28,55 @@ bool menu_handler_display(menu_input_t input) {
     }
 }
 
-__attribute__((weak)) void display_handler_display(char *text_buffer, size_t buffer_len) {
-    switch (userspace_config.painter.display_mode) {
+__attribute__((weak)) void display_handler_display_mode_master(char *text_buffer, size_t buffer_len) {
+    switch (userspace_config.painter.display_mode_master) {
         case 0:
             strncpy(text_buffer, "Console", buffer_len - 1);
             return;
         case 1:
-            strncpy(text_buffer, "Layer Map", buffer_len - 1);
-            return;
-        case 2:
             strncpy(text_buffer, "Fonts", buffer_len - 1);
             return;
+        case 2:
+            strncpy(text_buffer, "QMK Info", buffer_len - 1);
+            return;
         case 3:
+            strncpy(text_buffer, "Layer Map", buffer_len - 1);
+            return;
+    }
+
+    strncpy(text_buffer, "Unknown", buffer_len);
+}
+
+bool menu_handler_display_mode_slave(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.painter.display_mode_slave = (userspace_config.painter.display_mode_slave - 1) % 3;
+            if (userspace_config.painter.display_mode_slave > 2) {
+                userspace_config.painter.display_mode_slave = 2;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.painter.display_mode_slave = (userspace_config.painter.display_mode_slave + 1) % 43;
+            if (userspace_config.painter.display_mode_slave > 2) {
+                userspace_config.painter.display_mode_slave = 0;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_mode_slave(char *text_buffer, size_t buffer_len) {
+    switch (userspace_config.painter.display_mode_slave) {
+        case 0:
+            strncpy(text_buffer, "Console", buffer_len - 1);
+            return;
+        case 1:
+            strncpy(text_buffer, "Fonts", buffer_len - 1);
+            return;
+        case 2:
             strncpy(text_buffer, "QMK Info", buffer_len - 1);
             return;
     }
@@ -278,7 +315,8 @@ __attribute__((weak)) void display_handler_display_val_secondary(char *text_buff
 
 menu_entry_t display_option_entries[] = {
 #ifdef QUANTUM_PAINTER_ENABLE
-    MENU_ENTRY_CHILD("Display Option", display),
+    MENU_ENTRY_CHILD("Display (Master)", display_mode_master),
+    MENU_ENTRY_CHILD("Display (Slave)", display_mode_slave),
     MENU_ENTRY_CHILD("Image", display_image),
 #endif // QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_CHILD("Rotation", display_rotation),

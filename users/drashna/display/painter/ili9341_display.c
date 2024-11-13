@@ -5,8 +5,6 @@
 #include "drashna_runtime.h"
 #include "drashna_names.h"
 #include "drashna_layers.h"
-#include "drashna_util.h"
-#include "version.h"
 #include "qp_surface.h"
 #include "qp_ili9xxx_opcodes.h"
 #include "qp_comms.h"
@@ -25,9 +23,6 @@
 #endif // defined(RGBLIGHT_ENABLE)
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
-#endif
-#ifdef LAYER_MAP_ENABLE
-#    include "features/layer_map.h"
 #endif
 #ifdef KEYBOARD_LOCK_ENABLE
 #    include "features/keyboard_lock.h"
@@ -188,8 +183,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
         static uint8_t display_mode = 0xFF;
-        if (display_mode != userspace_config.painter.display_mode || screen_saver_redraw == false) {
-            display_mode        = userspace_config.painter.display_mode;
+        if (display_mode != userspace_config.painter.display_mode_master || screen_saver_redraw == false) {
+            display_mode        = userspace_config.painter.display_mode_master;
             screen_saver_redraw = true;
             screen_saver        = qp_load_image_mem(screen_saver_image[userspace_config.painter.display_logo].data);
             if (screen_saver != NULL) {
@@ -678,135 +673,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 
 #endif // RTC_ENABLE
 
-            static bool force_full_block_redraw = false;
-            ypos                                = 172;
-            // #if !defined(SPLIT_KEYBOARD)
-            if (render_menu(menu_surface, font_oled, 0, 0, SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT)) {
-                force_full_block_redraw = true;
-            } else
-            // #else
-            // // force set the dirty flag to false since we aren't actually rendering the menu on this side.
-            // userspace_runtime_state.menu_state.dirty = false;
-            // #endif
-            {
-                bool     block_redraw = false;
-                uint16_t surface_ypos = 2, surface_xpos = 3;
-
-                static uint8_t last_display_mode = 0xFF;
-                if (last_display_mode != userspace_config.painter.display_mode) {
-                    last_display_mode       = userspace_config.painter.display_mode;
-                    force_full_block_redraw = true;
-                }
-
-                if (force_full_block_redraw || screen_saver_redraw) {
-                    qp_rect(menu_surface, 0, 0, SURFACE_MENU_WIDTH - 1, SURFACE_MENU_HEIGHT - 1, 0, 0, 0, true);
-                    force_full_block_redraw = false;
-                    block_redraw            = true;
-                }
-
-                switch (userspace_config.painter.display_mode) {
-                    case 0:
-                        painter_render_console(menu_surface, font_oled, 2, surface_ypos, hue_redraw || block_redraw,
-                                               &curr_hsv.primary, DISPLAY_CONSOLE_LOG_LINE_START,
-                                               DISPLAY_CONSOLE_LOG_LINE_NUM);
-                        break;
-                    case 1:
-                        //  Layer Map render
-                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef LAYER_MAP_ENABLE
-                        if (hue_redraw || block_redraw || layer_map_has_updated) {
-                            surface_ypos += font_oled->line_height + 4;
-                            uint16_t temp_ypos = surface_ypos;
-                            for (uint8_t y = 0; y < LAYER_MAP_ROWS; y++) {
-                                surface_xpos = 20;
-                                for (uint8_t x = 0; x < LAYER_MAP_COLS; x++) {
-                                    uint16_t keycode = extract_basic_keycode(layer_map[y][x], NULL, false);
-                                    wchar_t  code[2] = {0};
-
-                                    // if (keycode == UC_IRNY) {
-                                    //     code[0] = L'⸮';
-                                    // } else if (keycode == UC_CLUE) {
-                                    //     code[0] = L'‽'
-                                    // } else
-                                    if (keycode > 0xFF) {
-                                        keycode = KC_SPC;
-                                    }
-                                    if (keycode < ARRAY_SIZE(code_to_name)) {
-                                        code[0] = pgm_read_byte(&code_to_name[keycode]);
-                                    }
-                                    surface_xpos += qp_drawtext_recolor(
-                                        menu_surface, surface_xpos, temp_ypos, font_oled, (char *)code,
-                                        curr_hsv.primary.h, curr_hsv.primary.s,
-                                        peek_matrix_layer_map(y, x) ? 0 : curr_hsv.primary.v, curr_hsv.secondary.h,
-                                        curr_hsv.secondary.s, peek_matrix_layer_map(y, x) ? curr_hsv.secondary.v : 0);
-                                    surface_xpos += qp_drawtext_recolor(menu_surface, surface_xpos, temp_ypos,
-                                                                        font_oled, " ", 0, 0, 0, 0, 0, 0);
-                                }
-                                temp_ypos += font_oled->line_height + 4;
-                            }
-                            layer_map_has_updated = false;
-                        }
-                        break;
-#endif
-                    case 2:
-                        if (hue_redraw || block_redraw) {
-                            static uint16_t max_font_xpos[3][4] = {0};
-                            render_character_set(menu_surface, &surface_xpos, max_font_xpos[0], &surface_ypos,
-                                                 font_thintel, curr_hsv.primary.h, curr_hsv.primary.s,
-                                                 curr_hsv.primary.v, 0, 0, 0);
-                            render_character_set(menu_surface, &surface_xpos, max_font_xpos[1], &surface_ypos,
-                                                 font_mono, curr_hsv.primary.h, curr_hsv.primary.s, curr_hsv.primary.v,
-                                                 0, 0, 0);
-                            render_character_set(menu_surface, &surface_xpos, max_font_xpos[2], &surface_ypos,
-                                                 font_oled, curr_hsv.primary.h, curr_hsv.primary.s, curr_hsv.primary.v,
-                                                 0, 0, 0);
-                        }
-                        break;
-                    case 3:
-                        if (hue_redraw || block_redraw) {
-                            surface_xpos = 5;
-                            surface_ypos = 5;
-                            snprintf(buf, sizeof(buf), "%s", QMK_BUILDDATE);
-                            surface_xpos += qp_drawtext_recolor(menu_surface, surface_xpos, surface_ypos, font_oled,
-                                                                "Built on: ", curr_hsv.primary.h, curr_hsv.primary.s,
-                                                                curr_hsv.primary.v, 0, 0, 0);
-                            qp_drawtext_recolor(menu_surface, surface_xpos, surface_ypos, font_oled, buf,
-                                                curr_hsv.secondary.h, curr_hsv.secondary.s, curr_hsv.secondary.v, 0, 0,
-                                                0);
-                            surface_xpos = 5;
-                            surface_ypos += font_oled->line_height + 4;
-                            snprintf(buf, sizeof(buf), "%s", QMK_VERSION);
-                            surface_xpos += qp_drawtext_recolor(menu_surface, surface_xpos, surface_ypos, font_oled,
-                                                                "Built from: ", curr_hsv.primary.h, curr_hsv.primary.s,
-                                                                curr_hsv.primary.v, 0, 0, 0);
-                            qp_drawtext_recolor(menu_surface, surface_xpos, surface_ypos, font_oled, buf,
-                                                curr_hsv.secondary.h, curr_hsv.secondary.s, curr_hsv.secondary.v, 0, 0,
-                                                0);
-                            surface_ypos += font_oled->line_height + 4;
-                            surface_xpos = 5;
-                            surface_xpos += qp_drawtext_recolor(menu_surface, surface_xpos, surface_ypos, font_oled,
-                                                                "Built with: ", curr_hsv.primary.h, curr_hsv.primary.s,
-                                                                curr_hsv.primary.v, 0, 0, 0);
-                            qp_drawtext_recolor(menu_surface, surface_xpos, surface_ypos, font_oled, __VERSION__,
-                                                curr_hsv.secondary.h, curr_hsv.secondary.s, curr_hsv.secondary.v, 0, 0,
-                                                0);
-
-                            qp_drawimage_recolor(menu_surface, 0, (SURFACE_MENU_HEIGHT - qmk_banner->height) - 3,
-                                                 qmk_banner, curr_hsv.primary.h, curr_hsv.primary.s, curr_hsv.primary.v,
-                                                 0, 0, 0);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
 #ifdef SPLIT_KEYBOARD
         } else {
-            static bool force_full_block_redraw = false;
-            if (!is_transport_connected()) {
-                force_full_block_redraw = true;
-                return;
-            }
 #    if defined(RGBLIGHT_ENABLE)
             ypos = 20;
             xpos = 83;
@@ -826,22 +694,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if defined(HAPTIC_ENABLE)
             painter_render_haptic(display, font_oled, 83, 58, hue_redraw, &curr_hsv);
 #    endif // HAPTIC_ENABLE
-            if (render_menu(menu_surface, font_oled, 0, 0, SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT)) {
-                force_full_block_redraw = true;
-            } else {
-                ypos = 3;
-                if (force_full_block_redraw || screen_saver_redraw) {
-                    qp_rect(menu_surface, 0, 0, SURFACE_MENU_WIDTH - 1, SURFACE_MENU_HEIGHT - 1, 0, 0, 0, true);
-                }
-                painter_render_console(menu_surface, font_oled, 2, ypos,
-                                       hue_redraw || force_full_block_redraw || screen_saver_redraw, &curr_hsv.primary,
-                                       DISPLAY_CONSOLE_LOG_LINE_START, DISPLAY_CONSOLE_LOG_LINE_NUM);
-
-                force_full_block_redraw = false;
-            }
             ypos = height - (16 + font_oled->line_height);
             painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &curr_hsv.primary);
         }
+        painter_render_menu_block(menu_surface, font_oled, 0, 0, SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT,
+                                  screen_saver_redraw || hue_redraw, &curr_hsv);
         qp_surface_draw(menu_surface, display, 2, 172, screen_saver_redraw);
 
 #endif // SPLIT_KEYBOARD

@@ -4,9 +4,10 @@
 #include "display/painter/painter.h"
 #include "display/menu/menu.h"
 #include <stdio.h>
-#include "drashna_runtime.h"
 #include "drashna_names.h"
-#include "drashna_layers.h"
+#include "drashna_runtime.h"
+#include "drashna_util.h"
+#include "version.h"
 
 #if defined(QUANTUM_PAINTER_ILI9341_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ILI9341)
 #    include "display/painter/ili9341_display.h"
@@ -14,6 +15,9 @@
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
 #endif // RTC_ENABLE
+#ifdef LAYER_MAP_ENABLE
+#    include "features/layer_map.h"
+#endif
 
 painter_image_array_t screen_saver_image[] = {
     [__COUNTER__] = {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
@@ -404,6 +408,124 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_close_image(frame_bottom);
 }
 
+void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    static bool force_full_block_redraw = false;
+    if (render_menu(device, font, x, y, width, height)) {
+        force_full_block_redraw = true;
+    } else {
+        bool     block_redraw = false;
+        uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
+        uint8_t  current_display_mode = is_keyboard_master() ? userspace_config.painter.display_mode_master
+                                                             : userspace_config.painter.display_mode_slave;
+
+        static uint8_t last_display_mode = 0xFF;
+        if (last_display_mode != current_display_mode) {
+            last_display_mode       = current_display_mode;
+            force_full_block_redraw = true;
+        }
+
+        if (force_full_block_redraw || force_redraw) {
+            qp_rect(device, x, y, width - 1, height - 1, 0, 0, 0, true);
+            force_full_block_redraw = false;
+            block_redraw            = true;
+        }
+
+        switch (current_display_mode) {
+            case 0:
+                painter_render_console(device, font, x + 2, surface_ypos, force_redraw || block_redraw,
+                                       &curr_hsv->primary, DISPLAY_CONSOLE_LOG_LINE_START,
+                                       DISPLAY_CONSOLE_LOG_LINE_NUM);
+                break;
+            case 1:
+                if (force_redraw || block_redraw) {
+                    static uint16_t              max_font_xpos[3][4] = {0};
+                    extern painter_font_handle_t font_thintel, font_mono, font_oled;
+                    render_character_set(device, &surface_xpos, max_font_xpos[0], &surface_ypos, font_thintel,
+                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
+                    render_character_set(device, &surface_xpos, max_font_xpos[1], &surface_ypos, font_mono,
+                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
+                    render_character_set(device, &surface_xpos, max_font_xpos[2], &surface_ypos, font_oled,
+                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
+                }
+                break;
+            case 2:
+                if (force_redraw || block_redraw) {
+                    char buf[50] = {0};
+                    surface_xpos = x + 5;
+                    surface_ypos = x + 5;
+                    snprintf(buf, sizeof(buf), "%s", QMK_BUILDDATE);
+                    surface_xpos +=
+                        qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, "Built on: ", curr_hsv->primary.h,
+                                            curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
+                    qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, buf, curr_hsv->secondary.h,
+                                        curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
+                    surface_xpos = x + 5;
+                    surface_ypos += font->line_height + 4;
+                    snprintf(buf, sizeof(buf), "%s", QMK_VERSION);
+                    surface_xpos += qp_drawtext_recolor(device, surface_xpos, surface_ypos, font,
+                                                        "Built from: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                                        curr_hsv->primary.v, 0, 0, 0);
+                    qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, buf, curr_hsv->secondary.h,
+                                        curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
+                    surface_ypos += font->line_height + 4;
+                    surface_xpos = x + 5;
+                    surface_xpos += qp_drawtext_recolor(device, surface_xpos, surface_ypos, font,
+                                                        "Built with: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                                        curr_hsv->primary.v, 0, 0, 0);
+                    qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, __VERSION__, curr_hsv->secondary.h,
+                                        curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
+
+                    extern painter_image_handle_t qmk_banner;
+                    qp_drawimage_recolor(device, x, y + (height - qmk_banner->height) - 3, qmk_banner,
+                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
+                }
+                break;
+            case 3:
+                //  Layer Map render
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef LAYER_MAP_ENABLE
+                if (force_redraw || block_redraw || layer_map_has_updated) {
+                    surface_ypos += font->line_height + 4;
+                    uint16_t temp_ypos = surface_ypos;
+                    for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
+                        surface_xpos = x + 20;
+                        for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
+                            uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
+                            wchar_t  code[2] = {0};
+
+                            // if (keycode == UC_IRNY) {
+                            //     code[0] = L'⸮';
+                            // } else if (keycode == UC_CLUE) {
+                            //     code[0] = L'‽'
+                            // } else
+                            if (keycode > 0xFF) {
+                                keycode = KC_SPC;
+                            }
+                            if (keycode < ARRAY_SIZE(code_to_name)) {
+                                code[0] = pgm_read_byte(&code_to_name[keycode]);
+                            }
+                            surface_xpos += qp_drawtext_recolor(
+                                device, surface_xpos, temp_ypos, font, (char*)code, curr_hsv->primary.h,
+                                curr_hsv->primary.s, peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v,
+                                curr_hsv->secondary.h, curr_hsv->secondary.s,
+                                peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0);
+                            surface_xpos +=
+                                qp_drawtext_recolor(device, surface_xpos, temp_ypos, font, " ", 0, 0, 0, 0, 0, 0);
+                        }
+                        temp_ypos += font->line_height + 4;
+                    }
+                    layer_map_has_updated = false;
+                }
+                break;
+#endif
+
+            default:
+                break;
+        }
+    }
+}
+
 /**
  * @brief Truncates text to fit within a certain width
  *
@@ -469,7 +591,8 @@ char* truncate_text(const char* text, uint16_t max_width, painter_font_handle_t 
  *
  * @param display quantum painter device to write to
  * @param x_offset x offset to start rendering at
- * @param max_pos array to store max x position of each line for clearing after rerendering
+ * @param max_pos array to store max x position of each line for clearing after
+ * rerendering
  * @param ypos y position to start rendering at
  * @param font font to use
  * @param hue_fg text hue
