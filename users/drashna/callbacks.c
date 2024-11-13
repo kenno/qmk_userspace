@@ -336,8 +336,8 @@ void                       eeconfig_init_user(void) {
     keymap_config.nkro = true;
     eeconfig_update_keymap(keymap_config.raw);
 
-    eeconfig_update_user_datablock(&userspace_config);
     eeconfig_init_keymap();
+    eeconfig_update_user_datablock(&userspace_config);
 }
 
 /**
