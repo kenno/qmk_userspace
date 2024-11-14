@@ -305,6 +305,7 @@ void                       eeconfig_init_user(void) {
 #else  // OLED_ENABLE
     userspace_config.oled.brightness = 255;
 #endif // OLED_ENABLE
+    userspace_config.painter.menu_render_side = 3;
     userspace_config.painter.hsv.primary = (HSV){
         .h = 128,
         .s = 255,

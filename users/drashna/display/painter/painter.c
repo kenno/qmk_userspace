@@ -411,7 +411,18 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
     static bool force_full_block_redraw = false;
-    if (render_menu(device, font, x, y, width, height)) {
+#ifdef SPLIT_KEYBOARD
+    bool should_render_this_side  = userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_keyboard_left());
+    static uint8_t last_menu_side = 0xFF;
+    if (last_menu_side != userspace_config.painter.menu_render_side) {
+        last_menu_side          = userspace_config.painter.menu_render_side;
+        force_full_block_redraw = true;
+    }
+#else  // SPLIT_KEYBOARD
+    const bool should_render_this_side = true;
+#endif // SPLIT_KEYBOARD
+
+    if (should_render_this_side && render_menu(device, font, x, y, width, height)) {
         force_full_block_redraw = true;
     } else {
         bool     block_redraw = false;

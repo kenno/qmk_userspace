@@ -132,6 +132,9 @@ void keyboard_post_init_display_driver(void) {
         .menu_stack     = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
         .selected_child = 0xFF,
     };
+    if (userspace_config.painter.menu_render_side == 0) {
+        userspace_config.painter.menu_render_side = 3;
+    }
 #endif // QUANTUM_PAINTER_ENABLE
 }
 

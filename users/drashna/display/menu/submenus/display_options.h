@@ -110,6 +110,45 @@ bool menu_handler_display_image(menu_input_t input) {
 __attribute__((weak)) void display_handler_display_image(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, screen_saver_image[userspace_config.painter.display_logo].name, buffer_len - 1);
 }
+
+#    ifdef SPLIT_KEYBOARD
+bool menu_handler_display_menu_location(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.painter.menu_render_side = (userspace_config.painter.menu_render_side - 1) % 4;
+            if (userspace_config.painter.menu_render_side < 1) {
+                userspace_config.painter.menu_render_side = 3;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.painter.menu_render_side = (userspace_config.painter.menu_render_side + 1) % 4;
+            if (userspace_config.painter.menu_render_side < 1) {
+                userspace_config.painter.menu_render_side = 1;
+            }
+            xprintf("menu location: %d\n", userspace_config.painter.menu_render_side);
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_menu_location(char *text_buffer, size_t buffer_len) {
+    switch (userspace_config.painter.menu_render_side) {
+        case 1:
+            strncpy(text_buffer, "Left", buffer_len - 1);
+            return;
+        case 2:
+            strncpy(text_buffer, "Right", buffer_len - 1);
+            return;
+        case 3:
+            strncpy(text_buffer, "Both", buffer_len - 1);
+            return;
+    }
+    strncpy(text_buffer, "Everywhere", buffer_len);
+}
+#    endif // SPLIT_KEYBOARD
 #endif // QUANTUM_PAINTER_ENABLE
 
 bool menu_handler_display_rotation(menu_input_t input) {
@@ -318,6 +357,9 @@ menu_entry_t display_option_entries[] = {
     MENU_ENTRY_CHILD("Display (Master)", display_mode_master),
     MENU_ENTRY_CHILD("Display (Slave)", display_mode_slave),
     MENU_ENTRY_CHILD("Image", display_image),
+#    ifdef SPLIT_KEYBOARD
+    MENU_ENTRY_CHILD("Menu Location", display_menu_location),
+#    endif // SPLIT_KEYBOARD
 #endif // QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_CHILD("Rotation", display_rotation),
     MENU_ENTRY_CHILD("Inverted", display_inverted),
