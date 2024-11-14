@@ -126,7 +126,6 @@ bool menu_handler_display_menu_location(menu_input_t input) {
             if (userspace_config.painter.menu_render_side < 1) {
                 userspace_config.painter.menu_render_side = 1;
             }
-            xprintf("menu location: %d\n", userspace_config.painter.menu_render_side);
             eeconfig_update_user_datablock(&userspace_config);
             return false;
         default:
