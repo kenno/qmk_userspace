@@ -33,7 +33,7 @@ painter_image_array_t screen_saver_image[] = {
 };
 const uint8_t screensaver_image_size = __COUNTER__;
 
-__attribute__((weak)) bool render_painter_side(void) {
+__attribute__((weak)) bool painter_render_side(void) {
     return is_keyboard_master();
 }
 
@@ -284,7 +284,7 @@ void painter_render_haptic(painter_device_t device, painter_font_handle_t font, 
 #endif // defined(HAPTIC_ENABLE)
 }
 
-void render_painter_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
+void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
                          dual_hsv_t* curr_hsv) {
 #if defined(RTC_ENABLE) && defined(RTC_TOTP_ENABLE) && __has_include("rtc_secrets.h")
 #    include "rtc_secrets.h"
@@ -310,17 +310,17 @@ void render_painter_totp(painter_device_t device, painter_font_handle_t font, ui
                                 : 0;
             snprintf(buf, sizeof(buf), "%-6s", totp_pairs[i].name);
             temp_x = x;
-            temp_x += qp_drawtext_recolor(device, temp_x, y, font_oled, buf, curr_hsv->primary.h, curr_hsv->primary.s,
+            temp_x += qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->primary.h, curr_hsv->primary.s,
                                           curr_hsv->primary.v, 0, 0, 0) +
                       3;
 
             snprintf(buf, sizeof(buf), "%06ld", code);
             // snprintf(buf, sizeof(buf), "%03ld %03ld", code / 1000, code % 1000);
             temp_x +=
-                qp_drawtext_recolor(device, temp_x, y, font_oled, buf, draw_red_redraw ? 0 : curr_hsv->secondary.h,
+                qp_drawtext_recolor(device, temp_x, y, font, buf, draw_red_redraw ? 0 : curr_hsv->secondary.h,
                                     draw_red_redraw ? 170 : curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
 
-            y += font_oled->line_height + 3;
+            y += font->line_height + 3;
         }
     }
 #endif
@@ -484,42 +484,46 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
             case 3:
                 //  Layer Map render
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if (is_keyboard_master()) {
 #ifdef LAYER_MAP_ENABLE
-                if (force_redraw || block_redraw || layer_map_has_updated) {
-                    surface_ypos += font->line_height + 4;
-                    uint16_t temp_ypos = surface_ypos;
-                    for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
-                        surface_xpos = x + 20;
-                        for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
-                            uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
-                            wchar_t  code[2] = {0};
+                    if (force_redraw || block_redraw || layer_map_has_updated) {
+                        surface_ypos += font->line_height + 4;
+                        uint16_t temp_ypos = surface_ypos;
+                        for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
+                            surface_xpos = x + 20;
+                            for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
+                                uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
+                                wchar_t  code[2] = {0};
 
-                            // if (keycode == UC_IRNY) {
-                            //     code[0] = L'⸮';
-                            // } else if (keycode == UC_CLUE) {
-                            //     code[0] = L'‽'
-                            // } else
-                            if (keycode > 0xFF) {
-                                keycode = KC_SPC;
+                                // if (keycode == UC_IRNY) {
+                                //     code[0] = L'⸮';
+                                // } else if (keycode == UC_CLUE) {
+                                //     code[0] = L'‽'
+                                // } else
+                                if (keycode > 0xFF) {
+                                    keycode = KC_SPC;
+                                }
+                                if (keycode < ARRAY_SIZE(code_to_name)) {
+                                    code[0] = pgm_read_byte(&code_to_name[keycode]);
+                                }
+                                surface_xpos += qp_drawtext_recolor(
+                                    device, surface_xpos, temp_ypos, font, (char*)code, curr_hsv->primary.h,
+                                    curr_hsv->primary.s, peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v,
+                                    curr_hsv->secondary.h, curr_hsv->secondary.s,
+                                    peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0);
+                                surface_xpos +=
+                                    qp_drawtext_recolor(device, surface_xpos, temp_ypos, font, " ", 0, 0, 0, 0, 0, 0);
                             }
-                            if (keycode < ARRAY_SIZE(code_to_name)) {
-                                code[0] = pgm_read_byte(&code_to_name[keycode]);
-                            }
-                            surface_xpos += qp_drawtext_recolor(
-                                device, surface_xpos, temp_ypos, font, (char*)code, curr_hsv->primary.h,
-                                curr_hsv->primary.s, peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v,
-                                curr_hsv->secondary.h, curr_hsv->secondary.s,
-                                peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0);
-                            surface_xpos +=
-                                qp_drawtext_recolor(device, surface_xpos, temp_ypos, font, " ", 0, 0, 0, 0, 0, 0);
+                            temp_ypos += font->line_height + 4;
                         }
-                        temp_ypos += font->line_height + 4;
+                        layer_map_has_updated = false;
                     }
-                    layer_map_has_updated = false;
-                }
-                break;
 #endif
+                } else {
+                    painter_render_totp(device, font, x + 4, y + 36, force_redraw, curr_hsv);
+                }
 
+                break;
             default:
                 break;
         }

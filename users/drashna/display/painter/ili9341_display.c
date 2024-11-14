@@ -71,7 +71,7 @@ void init_display_ili9341_rotation(void) {
     init_display_ili9341_inversion();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Initial render of frame/logo
-    painter_render_frame(display, font_thintel, is_keyboard_master(), 0, true);
+    painter_render_frame(display, font_thintel, painter_render_side(), 0, true);
 
     qp_power(display, true);
     qp_flush(display);
@@ -198,7 +198,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             qp_rect(display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
         }
         if (hue_redraw) {
-            painter_render_frame(display, font_thintel, is_keyboard_master(), 0, true);
+            painter_render_frame(display, font_thintel, painter_render_side(), 0, true);
         }
         bool transport_icon_redraw = false;
 #ifdef SPLIT_KEYBOARD
@@ -228,7 +228,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 
         painter_render_scan_rate(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
         ypos += font_oled->line_height + 4;
-        if (render_painter_side()) {
+        if (painter_render_side()) {
 #ifdef WPM_ENABLE
             painter_render_wpm(display, font_oled, 5, ypos, hue_redraw, &curr_hsv);
 #endif // WPM_ENABLE

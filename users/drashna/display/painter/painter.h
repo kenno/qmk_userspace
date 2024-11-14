@@ -29,7 +29,7 @@ void  render_character_set(painter_device_t display, uint16_t* x_offset, uint16_
                            painter_font_handle_t font, uint8_t hue_fg, uint8_t sat_fg, uint8_t val_fg, uint8_t hue_bg,
                            uint8_t sat_bg, uint8_t val_bg);
 
-bool render_painter_side(void);
+bool painter_render_side(void);
 void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset,
                           bool color_side);
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
