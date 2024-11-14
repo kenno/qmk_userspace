@@ -9,6 +9,9 @@
 #include "drashna_util.h"
 #include "version.h"
 
+#ifdef SPLIT_KEYBOARD
+#    include "split_util.h"
+#endif // SPLIT_KEYBOARD
 #if defined(QUANTUM_PAINTER_ILI9341_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ILI9341)
 #    include "display/painter/ili9341_display.h"
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE && CUSTOM_QUANTUM_PAINTER_ILI9341
@@ -417,6 +420,10 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     if (last_menu_side != userspace_config.painter.menu_render_side) {
         last_menu_side          = userspace_config.painter.menu_render_side;
         force_full_block_redraw = true;
+    }
+    // if slave side can't be detected, we need to force render, just to be safe
+    if (!is_transport_connected()) {
+        should_render_this_side = true;
     }
 #else  // SPLIT_KEYBOARD
     const bool should_render_this_side = true;
