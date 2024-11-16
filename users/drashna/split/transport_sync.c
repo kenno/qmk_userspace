@@ -266,15 +266,17 @@ void update_slave_state(void) {
     if (debug_config.raw != userspace_runtime_state.debug_config.raw) {
         debug_config = userspace_runtime_state.debug_config;
     }
-#if defined(QUANTUM_PAINTER_ENABLE) && defined(QUANTUM_PAINTER_ILI9341_ENABLE)
+#if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
     static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
     if (userspace_config.painter.inverted != last_inverted || userspace_config.painter.rotation != last_rotation) {
         last_inverted = userspace_config.painter.inverted;
         last_rotation = userspace_config.painter.rotation;
+#    if defined(QUANTUM_PAINTER_ILI9341_ENABLE)
         void init_display_ili9341_rotation(void);
         init_display_ili9341_rotation();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
     }
-#endif // QUANTUM_PAINTER_ENABLE && QUANTUM_PAINTER_ILI9341_ENABLE
+#endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
 }
 
 /**
