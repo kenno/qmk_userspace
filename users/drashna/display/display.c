@@ -84,15 +84,21 @@ bool process_record_menu(uint16_t keycode, keyrecord_t* record);
  * @return false
  */
 bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
+    bool keep_processing = true;
+
     if (record->event.pressed) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE
         add_keylog(keycode, record, display_keylogger_string, (DISPLAY_KEYLOGGER_LENGTH + 1));
 #endif // DISPLAY_KEYLOGGER_ENABLE
 #ifdef OLED_ENABLE
-        process_record_user_oled(keycode, record);
+        if (!process_record_user_oled(keycode, record)) {
+            keep_processing = false;
+        }
 #endif // OLED_ENABLE
 #if defined(QUANTUM_PAINTER_ENABLE)
-        return process_record_menu(keycode, record);
+        if (!process_record_menu(keycode, record)) {
+            keep_processing = false;
+        }
 #endif // QUANTUM_PAINTER_ENABLE
     }
 #ifdef DISPLAY_KEYLOGGER_ENABLE
@@ -101,7 +107,7 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
 #ifdef LAYER_MAP_ENABLE
     layer_map_has_updated = true;
 #endif // LAYER_MAP_ENABLE
-    return true;
+    return keep_processing;
 }
 
 /**
