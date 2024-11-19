@@ -51,6 +51,7 @@ void painter_render_totp(painter_device_t device, painter_font_handle_t font, ui
                          dual_hsv_t* curr_hsv);
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv);
+bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader);
 
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);

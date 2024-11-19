@@ -547,6 +547,39 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     }
 }
 
+bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader) {
+    painter_font_handle_t  font_proggy = qp_load_font_mem(font_proggy_clean_15);
+    painter_image_handle_t logo        = qp_load_image_mem(gfx_qmk_logo_220x220);
+    uint16_t               width, height, ypos = 240;
+    qp_get_geometry(device, &width, &height, NULL, NULL, NULL);
+    qp_rect(device, 0, 0, width - 1, height - 1, 0, 0, 0, true);
+    qp_drawimage_recolor(device, (width - logo->width) / 2, 10, logo, 0, 0, 255, 0, 0, 0);
+
+    char title[50] = {0};
+    snprintf(title, sizeof(title), "%s", "Please Stand By...");
+    uint8_t title_width = qp_textwidth(font_proggy, title);
+    uint8_t title_xpos  = (width - title_width) / 2;
+    qp_drawtext_recolor(device, title_xpos, ypos, font_proggy,
+                        truncate_text(title, title_width, font_proggy, false, false), 0, 0, 255, 0, 0, 0);
+    ypos += font_proggy->line_height + 4;
+    snprintf(title, sizeof(title), "%s", jump_to_bootloader ? "Jumping to Bootloader..." : "Shutting Down...");
+    title_width = qp_textwidth(font_proggy, title);
+    title_xpos  = (width - title_width) / 2;
+    qp_drawtext_recolor(device, title_xpos, ypos, font_proggy,
+                        truncate_text(title, title_width, font_proggy, false, false), 0, 0, 255, 0, 0, 0);
+    ypos += font_proggy->line_height + 4;
+    if (!eeconfig_is_enabled()) {
+        snprintf(title, sizeof(title), "%s", "Reinitialiing EEPROM...");
+        title_width = qp_textwidth(font_proggy, title);
+        title_xpos  = (width - title_width) / 2;
+        qp_drawtext_recolor(device, title_xpos, ypos, font_proggy,
+                            truncate_text(title, title_width, font_proggy, false, false), 0, 0, 255, 0, 0, 0);
+        ypos += font_proggy->line_height + 4;
+    }
+    qp_flush(device);
+    return false;
+}
+
 /**
  * @brief Truncates text to fit within a certain width
  *
@@ -674,6 +707,7 @@ void qp_backlight_disable(void) {
     gpio_write_pin_low(BACKLIGHT_PIN);
 #endif // BACKLIGHT_ENABLE
 }
+
 void housekeeping_task_quantum_painter(void) {
 #ifdef SPLIT_KEYBOARD
     if (!is_keyboard_master()) {
@@ -713,6 +747,7 @@ void housekeeping_task_quantum_painter(void) {
     }
 #endif
 }
+
 void keyboard_post_init_quantum_painter(void) {
 #if defined(BACKLIGHT_ENABLE)
     if (!is_backlight_enabled()) {
@@ -747,10 +782,7 @@ void suspend_wakeup_init_quantum_painter(void) {
 
 void shutdown_quantum_painter(bool jump_to_bootloader) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    ili9341_display_power(true);
-    if (!ili9341_display_shutdown(jump_to_bootloader)) {
-        return;
-    }
+    ili9341_display_shutdown(jump_to_bootloader);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #ifdef BACKLIGHT_ENABLE
     qp_backlight_enable();
