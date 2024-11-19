@@ -58,11 +58,11 @@ bool menu_handler_mouse_debugging(menu_input_t input) {
     }
 }
 
-#if 0
 __attribute__((weak)) void display_handler_mouse_debugging(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", debug_mouse ? "enabled" : "disabled");
 }
 
+#if 0
 bool menu_handler_pointing_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
