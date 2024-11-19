@@ -4,13 +4,14 @@
 #ifdef POINTING_DEVICE_ENABLE
 #    include "pointing/pointing.h"
 
+#    ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
 bool menu_handler_auto_mouse_enable(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
-            userspace_config.pointing.auto_mouse_layer_enable = !userspace_config.pointing.auto_mouse_layer_enable;
+            userspace_config.pointing.auto_mouse_layer.enable = !userspace_config.pointing.auto_mouse_layer.enable;
             eeconfig_update_user_datablock(&userspace_config);
-            set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer_enable);
+            set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer.enable);
             return false;
         default:
             return true;
@@ -19,16 +20,22 @@ bool menu_handler_auto_mouse_enable(menu_input_t input) {
 
 __attribute__((weak)) void display_handler_auto_mouse_enable(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s",
-             userspace_config.pointing.auto_mouse_layer_enable ? "enabled" : "disabled");
+             userspace_config.pointing.auto_mouse_layer.enable ? "enabled" : "disabled");
 }
 
 bool menu_handler_auto_mouse_layer(menu_input_t input) {
     switch (input) {
         case menu_input_left:
-            set_auto_mouse_layer((get_auto_mouse_layer() - 1) % MAX_USER_LAYERS);
+            userspace_config.pointing.auto_mouse_layer.layer =
+                (userspace_config.pointing.auto_mouse_layer.layer - 1) % MAX_USER_LAYERS;
+            set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
+            eeconfig_update_user_datablock(&userspace_config);
             return false;
         case menu_input_right:
-            set_auto_mouse_layer((get_auto_mouse_layer() + 1) % MAX_USER_LAYERS);
+            userspace_config.pointing.auto_mouse_layer.layer =
+                (userspace_config.pointing.auto_mouse_layer.layer - 1) % MAX_USER_LAYERS;
+            set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
+            eeconfig_update_user_datablock(&userspace_config);
             return false;
         default:
             return true;
@@ -36,8 +43,55 @@ bool menu_handler_auto_mouse_layer(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_auto_mouse_layer(char *text_buffer, size_t buffer_len) {
-    snprintf(text_buffer, buffer_len - 1, "%s", layer_name(get_auto_mouse_layer()));
+    snprintf(text_buffer, buffer_len - 1, "%s", layer_name(userspace_config.pointing.auto_mouse_layer.layer));
 }
+
+bool menu_handler_auto_mouse_timeout(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.pointing.auto_mouse_layer.timeout =
+                (userspace_config.pointing.auto_mouse_layer.timeout - 10);
+            set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.pointing.auto_mouse_layer.timeout =
+                (userspace_config.pointing.auto_mouse_layer.timeout - 10);
+            set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_auto_mouse_timeout(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.pointing.auto_mouse_layer.timeout);
+}
+
+bool menu_handler_auto_mouse_debounce(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.pointing.auto_mouse_layer.debounce =
+                (userspace_config.pointing.auto_mouse_layer.debounce - 1);
+            set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.pointing.auto_mouse_layer.debounce =
+                (userspace_config.pointing.auto_mouse_layer.debounce - 1);
+            set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_auto_mouse_debounce(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.pointing.auto_mouse_layer.debounce);
+}
+#    endif // POINTING_DEVICE_AUTO_MOUSE_ENABLE
 
 extern uint16_t mouse_jiggler_timer;
 
@@ -196,13 +250,21 @@ menu_entry_t pointing_acceleration_entries[] = {
     MENU_ENTRY_CHILD("Limit", mouse_accel_limit),
 };
 
+menu_entry_t pointing_auto_layer_entries[] = {
+    MENU_ENTRY_CHILD("Layer", auto_mouse_layer),
+    MENU_ENTRY_CHILD("Timeout", auto_mouse_timeout),
+    MENU_ENTRY_CHILD("Debounce", auto_mouse_debounce),
+};
+
 menu_entry_t pointing_entries[] = {
     MENU_ENTRY_MULTI("Mouse Acceleration", pointing_acceleration_entries, mouse_accel_toggle),
 #    if defined(KEYBOARD_handwired_tractyl_manuform) || defined(KEYBOARD_bastardkb_charybdis)
     MENU_ENTRY_CHILD("DPI Config", dpi_config),
 #    endif // KEYBOARD_handwired_tractyl_manuform || KEYBOARD_bastardkb_charybdis
+#    ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
     MENU_ENTRY_CHILD("Auto Mouse", auto_mouse_enable),
-    MENU_ENTRY_CHILD("Auto Mouse Layer", auto_mouse_layer),
+    MENU_ENTRY_MULTI("Auto Mouse Options", pointing_auto_layer_entries, auto_mouse_layer),
+#    endif // POINTING_DEVICE_AUTO_MOUSE_ENABLE
     MENU_ENTRY_CHILD("Mouse Jiggler", mouse_jiggler),
     MENU_ENTRY_CHILD("Allow Jiggler Interrupt", mouse_jiggler_interrupt),
 #    ifdef AUDIO_ENABLE

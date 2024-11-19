@@ -87,8 +87,10 @@ uint8_t pointing_device_handle_buttons(uint8_t buttons, bool pressed, pointing_d
 __attribute__((weak)) void pointing_device_init_keymap(void) {}
 
 void pointing_device_init_user(void) {
-    set_auto_mouse_layer(_MOUSE);
-    set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer_enable);
+    set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer.enable);
+    set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
+    set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
+    set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
 
     pointing_device_init_keymap();
 }
@@ -279,7 +281,7 @@ layer_state_t layer_state_set_pointing(layer_state_t state) {
         state |= ((layer_state_t)1 << _MOUSE);
         set_auto_mouse_enable(false); // auto mouse can be disabled any time during run time
     } else {
-        set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer_enable);
+        set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer.enable);
     }
     return state;
 }

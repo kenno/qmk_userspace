@@ -39,7 +39,12 @@ typedef union PACKED {
             bool matrix_scan_print  : 1;
         } debug;
         struct {
-            bool auto_mouse_layer_enable : 1;
+            struct {
+                bool     enable : 1;
+                uint8_t  layer : MAX_LAYER_BITS;
+                uint16_t timeout  : 16;
+                uint8_t  debounce : 8;
+            } auto_mouse_layer;
             bool mouse_jiggler_interrupt : 1;
             bool audio_mouse_clicky      : 1;
             struct {

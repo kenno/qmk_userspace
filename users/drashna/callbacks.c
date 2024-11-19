@@ -305,7 +305,6 @@ void                       eeconfig_init_user(void) {
 #else  // OLED_ENABLE
     userspace_config.oled.brightness = 255;
 #endif // OLED_ENABLE
-    userspace_config.painter.menu_render_side = 3;
     userspace_config.painter.hsv.primary = (HSV){
         .h = 128,
         .s = 255,
@@ -316,19 +315,17 @@ void                       eeconfig_init_user(void) {
         .s = 255,
         .v = 255,
     };
+    userspace_config.painter.menu_render_side = 3;
 
-#ifdef POINTING_DEVICE_ENABLE
-    userspace_config.pointing.accel.growth_rate = POINTING_DEVICE_ACCEL_GROWTH_RATE;
-    userspace_config.pointing.accel.offset      = POINTING_DEVICE_ACCEL_OFFSET;
-    userspace_config.pointing.accel.limit       = POINTING_DEVICE_ACCEL_LIMIT;
-    userspace_config.pointing.accel.takeoff     = POINTING_DEVICE_ACCEL_TAKEOFF;
-#else
-    userspace_config.pointing.accel.growth_rate = 0.25;
-    userspace_config.pointing.accel.offset      = 2.2;
-    userspace_config.pointing.accel.limit       = 0.2;
-    userspace_config.pointing.accel.takeoff     = 2.0;
-#endif // POINTING_DEVICE_ENABLE
-    userspace_config.pointing.auto_mouse_layer_enable = true;
+    userspace_config.pointing.accel.growth_rate        = POINTING_DEVICE_ACCEL_GROWTH_RATE;
+    userspace_config.pointing.accel.offset             = POINTING_DEVICE_ACCEL_OFFSET;
+    userspace_config.pointing.accel.limit              = POINTING_DEVICE_ACCEL_LIMIT;
+    userspace_config.pointing.accel.takeoff            = POINTING_DEVICE_ACCEL_TAKEOFF;
+    userspace_config.pointing.auto_mouse_layer.enable  = true;
+    userspace_config.pointing.auto_mouse_layer.layer   = _MOUSE;
+    userspace_config.pointing.auto_mouse_layer.timeout = AUTO_MOUSE_TIME;
+    userspace_config.pointing.auto_mouse_layer.timeout = AUTO_MOUSE_DEBOUNCE;
+
     userspace_config.pointing.mouse_jiggler_interrupt = true;
 
     userspace_config.rtc.timezone = RTC_TIMEZONE;

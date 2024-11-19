@@ -19,6 +19,13 @@ void           pointing_device_mouse_jiggler_toggle(void);
 extern const uint16_t PROGMEM pointing_mode_maps[POINTING_MODE_MAP_COUNT][POINTING_NUM_DIRECTIONS];
 #endif // POINTING_MODE_MAP_ENABLE
 
+#ifndef AUTO_MOUSE_TIME
+#    define AUTO_MOUSE_TIME 650
+#endif
+#ifndef AUTO_MOUSE_DEBOUNCE
+#    define AUTO_MOUSE_DEBOUNCE 25
+#endif
+
 // lower/higher value = curve starts more smoothly/abruptly
 #ifndef POINTING_DEVICE_ACCEL_TAKEOFF
 #    define POINTING_DEVICE_ACCEL_TAKEOFF 2.0
