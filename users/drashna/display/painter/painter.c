@@ -355,8 +355,7 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_drawimage_recolor(device, xpos + 1, 2, frame_top, hsv.h, hsv.s, hsv.v, 0, 0, 0);
     // lines for frame sides
     qp_line(device, xpos + 1, frame_top->height, xpos + 1, height - frame_bottom->height, hsv.h, hsv.s, hsv.v);
-    qp_line(device, xpos + width - 2, frame_top->height, xpos + 238, height - frame_bottom->height, hsv.h, hsv.s,
-            hsv.v);
+    qp_line(device, width - 2, frame_top->height, width - 2, height - frame_bottom->height, hsv.h, hsv.s, hsv.v);
 
     // horizontal line below rgb
     qp_line(device, xpos + 80, 54, xpos + 237, 54, hsv.h, hsv.s, hsv.v);
