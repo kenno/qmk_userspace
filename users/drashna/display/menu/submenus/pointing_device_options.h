@@ -33,7 +33,7 @@ bool menu_handler_auto_mouse_layer(menu_input_t input) {
             return false;
         case menu_input_right:
             userspace_config.pointing.auto_mouse_layer.layer =
-                (userspace_config.pointing.auto_mouse_layer.layer - 1) % MAX_USER_LAYERS;
+                (userspace_config.pointing.auto_mouse_layer.layer + 1) % MAX_USER_LAYERS;
             set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
             eeconfig_update_user_datablock(&userspace_config);
             return false;
@@ -56,7 +56,7 @@ bool menu_handler_auto_mouse_timeout(menu_input_t input) {
             return false;
         case menu_input_right:
             userspace_config.pointing.auto_mouse_layer.timeout =
-                (userspace_config.pointing.auto_mouse_layer.timeout - 10);
+                (userspace_config.pointing.auto_mouse_layer.timeout + 10);
             set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
             eeconfig_update_user_datablock(&userspace_config);
             return false;
@@ -79,7 +79,7 @@ bool menu_handler_auto_mouse_debounce(menu_input_t input) {
             return false;
         case menu_input_right:
             userspace_config.pointing.auto_mouse_layer.debounce =
-                (userspace_config.pointing.auto_mouse_layer.debounce - 1);
+                (userspace_config.pointing.auto_mouse_layer.debounce + 1);
             set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
             eeconfig_update_user_datablock(&userspace_config);
             return false;

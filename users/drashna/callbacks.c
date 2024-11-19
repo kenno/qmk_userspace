@@ -317,14 +317,14 @@ void                       eeconfig_init_user(void) {
     };
     userspace_config.painter.menu_render_side = 3;
 
-    userspace_config.pointing.accel.growth_rate        = POINTING_DEVICE_ACCEL_GROWTH_RATE;
-    userspace_config.pointing.accel.offset             = POINTING_DEVICE_ACCEL_OFFSET;
-    userspace_config.pointing.accel.limit              = POINTING_DEVICE_ACCEL_LIMIT;
-    userspace_config.pointing.accel.takeoff            = POINTING_DEVICE_ACCEL_TAKEOFF;
-    userspace_config.pointing.auto_mouse_layer.enable  = true;
-    userspace_config.pointing.auto_mouse_layer.layer   = _MOUSE;
-    userspace_config.pointing.auto_mouse_layer.timeout = AUTO_MOUSE_TIME;
-    userspace_config.pointing.auto_mouse_layer.timeout = AUTO_MOUSE_DEBOUNCE;
+    userspace_config.pointing.accel.growth_rate         = POINTING_DEVICE_ACCEL_GROWTH_RATE;
+    userspace_config.pointing.accel.offset              = POINTING_DEVICE_ACCEL_OFFSET;
+    userspace_config.pointing.accel.limit               = POINTING_DEVICE_ACCEL_LIMIT;
+    userspace_config.pointing.accel.takeoff             = POINTING_DEVICE_ACCEL_TAKEOFF;
+    userspace_config.pointing.auto_mouse_layer.enable   = true;
+    userspace_config.pointing.auto_mouse_layer.layer    = _MOUSE;
+    userspace_config.pointing.auto_mouse_layer.timeout  = AUTO_MOUSE_TIME;
+    userspace_config.pointing.auto_mouse_layer.debounce = AUTO_MOUSE_DEBOUNCE;
 
     userspace_config.pointing.mouse_jiggler_interrupt = true;
 
