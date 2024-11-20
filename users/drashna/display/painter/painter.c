@@ -254,7 +254,7 @@ void painter_render_haptic(painter_device_t device, painter_font_handle_t font, 
     extern haptic_config_t haptic_config;
     if (force_redraw || haptic_config.raw != temp_config.raw) {
         temp_config.raw = haptic_config.raw;
-        uint8_t temp_x  = x;
+        uint16_t temp_x = x;
         temp_x += qp_drawtext_recolor(device, temp_x, y, font, "Haptic Feedback: ", curr_hsv->primary.h,
                                       curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0) +
                   4;
@@ -559,8 +559,8 @@ bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader) {
 
     char title[50] = {0};
     snprintf(title, sizeof(title), "%s", "Please Stand By...");
-    uint8_t title_width = qp_textwidth(font_proggy, title);
-    uint8_t title_xpos  = (width - title_width) / 2;
+    uint16_t title_width = qp_textwidth(font_proggy, title);
+    uint16_t title_xpos  = (width - title_width) / 2;
     qp_drawtext_recolor(device, title_xpos, ypos, font_proggy,
                         truncate_text(title, title_width, font_proggy, false, false), 0, 0, 255, 0, 0, 0);
     ypos += font_proggy->line_height + 4;
