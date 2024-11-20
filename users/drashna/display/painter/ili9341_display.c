@@ -700,7 +700,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &curr_hsv.primary);
         }
         painter_render_menu_block(menu_surface, font_oled, 0, 0, SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT,
-                                  screen_saver_redraw || hue_redraw, &curr_hsv);
+                                  screen_saver_redraw || hue_redraw, &curr_hsv, is_keyboard_left());
         qp_surface_draw(menu_surface, display, 2, 172, screen_saver_redraw);
 
 #endif // SPLIT_KEYBOARD

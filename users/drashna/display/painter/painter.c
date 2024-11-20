@@ -94,16 +94,12 @@ void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font
  * @param end last line to render
  */
 void painter_render_console(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                            bool force_redraw, HSV* hsv, uint8_t start, uint8_t end) {
-    static uint16_t max_line_width = 0;
+                            uint16_t display_width, bool force_redraw, hsv_t* hsv, uint8_t start, uint8_t end) {
     if (console_log_needs_redraw || force_redraw) {
         for (uint8_t i = start; i < end; i++) {
             uint16_t xpos =
                 x + qp_drawtext_recolor(device, x, y, font, logline_ptrs[i], hsv->h, hsv->s, hsv->v, 0, 0, 0);
-            if (max_line_width < xpos) {
-                max_line_width = xpos;
-            }
-            qp_rect(device, xpos, y, max_line_width, y + font->line_height, 0, 0, 0, true);
+            qp_rect(device, xpos, y, display_width, y + font->line_height, 0, 0, 0, true);
             y += font->line_height + 4;
         }
         console_log_needs_redraw = false;
@@ -413,10 +409,10 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
 }
 
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool is_left) {
     static bool force_full_block_redraw = false;
 #ifdef SPLIT_KEYBOARD
-    bool should_render_this_side  = userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_keyboard_left());
+    bool           should_render_this_side = userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_left);
     static uint8_t last_menu_side = 0xFF;
     if (last_menu_side != userspace_config.painter.menu_render_side) {
         last_menu_side          = userspace_config.painter.menu_render_side;
@@ -452,7 +448,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
 
         switch (current_display_mode) {
             case 0:
-                painter_render_console(device, font, x + 2, surface_ypos, force_redraw || block_redraw,
+                painter_render_console(device, font, x + 2, surface_ypos, width, force_redraw || block_redraw,
                                        &curr_hsv->primary, DISPLAY_CONSOLE_LOG_LINE_START,
                                        DISPLAY_CONSOLE_LOG_LINE_NUM);
                 break;
@@ -503,7 +499,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
             case 3:
                 //  Layer Map render
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if (is_keyboard_master()) {
+                if (is_left) {
 #ifdef LAYER_MAP_ENABLE
                     if (force_redraw || block_redraw || layer_map_has_updated) {
                         surface_ypos += font->line_height + 4;
