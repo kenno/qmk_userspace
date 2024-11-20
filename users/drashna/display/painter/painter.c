@@ -68,13 +68,15 @@ void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font
             snprintf(buf, sizeof(buf), "RTC Device Not Connected");
         }
 
-        uint8_t title_width = qp_textwidth(font, buf);
-        if (title_width > (display_width - 6)) {
-            title_width = display_width - 6;
+        uint16_t total_width = display_width - 6 - x;
+        uint16_t title_width = qp_textwidth(font, buf);
+        if (title_width > (total_width)) {
+            title_width = total_width;
         }
-        uint8_t title_xpos = (display_width - title_width) / 2;
+        uint16_t title_xpos = (total_width - title_width) / 2 + x;
 
-        qp_drawtext_recolor(device, title_xpos, y, font, buf, hsv->h, hsv->s, hsv->v, 0, 0, 0);
+        qp_drawtext_recolor(device, title_xpos, y, font, truncate_text(buf, total_width, font, false, false), hsv->h,
+                            hsv->s, hsv->v, 0, 0, 0);
     }
 #endif // RTC_ENABLE
 }
@@ -398,11 +400,11 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
 
     char title[50] = {0};
     snprintf(title, sizeof(title), "%s", PRODUCT);
-    uint8_t title_width = qp_textwidth(font_title, title);
+    uint16_t title_width = qp_textwidth(font_title, title);
     if (title_width > (max_width - 55)) {
         title_width = max_width;
     }
-    uint8_t title_xpos = (max_width - title_width) / 2;
+    uint16_t title_xpos = (max_width - title_width) / 2;
     qp_drawtext_recolor(device, xpos + title_xpos, 4, font_title,
                         truncate_text(title, title_width, font_title, false, false), 0, 0, 0, hsv.h, hsv.s, hsv.v);
 
