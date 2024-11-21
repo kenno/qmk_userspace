@@ -22,6 +22,19 @@
 #    include "features/layer_map.h"
 #endif
 
+painter_font_handle_t font_thintel, font_mono, font_oled;
+
+painter_image_handle_t frame_top, frame_bottom;
+painter_image_handle_t lock_caps_on, lock_caps_off;
+painter_image_handle_t lock_num_on, lock_num_off;
+painter_image_handle_t lock_scrl_on, lock_scrl_off;
+painter_image_handle_t windows_logo, apple_logo, linux_logo;
+painter_image_handle_t shift_icon, control_icon, alt_icon, command_icon, windows_icon;
+painter_image_handle_t mouse_icon;
+painter_image_handle_t gamepad_icon;
+painter_image_handle_t qmk_banner;
+painter_image_handle_t akira_explosion;
+
 painter_image_array_t screen_saver_image[] = {
     [__COUNTER__] = {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
     [__COUNTER__] = {gfx_anime_girl_jacket_240x320, "Anime Girl"},
@@ -38,6 +51,37 @@ const uint8_t screensaver_image_size = __COUNTER__;
 
 __attribute__((weak)) bool painter_render_side(void) {
     return is_keyboard_master();
+}
+
+/**
+ * @brief Initializes the assets used by the painter module.
+ *
+ * This function loads various fonts and images into memory for use in the
+ * painter module. The assets include fonts, frames, logos, and icons.
+ *
+ */
+void painter_init_assets(void) {
+    font_thintel = qp_load_font_mem(font_thintel15);
+    font_mono    = qp_load_font_mem(font_ProggyTiny15);
+    font_oled    = qp_load_font_mem(font_oled_font);
+
+    frame_top    = qp_load_image_mem(gfx_frame_top);
+    frame_bottom = qp_load_image_mem(gfx_frame_bottom);
+
+    windows_logo = qp_load_image_mem(gfx_windows_logo);
+    apple_logo   = qp_load_image_mem(gfx_apple_logo);
+    linux_logo   = qp_load_image_mem(gfx_linux_logo);
+
+    shift_icon   = qp_load_image_mem(gfx_shift_icon);
+    control_icon = qp_load_image_mem(gfx_control_icon);
+    alt_icon     = qp_load_image_mem(gfx_alt_icon);
+    command_icon = qp_load_image_mem(gfx_command_icon);
+    windows_icon = qp_load_image_mem(gfx_windows_icon);
+
+    mouse_icon      = qp_load_image_mem(gfx_mouse_icon);
+    gamepad_icon    = qp_load_image_mem(gfx_gamepad_24x24);
+    qmk_banner      = qp_load_image_mem(gfx_qmk_powered_by);
+    akira_explosion = qp_load_image_mem(gfx_akira_explosion);
 }
 
 /**
@@ -980,6 +1024,7 @@ void housekeeping_task_quantum_painter(void) {
 }
 
 void keyboard_post_init_quantum_painter(void) {
+    painter_init_assets();
 #if defined(BACKLIGHT_ENABLE)
     if (!is_backlight_enabled()) {
         backlight_enable();

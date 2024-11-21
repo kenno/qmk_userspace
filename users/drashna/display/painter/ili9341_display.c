@@ -30,20 +30,11 @@
 #    include "features/keyboard_lock.h"
 #endif // KEYBOARD_LOCK_ENABLE
 
-painter_device_t display, menu_surface;
-
-painter_font_handle_t font_thintel, font_mono, font_oled;
-
-painter_image_handle_t lock_caps_on, lock_caps_off;
-painter_image_handle_t lock_num_on, lock_num_off;
-painter_image_handle_t lock_scrl_on, lock_scrl_off;
-painter_image_handle_t windows_logo, apple_logo, linux_logo;
-painter_image_handle_t shift_icon, control_icon, alt_icon, command_icon, windows_icon;
-painter_image_handle_t mouse_icon;
-painter_image_handle_t gamepad_icon;
-painter_image_handle_t qmk_banner;
-painter_image_handle_t akira_explosion;
-painter_image_handle_t screen_saver;
+painter_device_t              display, menu_surface;
+painter_image_handle_t        screen_saver;
+extern painter_image_handle_t windows_logo, apple_logo, linux_logo;
+extern painter_image_handle_t mouse_icon, gamepad_icon;
+extern painter_image_handle_t akira_explosion;
 
 #define SURFACE_MENU_WIDTH  236
 #define SURFACE_MENU_HEIGHT 120
@@ -88,25 +79,6 @@ void init_display_ili9341_rotation(void) {
  *
  */
 void init_display_ili9341(void) {
-    font_thintel = qp_load_font_mem(font_thintel15);
-    font_mono    = qp_load_font_mem(font_ProggyTiny15);
-    font_oled    = qp_load_font_mem(font_oled_font);
-
-    windows_logo = qp_load_image_mem(gfx_windows_logo);
-    apple_logo   = qp_load_image_mem(gfx_apple_logo);
-    linux_logo   = qp_load_image_mem(gfx_linux_logo);
-
-    shift_icon   = qp_load_image_mem(gfx_shift_icon);
-    control_icon = qp_load_image_mem(gfx_control_icon);
-    alt_icon     = qp_load_image_mem(gfx_alt_icon);
-    command_icon = qp_load_image_mem(gfx_command_icon);
-    windows_icon = qp_load_image_mem(gfx_windows_icon);
-
-    mouse_icon   = qp_load_image_mem(gfx_mouse_icon);
-    gamepad_icon = qp_load_image_mem(gfx_gamepad_24x24);
-    qmk_banner   = qp_load_image_mem(gfx_qmk_powered_by);
-    akira_explosion = qp_load_image_mem(gfx_akira_explosion);
-
     display =
         qp_ili9341_make_spi_device(240, 320, DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, DISPLAY_SPI_DIVIDER, 0);
     menu_surface = qp_make_rgb565_surface(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, menu_buffer);
@@ -453,8 +425,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                                      &curr_hsv, disabled_val);
 
 #ifdef OS_DETECTION_ENABLE
-            ypos                                    = 107 + 4;
-            xpos                                    = 159;
+            ypos = 107 + 4;
+            xpos = 159;
             painter_render_os_detection(display, font_oled, xpos, ypos, width, hue_redraw, &curr_hsv);
 #endif // OS_DETECTION_ENABLE
 
@@ -586,7 +558,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if defined(HAPTIC_ENABLE)
             painter_render_haptic(display, font_oled, 83, 58, hue_redraw, &curr_hsv);
 #    endif // HAPTIC_ENABLE
-            ypos = height - (16 + font_oled->line_height);
+            ypos                          = height - (16 + font_oled->line_height);
             static uint16_t last_rtc_time = 0xFFFF;
             painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
         }
