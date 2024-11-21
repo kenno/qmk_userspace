@@ -89,6 +89,7 @@ void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font
  * @param font font to render with
  * @param x x position to start rendering
  * @param y y position to start rendering
+ * @param display_width maximum width for rendering
  * @param force_redraw do we forcibly redraw the console log
  * @param hsv colors to render with
  * @param start start line to render
@@ -208,14 +209,14 @@ void painter_render_lock_state(painter_device_t device, painter_font_handle_t fo
 }
 
 /**
- * @brief Render the current wpm count to the display
+ * @brief Render the keylogger to the display
  *
- * @param device
- * @param font
- * @param x
- * @param y
- * @param force_redraw
- * @param curr_hsv
+ * @param device device to render to
+ * @param font font to render with
+ * @param x x position to start rendering
+ * @param y y position to start rendering
+ * @param force_redraw do we forcibly redraw the keylogger
+ * @param curr_hsv painter colors
  */
 void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
                         dual_hsv_t* curr_hsv) {
@@ -409,6 +410,19 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_close_image(frame_bottom);
 }
 
+/**
+ * @brief Renders a menu block on the display.
+ *
+ * @param device The painter device to render on.
+ * @param font The font handle to use for rendering text.
+ * @param x The x-coordinate of the top-left corner of the menu block.
+ * @param y The y-coordinate of the top-left corner of the menu block.
+ * @param width The width of the menu block.
+ * @param height The height of the menu block.
+ * @param force_redraw If true, forces the menu block to be redrawn.
+ * @param curr_hsv Pointer to the current HSV color values.
+ * @param is_left If true, indicates that the menu block is on the left side rendering.
+ */
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool is_left) {
     static bool force_full_block_redraw = false;
