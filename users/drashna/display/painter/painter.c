@@ -508,8 +508,14 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     } else {
         bool     block_redraw = false;
         uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
-        uint8_t  current_display_mode = is_keyboard_master() ? userspace_config.painter.display_mode_master
-                                                             : userspace_config.painter.display_mode_slave;
+#ifdef SPLIT_KEYBOARD
+        uint8_t  current_display_mode = painter_render_side() ? userspace_config.painter.display_mode_master
+                                                              : userspace_config.painter.display_mode_slave;
+#else
+        uint8_t current_display_mode =
+            is_left ? userspace_config.painter.display_mode_master : userspace_config.painter.display_mode_slave;
+
+#endif
 
         static uint8_t last_display_mode = 0xFF;
         if (last_display_mode != current_display_mode) {
