@@ -63,7 +63,8 @@ void painter_render_modifiers(painter_device_t device, painter_font_handle_t fon
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv, uint8_t disabled_val);
 void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                              uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv);
-
+void painter_render_layer_map(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                              uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv);
 bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader);
 
 dual_hsv_t painter_get_dual_hsv(void);

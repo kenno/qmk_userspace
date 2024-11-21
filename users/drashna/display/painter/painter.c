@@ -555,38 +555,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (is_left) {
 #ifdef LAYER_MAP_ENABLE
-                    if (force_redraw || block_redraw || layer_map_has_updated) {
-                        surface_ypos += font->line_height + 4;
-                        uint16_t temp_ypos = surface_ypos;
-                        for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
-                            surface_xpos = x + 20;
-                            for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
-                                uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
-                                wchar_t  code[2] = {0};
-
-                                // if (keycode == UC_IRNY) {
-                                //     code[0] = L'⸮';
-                                // } else if (keycode == UC_CLUE) {
-                                //     code[0] = L'‽'
-                                // } else
-                                if (keycode > 0xFF) {
-                                    keycode = KC_SPC;
-                                }
-                                if (keycode < ARRAY_SIZE(code_to_name)) {
-                                    code[0] = pgm_read_byte(&code_to_name[keycode]);
-                                }
-                                surface_xpos += qp_drawtext_recolor(
-                                    device, surface_xpos, temp_ypos, font, (char*)code, curr_hsv->primary.h,
-                                    curr_hsv->primary.s, peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v,
-                                    curr_hsv->secondary.h, curr_hsv->secondary.s,
-                                    peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0);
-                                surface_xpos +=
-                                    qp_drawtext_recolor(device, surface_xpos, temp_ypos, font, " ", 0, 0, 0, 0, 0, 0);
-                            }
-                            temp_ypos += font->line_height + 4;
-                        }
-                        layer_map_has_updated = false;
-                    }
+                    painter_render_layer_map(device, font, x, y, width, force_redraw || block_redraw, curr_hsv);
 #endif
                 } else {
                     painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv,
@@ -828,6 +797,54 @@ void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font
     extern painter_image_handle_t qmk_banner;
     qp_drawimage_recolor(device, x, y + 20, qmk_banner, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v,
                          0, 0, 0);
+}
+
+/**
+ * @brief Renders the layer map on the display.
+ *
+ * This function renders the current keymap based on the active layers on the specified painter device.
+ *
+ * @param device The display device to render on.
+ * @param font The font handle to use for rendering text.
+ * @param x The x-coordinate to start rendering from.
+ * @param y The y-coordinate to start rendering from.
+ * @param width The width of the area to render within.
+ * @param force_redraw A boolean indicating whether to force a redraw of the layer map.
+ * @param curr_hsv A pointer to a dual_hsv_t structure containing the primary and secondary HSV color values to use for
+ * rendering.
+ */
+void painter_render_layer_map(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                              uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+    if (force_redraw || layer_map_has_updated) {
+        y += font->line_height + 4;
+        uint16_t xpos = x, ypos = y;
+        for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
+            xpos = x + 20;
+            for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
+                uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
+                wchar_t  code[2] = {0};
+
+                // if (keycode == UC_IRNY) {
+                //     code[0] = L'⸮';
+                // } else if (keycode == UC_CLUE) {
+                //     code[0] = L'‽'
+                // } else
+                if (keycode > 0xFF) {
+                    keycode = KC_SPC;
+                }
+                if (keycode < ARRAY_SIZE(code_to_name)) {
+                    code[0] = pgm_read_byte(&code_to_name[keycode]);
+                }
+                xpos += qp_drawtext_recolor(
+                    device, xpos, ypos, font, (char*)code, curr_hsv->primary.h, curr_hsv->primary.s,
+                    peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v, curr_hsv->secondary.h,
+                    curr_hsv->secondary.s, peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0);
+                xpos += qp_drawtext_recolor(device, xpos, ypos, font, " ", 0, 0, 0, 0, 0, 0);
+            }
+            ypos += font->line_height + 4;
+        }
+        layer_map_has_updated = false;
+    }
 }
 
 /**
