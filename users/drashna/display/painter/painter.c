@@ -56,7 +56,7 @@ void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font
                              uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, HSV* hsv) {
 #ifdef RTC_ENABLE
 
-    bool            rtc_redraw = false;
+    bool rtc_redraw = false;
     if (timer_elapsed(*rtc_timer) > 125 && rtc_is_connected()) {
         *rtc_timer = timer_read();
         rtc_redraw = true;
@@ -287,8 +287,20 @@ void painter_render_haptic(painter_device_t device, painter_font_handle_t font, 
 #endif // defined(HAPTIC_ENABLE)
 }
 
-void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
-                         dual_hsv_t* curr_hsv) {
+/**
+ * @brief Renders a TOTP (Time-based One-Time Password) on the specified painter device.
+ *
+ * @param device The painter device to render on.
+ * @param font The font handle to use for rendering the text.
+ * @param x The x-coordinate where the rendering should start.
+ * @param y The y-coordinate where the rendering should start.
+ * @param width The width of the area to render the TOTP.
+ * @param force_redraw A boolean flag indicating whether to force a redraw of the TOTP.
+ * @param curr_hsv A pointer to the current HSV color values.
+ * @param wide_load Render as  "name XXXXXX" if false, or "name: XXX XXX" if true
+ */
+void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, uint16_t width,
+                         bool force_redraw, dual_hsv_t* curr_hsv, bool wide_load) {
 #if defined(RTC_ENABLE) && defined(RTC_TOTP_ENABLE) && __has_include("rtc_secrets.h")
 #    include "rtc_secrets.h"
     uint32_t    get_totp_code(const uint8_t* hmackey, const uint8_t keylength, const uint32_t timestep);
@@ -305,25 +317,30 @@ void painter_render_totp(painter_device_t device, painter_font_handle_t font, ui
         totp_redraw = draw_red_redraw = true;
     }
     if (force_redraw || totp_redraw) {
-        uint16_t temp_x  = x;
-        char     buf[20] = {0};
+        uint16_t temp_x     = x;
+        char     buf[20]    = {0};
+        uint16_t text_width = qp_textwidth(font, wide_load ? "WWWWWW: WWW WWW" : "WWWWWW WWWWWW") + 10;
         for (uint8_t i = 0; i < ARRAY_SIZE(totp_pairs); i++) {
             uint32_t code = rtc_is_connected()
                                 ? get_totp_code(totp_pairs[i].hmacKey, totp_pairs[i].key_length, totp_pairs[i].timestep)
                                 : 0;
-            snprintf(buf, sizeof(buf), "%-6s", totp_pairs[i].name);
-            temp_x = x;
+            snprintf(buf, sizeof(buf), "%6s%s", totp_pairs[i].name, wide_load ? ": " : " ");
+            if ((temp_x + text_width) > (width)) {
+                temp_x = x;
+                y += font->line_height + 3;
+            }
             temp_x += qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->primary.h, curr_hsv->primary.s,
-                                          curr_hsv->primary.v, 0, 0, 0) +
-                      3;
+                                          curr_hsv->primary.v, 0, 0, 0);
 
-            snprintf(buf, sizeof(buf), "%06ld", code);
-            // snprintf(buf, sizeof(buf), "%03ld %03ld", code / 1000, code % 1000);
+            if (wide_load) {
+                snprintf(buf, sizeof(buf), "%03ld %03ld", code / 1000, code % 1000);
+            } else {
+                snprintf(buf, sizeof(buf), "%06ld", code);
+            }
             temp_x +=
                 qp_drawtext_recolor(device, temp_x, y, font, buf, draw_red_redraw ? 0 : curr_hsv->secondary.h,
-                                    draw_red_redraw ? 170 : curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
-
-            y += font->line_height + 3;
+                                    draw_red_redraw ? 170 : curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0) +
+                10;
         }
     }
 #endif
@@ -340,8 +357,10 @@ void painter_render_totp(painter_device_t device, painter_font_handle_t font, ui
  * @param font_title The font handle to use for the title.
  * @param right_side A boolean indicating whether to render on the right side (true) or left side (false).
  * @param offset An optional offset value for the rendering position.
+ * @param color_side A boolean indicating whether to render the frame in primary (true) or secondary (false) color.
  */
-void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset, bool color_side) {
+void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset,
+                          bool color_side) {
     painter_image_handle_t frame_top    = qp_load_image_mem(gfx_frame_top),
                            frame_bottom = qp_load_image_mem(gfx_frame_bottom);
 
@@ -428,7 +447,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     static bool force_full_block_redraw = false;
 #ifdef SPLIT_KEYBOARD
     bool           should_render_this_side = userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_left);
-    static uint8_t last_menu_side = 0xFF;
+    static uint8_t last_menu_side          = 0xFF;
     if (last_menu_side != userspace_config.painter.menu_render_side) {
         last_menu_side          = userspace_config.painter.menu_render_side;
         force_full_block_redraw = true;
@@ -550,7 +569,8 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                     }
 #endif
                 } else {
-                    painter_render_totp(device, font, x + 4, y + 36, force_redraw, curr_hsv);
+                    painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv,
+                                        true);
                 }
 
                 break;

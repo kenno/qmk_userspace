@@ -47,8 +47,8 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
                         dual_hsv_t* curr_hsv);
 void painter_render_haptic(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                            bool force_redraw, dual_hsv_t* curr_hsv);
-void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
-                         dual_hsv_t* curr_hsv);
+void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, uint16_t width,
+                         bool force_redraw, dual_hsv_t* curr_hsv, bool wide_load);
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool side);
 void painter_render_keylogger(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
