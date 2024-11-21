@@ -592,36 +592,10 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 
 #ifdef AUTOCORRECT_ENABLE
             ypos = 122 + 4;
-            extern bool     autocorrect_str_has_changed;
-            extern char     autocorrected_str_raw[2][21];
-            static uint32_t autocorrect_timer = 0;
-            if (timer_elapsed(autocorrect_timer) > 125) {
-                autocorrect_timer           = timer_read();
-                autocorrect_str_has_changed = true;
-            }
 
-            if (hue_redraw || autocorrect_str_has_changed) {
-                xpos = 5;
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Autocorrected: ", curr_hsv.primary.h,
-                                    curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
-                ypos += font_oled->line_height + 4;
-                snprintf(buf, sizeof(buf), "%19s", autocorrected_str_raw[0]);
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
-                                    curr_hsv.secondary.v, 0, 0, 0);
+            painter_render_autocorrect(display, font_oled, 5, ypos, width, hue_redraw, &curr_hsv);
+            ypos += (font_oled->line_height + 4) * 3;
 
-                ypos += font_oled->line_height + 4;
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Original Text: ", curr_hsv.primary.h,
-                                    curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
-                ypos += font_oled->line_height + 4;
-                snprintf(buf, sizeof(buf), "%19s", autocorrected_str_raw[1]);
-
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
-                                    curr_hsv.secondary.v, 0, 0, 0);
-                autocorrect_str_has_changed = false;
-            } else {
-                // we called ypos inside the function ... to make sure we don't skip a line on future passes ....
-                ypos += (font_oled->line_height + 4) * 3;
-            }
 #endif // AUTOCORRECT_ENABLE
 
             ypos += font_oled->line_height + 1;

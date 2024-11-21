@@ -611,6 +611,53 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
 }
 
 /**
+ * @brief Renders the autocorrected and original text on the display.
+ *
+ * This function displays the autocorrected text and the original text on the specified device
+ * using the provided font. It updates the display if the text has changed or if a forced redraw
+ * is requested.
+ *
+ * @param device The painter device to render on.
+ * @param font The font handle to use for rendering text.
+ * @param x The x-coordinate where the text rendering starts.
+ * @param y The y-coordinate where the text rendering starts.
+ * @param width The width of the area to render the text.
+ * @param force_redraw A boolean flag indicating whether to force a redraw of the text.
+ * @param curr_hsv A pointer to a dual_hsv_t structure containing the primary and secondary HSV colors for text
+ * rendering.
+ */
+void painter_render_autocorrect(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+    extern bool     autocorrect_str_has_changed;
+    extern char     autocorrected_str_raw[2][21];
+    char            buf[50]           = {0};
+    static uint32_t autocorrect_timer = 0;
+    if (timer_elapsed(autocorrect_timer) > 125) {
+        autocorrect_timer           = timer_read();
+        autocorrect_str_has_changed = true;
+    }
+
+    if (force_redraw || autocorrect_str_has_changed) {
+        qp_drawtext_recolor(device, x, y, font, "Autocorrected: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                            curr_hsv->primary.v, 0, 0, 0);
+        y += font->line_height + 4;
+        snprintf(buf, sizeof(buf), "%19s", autocorrected_str_raw[0]);
+        qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                            curr_hsv->secondary.v, 0, 0, 0);
+
+        y += font->line_height + 4;
+        qp_drawtext_recolor(device, x, y, font, "Original Text: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                            curr_hsv->primary.v, 0, 0, 0);
+        y += font->line_height + 4;
+        snprintf(buf, sizeof(buf), "%19s", autocorrected_str_raw[1]);
+
+        qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                            curr_hsv->secondary.v, 0, 0, 0);
+        autocorrect_str_has_changed = false;
+    }
+}
+
+/**
  * @brief Renders the shutdown screen for the painter device.
  *
  * This function is responsible for rendering the shutdown screen on the specified
