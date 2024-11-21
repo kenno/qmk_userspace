@@ -640,7 +640,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 
             ypos -= (font_oled->line_height + 4);
 #ifdef RTC_ENABLE
-            painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &curr_hsv.primary);
+            static uint16_t last_rtc_time = 0xFFFF;
+            painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
 #else
             if (hue_redraw) {
                 snprintf(buf, sizeof(buf), "Built on: %s", QMK_BUILDDATE);

@@ -52,12 +52,12 @@ __attribute__((weak)) bool painter_render_side(void) {
  * @param hsv hsv value to render with
  */
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                             uint16_t display_width, bool force_redraw, HSV* hsv) {
+                             uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, HSV* hsv) {
 #ifdef RTC_ENABLE
-    static uint16_t rtc_timer  = 0;
+
     bool            rtc_redraw = false;
-    if (timer_elapsed(rtc_timer) > 125 && rtc_is_connected()) {
-        rtc_timer  = timer_read();
+    if (timer_elapsed(*rtc_timer) > 125 && rtc_is_connected()) {
+        *rtc_timer = timer_read();
         rtc_redraw = true;
     }
     if (force_redraw || rtc_redraw) {

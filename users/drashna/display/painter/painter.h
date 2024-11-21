@@ -33,9 +33,9 @@ bool painter_render_side(void);
 void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset,
                           bool color_side);
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                             uint16_t display_width, bool force_redraw, HSV* hsv);
+                             uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, HSV* hsv);
 void painter_render_console(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                            uint16_t display_width, bool force_redraw, hsv_t* hsv, uint8_t start, uint8_t end);
+                            uint16_t display_width, bool force_redraw, HSV* hsv, uint8_t start, uint8_t end);
 void painter_render_scan_rate(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               bool force_redraw, dual_hsv_t* curr_hsv);
 void painter_render_rgb(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
