@@ -543,36 +543,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 }
                 break;
             case 2:
-                if (force_redraw || block_redraw) {
-                    char buf[50] = {0};
-                    surface_xpos = x + 5;
-                    surface_ypos = x + 5;
-                    snprintf(buf, sizeof(buf), "%s", QMK_BUILDDATE);
-                    surface_xpos +=
-                        qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, "Built on: ", curr_hsv->primary.h,
-                                            curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
-                    qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, buf, curr_hsv->secondary.h,
-                                        curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
-                    surface_xpos = x + 5;
-                    surface_ypos += font->line_height + 4;
-                    snprintf(buf, sizeof(buf), "%s", QMK_VERSION);
-                    surface_xpos += qp_drawtext_recolor(device, surface_xpos, surface_ypos, font,
-                                                        "Built from: ", curr_hsv->primary.h, curr_hsv->primary.s,
-                                                        curr_hsv->primary.v, 0, 0, 0);
-                    qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, buf, curr_hsv->secondary.h,
-                                        curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
-                    surface_ypos += font->line_height + 4;
-                    surface_xpos = x + 5;
-                    surface_xpos += qp_drawtext_recolor(device, surface_xpos, surface_ypos, font,
-                                                        "Built with: ", curr_hsv->primary.h, curr_hsv->primary.s,
-                                                        curr_hsv->primary.v, 0, 0, 0);
-                    qp_drawtext_recolor(device, surface_xpos, surface_ypos, font, __VERSION__, curr_hsv->secondary.h,
-                                        curr_hsv->secondary.s, curr_hsv->secondary.v, 0, 0, 0);
-
-                    extern painter_image_handle_t qmk_banner;
-                    qp_drawimage_recolor(device, x, y + (height - qmk_banner->height) - 3, qmk_banner,
-                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
-                }
+                painter_render_qmk_info(device, font, x + 5, y + 5, width, force_redraw || block_redraw, curr_hsv);
                 break;
             case 3:
                 //  Layer Map render
@@ -810,6 +781,48 @@ void painter_render_modifiers(painter_device_t device, painter_font_handle_t fon
             x += shift_icon->width + 2;
         }
     }
+}
+
+/**
+ * @brief Renders QMK information on the display.
+ *
+ * This function displays the build date, QMK version, and compiler version on the specified device.
+ * It also draws a QMK banner image.
+ *
+ * @param device        The painter device to render on.
+ * @param font          The font handle to use for text rendering.
+ * @param x             The x-coordinate to start rendering.
+ * @param y             The y-coordinate to start rendering.
+ * @param width         The width of the rendering area.
+ * @param force_redraw  A flag to force redraw.
+ * @param curr_hsv      Pointer to a dual_hsv_t structure containing the current HSV color values.
+ */
+void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                             uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+    char     buf[50] = {0};
+    uint16_t xpos    = x;
+
+    snprintf(buf, sizeof(buf), "%s", QMK_BUILDDATE);
+    xpos = x + qp_drawtext_recolor(device, xpos, y, font, "Built on: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                   curr_hsv->primary.v, 0, 0, 0);
+    qp_drawtext_recolor(device, xpos, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v,
+                        0, 0, 0);
+    xpos = x;
+    y += font->line_height + 4;
+    snprintf(buf, sizeof(buf), "%s", QMK_VERSION);
+    y += qp_drawtext_recolor(device, xpos, y, font, "Built from: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                             curr_hsv->primary.v, 0, 0, 0);
+    qp_drawtext_recolor(device, xpos, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v,
+                        0, 0, 0);
+    y += font->line_height + 4;
+    xpos = x + qp_drawtext_recolor(device, xpos, y, font, "Built with: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                   curr_hsv->primary.v, 0, 0, 0);
+    qp_drawtext_recolor(device, xpos, y, font, __VERSION__, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                        curr_hsv->secondary.v, 0, 0, 0);
+
+    extern painter_image_handle_t qmk_banner;
+    qp_drawimage_recolor(device, x, y + 20, qmk_banner, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v,
+                         0, 0, 0);
 }
 
 /**
