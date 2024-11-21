@@ -148,7 +148,6 @@ void painter_render_console(painter_device_t device, painter_font_handle_t font,
             qp_rect(device, xpos, y, display_width, y + font->line_height, 0, 0, 0, true);
             y += font->line_height + 4;
         }
-        console_log_needs_redraw = false;
     }
 }
 
@@ -1034,6 +1033,7 @@ void housekeeping_task_quantum_painter(void) {
         qp_backlight_enable();
     }
 #endif
+    console_log_needs_redraw = false;
 }
 
 void keyboard_post_init_quantum_painter(void) {
