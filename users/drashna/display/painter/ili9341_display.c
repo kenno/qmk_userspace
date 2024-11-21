@@ -511,18 +511,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #ifdef OS_DETECTION_ENABLE
             ypos                                    = 107 + 4;
             xpos                                    = 159;
-            static os_variant_t last_detected_os    = {0};
-            os_variant_t        current_detected_os = detected_host_os();
-            if (hue_redraw || last_detected_os != current_detected_os) {
-                last_detected_os = current_detected_os;
-
-                xpos += qp_drawtext_recolor(display, xpos, ypos, font_oled, "OS: ", curr_hsv.primary.h,
-                                            curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
-
-                snprintf(buf, sizeof(buf), "%9s", os_variant_to_string(current_detected_os));
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
-                                    curr_hsv.secondary.v, 0, 0, 0);
-            }
+            painter_render_os_detection(display, font_oled, xpos, ypos, width, hue_redraw, &curr_hsv);
 #endif // OS_DETECTION_ENABLE
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

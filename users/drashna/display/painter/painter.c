@@ -658,6 +658,39 @@ void painter_render_autocorrect(painter_device_t device, painter_font_handle_t f
 }
 
 /**
+ * @brief Renders the detected operating system on the display.
+ *
+ * This function checks the currently detected operating system and displays it on the specified device.
+ *
+ * @param device The painter device to render on.
+ * @param font The font handle to use for rendering text.
+ * @param x The x-coordinate to start rendering.
+ * @param y The y-coordinate to start rendering.
+ * @param width The width of the area to render.
+ * @param force_redraw A boolean flag to force redraw even if the OS has not changed.
+ * @param curr_hsv A pointer to a dual_hsv_t structure containing the current HSV color values for primary and secondary
+ * colors.
+ */
+void painter_render_os_detection(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                 uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+#ifdef OS_DETECTION_ENABLE
+    static os_variant_t last_detected_os    = {0};
+    char                buf[50]             = {0};
+    os_variant_t        current_detected_os = detected_host_os();
+    if (force_redraw || last_detected_os != current_detected_os) {
+        last_detected_os = current_detected_os;
+
+        x += qp_drawtext_recolor(device, x, y, font, "OS: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                 curr_hsv->primary.v, 0, 0, 0);
+
+        snprintf(buf, sizeof(buf), "%9s", os_variant_to_string(current_detected_os));
+        qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                            curr_hsv->secondary.v, 0, 0, 0);
+    }
+#endif
+}
+
+/**
  * @brief Renders the shutdown screen for the painter device.
  *
  * This function is responsible for rendering the shutdown screen on the specified
