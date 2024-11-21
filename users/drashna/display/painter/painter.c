@@ -545,6 +545,32 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     }
 }
 
+void painter_render_keylogger(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                              uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+    char buf[50] = {0};
+
+    if (keylogger_has_changed || force_redraw) {
+        snprintf(buf, sizeof(buf), "Keylogger: %s", display_keylogger_string);
+
+        x += qp_drawtext_recolor(device, x, y, font, truncate_text(buf, width - x, font, false, false), 0, 255, 0,
+                                 curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
+
+        qp_rect(device, x, y, width, y + font->line_height, curr_hsv->primary.h, curr_hsv->primary.s,
+                curr_hsv->primary.v, true);
+        keylogger_has_changed = false;
+    }
+}
+
+/**
+ * @brief Renders the shutdown screen for the painter device.
+ *
+ * This function is responsible for rendering the shutdown screen on the specified
+ * painter device. It can also optionally jump to the bootloader if specified.
+ *
+ * @param device The painter device to render the shutdown screen on.
+ * @param jump_to_bootloader If true, the device will jump to the bootloader after rendering the shutdown screen.
+ * @return true if the shutdown screen was rendered successfully, false otherwise.
+ */
 bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader) {
     painter_font_handle_t  font_proggy = qp_load_font_mem(font_proggy_clean_15);
     painter_image_handle_t logo        = qp_load_image_mem(gfx_qmk_logo_220x220);

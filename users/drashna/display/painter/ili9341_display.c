@@ -630,27 +630,9 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DISPLAY_KEYLOGGER_ENABLE // keep at very end
-            static uint32_t last_klog_update = 0;
-            if (timer_elapsed32(last_klog_update) > 125 || keylogger_has_changed) {
-                last_klog_update      = timer_read32();
-                keylogger_has_changed = true;
-            }
-
             ypos = height - (font_mono->line_height + 2);
-            if (keylogger_has_changed) {
-                static int max_klog_xpos = 0;
-                xpos                     = 27;
-                snprintf(buf, sizeof(buf), "Keylogger: %s", display_keylogger_string);
 
-                xpos += qp_drawtext_recolor(display, xpos, ypos, font_mono, buf, 0, 255, 0, curr_hsv.primary.h,
-                                            curr_hsv.primary.s, curr_hsv.primary.v);
-
-                if (max_klog_xpos < xpos) {
-                    max_klog_xpos = xpos;
-                }
-                // qp_rect(display, xpos, ypos, max_klog_xpos, ypos + font->line_height, 0, 0, 255, true);
-                keylogger_has_changed = false;
-            }
+            painter_render_keylogger(display, font_mono, 27, ypos, width - 27, hue_redraw, &curr_hsv);
 #endif // DISPLAY_KEYLOGGER_ENABLE
 
             // RTC
