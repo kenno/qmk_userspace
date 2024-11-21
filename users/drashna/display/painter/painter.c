@@ -49,6 +49,7 @@ __attribute__((weak)) bool painter_render_side(void) {
  * @param y y position to start rendering
  * @param display_width maximum width for rendering
  * @param force_redraw do we need to redraw regardless of time
+ * @param rtc_timer timer to check for redraw
  * @param hsv hsv value to render with
  */
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
