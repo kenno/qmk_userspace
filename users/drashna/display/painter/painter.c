@@ -580,6 +580,20 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     }
 }
 
+/**
+ * @brief Renders the keylogger information on the display.
+ *
+ * This function renders the keylogger information on the specified device using the given font and coordinates.
+ * It checks if the keylogger state has changed or if a forced redraw is requested, and updates the display accordingly.
+ *
+ * @param device The painter device to render on.
+ * @param font The font handle to use for rendering text.
+ * @param x The x-coordinate to start rendering.
+ * @param y The y-coordinate to start rendering.
+ * @param width The width of the area to render within.
+ * @param force_redraw A boolean indicating whether to force a redraw regardless of keylogger state change.
+ * @param curr_hsv A pointer to the current HSV color values to use for rendering.
+ */
 void painter_render_keylogger(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
     char buf[50] = {0};
