@@ -446,67 +446,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Mods
 
-            ypos                        = 107 + 3;
-            static uint8_t last_mods    = {0};
-            uint8_t        current_mods = get_mods() | get_weak_mods() | get_oneshot_mods();
-            if (hue_redraw || last_mods != current_mods || keymap_config_redraw) {
-                last_mods = current_mods;
-                xpos      = 5;
-                xpos += qp_drawtext_recolor(display, xpos, ypos + 1, font_oled, "Modifiers:", curr_hsv.primary.h,
-                                            curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0) +
-                        2;
+            ypos = 107 + 3;
+            xpos = 5;
 
-                if (qp_drawimage_recolor(display, xpos, ypos, shift_icon,
-                                         last_mods & MOD_BIT_LSHIFT ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_LSHIFT ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += shift_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos,
-                                         keymap_config.swap_lctl_lgui ? command_icon : windows_icon,
-                                         last_mods & MOD_BIT_LGUI ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_LGUI ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_LGUI ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += windows_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos, alt_icon,
-                                         last_mods & MOD_BIT_LALT ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_LALT ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_LALT ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += alt_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos, control_icon,
-                                         last_mods & MOD_BIT_LCTRL ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_LCTRL ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_LCTRL ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += control_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos, control_icon,
-                                         last_mods & MOD_BIT_RCTRL ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_RCTRL ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_RCTRL ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += control_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos, alt_icon,
-                                         last_mods & MOD_BIT_RALT ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_RALT ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_RALT ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += alt_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos,
-                                         keymap_config.swap_rctl_rgui ? command_icon : windows_icon,
-                                         last_mods & MOD_BIT_RGUI ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_RGUI ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_RGUI ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += windows_icon->width + 2;
-                }
-                if (qp_drawimage_recolor(display, xpos, ypos, shift_icon,
-                                         last_mods & MOD_BIT_RSHIFT ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                         last_mods & MOD_BIT_RSHIFT ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                         last_mods & MOD_BIT_RSHIFT ? curr_hsv.primary.v : disabled_val, 0, 0, 0)) {
-                    xpos += shift_icon->width + 2;
-                }
-            }
+            painter_render_modifiers(display, font_oled, xpos, ypos, width, hue_redraw || keymap_config_redraw,
+                                     &curr_hsv, disabled_val);
 
 #ifdef OS_DETECTION_ENABLE
             ypos                                    = 107 + 4;

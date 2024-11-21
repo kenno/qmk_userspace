@@ -691,6 +691,84 @@ void painter_render_os_detection(painter_device_t device, painter_font_handle_t 
 }
 
 /**
+ * @brief Renders the modifier icons on the display.
+ *
+ * This function draws the current state of the modifier keys (Shift, Control, Alt, Command, Windows) on the specified
+ * device using the provided font and coordinates. It recolors the icons based on whether the modifiers are active or
+ * not.
+ *
+ * @param device The painter device to render on.
+ * @param font The font handle to use for rendering text.
+ * @param x The x-coordinate to start rendering.
+ * @param y The y-coordinate to start rendering.
+ * @param width The width of the area to render.
+ * @param force_redraw If true, forces the redraw of the modifiers regardless of state change.
+ * @param curr_hsv The current HSV color values to use for active and inactive states.
+ * @param disabled_val The value to use for the disabled state of the modifiers.
+ */
+
+void painter_render_modifiers(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                              uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv, uint8_t disabled_val) {
+    extern painter_image_handle_t shift_icon, control_icon, alt_icon, command_icon, windows_icon;
+    static uint8_t                last_mods    = 0;
+    uint8_t                       current_mods = get_mods() | get_weak_mods() | get_oneshot_mods();
+    if (force_redraw || last_mods != current_mods) {
+        last_mods = current_mods;
+        x += qp_drawtext_recolor(device, x, y + 1, font, "Modifiers:", curr_hsv->primary.h, curr_hsv->primary.s,
+                                 curr_hsv->primary.v, 0, 0, 0) +
+             2;
+
+        if (qp_drawimage_recolor(
+                device, x, y, shift_icon, last_mods & MOD_BIT_LSHIFT ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                curr_hsv->primary.s, last_mods & MOD_BIT_LSHIFT ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += shift_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, keymap_config.swap_lctl_lgui ? command_icon : windows_icon,
+                                 last_mods & MOD_BIT_LGUI ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_LGUI ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_LGUI ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += windows_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, alt_icon,
+                                 last_mods & MOD_BIT_LALT ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_LALT ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_LALT ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += alt_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, control_icon,
+                                 last_mods & MOD_BIT_LCTRL ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_LCTRL ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_LCTRL ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += control_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, control_icon,
+                                 last_mods & MOD_BIT_RCTRL ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_RCTRL ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_RCTRL ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += control_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, alt_icon,
+                                 last_mods & MOD_BIT_RALT ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_RALT ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_RALT ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += alt_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, keymap_config.swap_rctl_rgui ? command_icon : windows_icon,
+                                 last_mods & MOD_BIT_RGUI ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_RGUI ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_RGUI ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += windows_icon->width + 2;
+        }
+        if (qp_drawimage_recolor(device, x, y, shift_icon,
+                                 last_mods & MOD_BIT_RSHIFT ? curr_hsv->secondary.h : curr_hsv->primary.h,
+                                 last_mods & MOD_BIT_RSHIFT ? curr_hsv->secondary.s : curr_hsv->primary.s,
+                                 last_mods & MOD_BIT_RSHIFT ? curr_hsv->primary.v : disabled_val, 0, 0, 0)) {
+            x += shift_icon->width + 2;
+        }
+    }
+}
+
+/**
  * @brief Renders the shutdown screen for the painter device.
  *
  * This function is responsible for rendering the shutdown screen on the specified
