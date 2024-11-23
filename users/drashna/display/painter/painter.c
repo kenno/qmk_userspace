@@ -549,9 +549,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 //  Layer Map render
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (is_left) {
-#ifdef LAYER_MAP_ENABLE
                     painter_render_layer_map(device, font, x, y, width, force_redraw || block_redraw, curr_hsv);
-#endif
                 } else {
                     painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv,
                                         true);
@@ -580,6 +578,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
  */
 void painter_render_keylogger(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+#ifdef DISPLAY_KEYLOGGER_ENABLE
     char buf[50] = {0};
 
     if (keylogger_has_changed || force_redraw) {
@@ -592,6 +591,7 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
                 curr_hsv->primary.v, true);
         keylogger_has_changed = false;
     }
+#endif
 }
 
 /**
@@ -612,6 +612,7 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
  */
 void painter_render_autocorrect(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                 uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+#ifdef AUTOCORRECT_ENABLE
     extern bool     autocorrect_str_has_changed;
     extern char     autocorrected_str_raw[2][21];
     char            buf[50]           = {0};
@@ -639,6 +640,7 @@ void painter_render_autocorrect(painter_device_t device, painter_font_handle_t f
                             curr_hsv->secondary.v, 0, 0, 0);
         autocorrect_str_has_changed = false;
     }
+#endif // AUTOCORRECT_ENABLE
 }
 
 /**
@@ -811,6 +813,7 @@ void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font
  */
 void painter_render_layer_map(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
+#ifdef LAYER_MAP_ENABLE
     if (force_redraw || layer_map_has_updated) {
         y += font->line_height + 4;
         uint16_t xpos = x, ypos = y;
@@ -841,6 +844,7 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
         }
         layer_map_has_updated = false;
     }
+#endif // LAYER_MAP_ENABLE
 }
 
 /**
