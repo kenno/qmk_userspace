@@ -85,6 +85,9 @@ __attribute__((weak)) void display_handler_display_mode_slave(char *text_buffer,
 }
 
 bool menu_handler_display_image(menu_input_t input) {
+    if (screensaver_image_size == 0) {
+        return true;
+    }
     switch (input) {
         case menu_input_left:
             userspace_config.painter.display_logo =
@@ -108,6 +111,10 @@ bool menu_handler_display_image(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_display_image(char *text_buffer, size_t buffer_len) {
+    if (screensaver_image_size == 0) {
+        strncpy(text_buffer, "No Images", buffer_len - 1);
+        return;
+    }
     strncpy(text_buffer, screen_saver_image[userspace_config.painter.display_logo].name, buffer_len - 1);
 }
 
