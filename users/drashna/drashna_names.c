@@ -6,6 +6,7 @@
 #include "modifiers.h"
 #include "quantum_keycodes.h"
 #include "drashna_layers.h"
+#include "drashna_names.h"
 #include "util.h"
 #if defined(UNICODE_COMMON_ENABLE)
 #    include "keyrecords/unicode.h"
