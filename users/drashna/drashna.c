@@ -161,6 +161,7 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
                     .swap_ctl_gui       = true,
                     .unicode_input_mode = UNICODE_MODE_MACOS,
                 };
+                userspace_config.pointing.accel.enabled = false;
                 break;
             case OS_IOS:
                 xprintf("iOS Detected\n");
@@ -168,6 +169,7 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
                     .swap_ctl_gui       = true,
                     .unicode_input_mode = UNICODE_MODE_MACOS,
                 };
+                userspace_config.pointing.accel.enabled = false;
                 break;
 #    if 0
             case OS_PS5:
