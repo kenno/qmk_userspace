@@ -254,10 +254,6 @@ __attribute__((weak)) layer_state_t default_layer_state_set_keymap(layer_state_t
     return state;
 }
 
-#if defined(AUDIO_ENABLE) && defined(DEFAULT_LAYER_SONGS)
-static float default_layer_songs[][16][2] = DEFAULT_LAYER_SONGS;
-#endif // AUDIO_ENABLE && DEFAULT_LAYER_SONGS
-
 layer_state_t default_layer_state_set_user(layer_state_t state) {
     if (!is_keyboard_master()) {
         return state;
@@ -267,20 +263,6 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 #if defined(CUSTOM_RGBLIGHT)
     state = default_layer_state_set_rgb_light(state);
 #endif // CUSTOM_RGBLIGHT
-
-    static bool has_init_been_ran = false;
-    // We don't want to run this the first time it's called, since it's read from eeeprom and called
-    // as part of the startup process. But after that, it's okay.
-    if (has_init_been_ran) {
-#if defined(AUDIO_ENABLE) && defined(DEFAULT_LAYER_SONGS)
-        if (get_highest_layer(state) < MAX_LAYER) {
-            PLAY_SONG(default_layer_songs[get_highest_layer(state)]);
-        }
-#endif // AUDIO_ENABLE && DEFAULT_LAYER_SONGS
-        eeconfig_update_default_layer(state);
-    } else {
-        has_init_been_ran = true;
-    }
 
 #ifdef LAYER_MAP_ENABLE
     set_layer_map();

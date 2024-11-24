@@ -110,15 +110,10 @@ void rgb_layer_indication_toggle(void);
 #define KC_SEC4 KC_SECRET_4
 #define KC_SEC5 KC_SECRET_5
 
-#define KC_QWERTY     DF(_QWERTY)
-#define KC_COLEMAK_DH DF(_COLEMAK_DH)
-#define KC_COLEMAK    DF(_COLEMAK)
-#define KC_DVORAK     DF(_DVORAK)
-
-#define QWERTY  KC_QWERTY
-#define DVORAK  KC_DVORAK
-#define COLEMAK KC_COLEMAK
-#define CLMKDH  KC_COLEMAK_DH
+#define QWERTY  PDF(_QWERTY)
+#define CLMKDH  PDF(_COLEMAK_DH)
+#define COLEMAK PDF(_COLEMAK)
+#define DVORAK  PDF(_DVORAK)
 
 #ifdef SWAP_HANDS_ENABLE
 #    define KC_C1R3 SH_T(KC_TAB)
