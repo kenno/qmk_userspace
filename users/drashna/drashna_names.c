@@ -5,8 +5,11 @@
 #include "keycodes.h"
 #include "modifiers.h"
 #include "quantum_keycodes.h"
-#include "drashna.h"
+#include "drashna_layers.h"
 #include "util.h"
+#if defined(UNICODE_COMMON_ENABLE)
+#    include "keyrecords/unicode.h"
+#endif // UNICODE_COMMON_ENABLE
 
 #ifndef __AVR__
 static const char *const keycode_display_map[][2] = {

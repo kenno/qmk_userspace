@@ -3,12 +3,11 @@
 
 #include "clap_trap.h"
 #include "keycodes.h"
-#include "keycode_config.h"
 #include "action_util.h"
-#include "debug.h"
 #include "drashna_layers.h"
 #include "drashna_runtime.h"
 #include "keyrecords/process_records.h"
+#include "wait.h"
 
 // Max 10 since we only have 10 fingers to press keys
 #define KEYREPORT_BUFFER_SIZE 10

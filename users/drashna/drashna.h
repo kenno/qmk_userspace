@@ -11,7 +11,9 @@
 #include "drashna_runtime.h"
 #include "drashna_layers.h"
 #include "drashna_util.h"
-#include "quantum/unicode/unicode.h"
+#ifdef CUSTOM_TAP_DANCE_ENABLE
+#    include "keyrecords/custom_tap_dance.h"
+#endif // CUSTOM_TAP_DANCE_ENABLE
 
 #if defined(RGB_MATRIX_ENABLE)
 void rgb_matrix_layer_helper(uint8_t hue, uint8_t sat, uint8_t val, uint8_t mode, uint8_t speed, uint8_t led_type,

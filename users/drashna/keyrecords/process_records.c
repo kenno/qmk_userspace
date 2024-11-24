@@ -6,9 +6,6 @@
 #include "drashna.h"
 #include "version.h"
 #include "drashna_names.h"
-#ifdef OS_DETECTION_ENABLE
-#    include "os_detection.h"
-#endif // OS_DETECTION_ENABLE
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
 #    include "keyrecords/custom_dynamic_macros.h"
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
@@ -33,6 +30,15 @@
 #if defined(RGB_MATRIX_ENABLE)
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // defined(RGB_MATRIX_ENABLE)
+#ifdef SENTENCE_CASE_ENABLE
+#    include "keyrecords/sentence_case.h"
+#endif // SENTENCE_CASE_ENABLE
+#ifdef UNICODE_COMMON_ENABLE
+#    include "keyrecords/unicode.h"
+#endif // UNICODE_COMMON_ENABLE
+#ifdef CLAP_TRAP_ENABLE
+#    include "keyrecords/clap_trap.h"
+#endif // CLAP_TRAP_ENABLE
 
 uint16_t copy_paste_timer;
 

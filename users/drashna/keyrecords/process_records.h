@@ -3,28 +3,16 @@
 
 #pragma once
 
-#include "quantum.h"
+#include "action.h"
 #ifdef ACHORDION_ENABLE
 #    include "keyrecords/achordion.h"
 #endif // ACHORDION_ENABLE
-#ifdef CUSTOM_TAP_DANCE_ENABLE
-#    include "keyrecords/custom_tap_dance.h"
-#endif // CUSTOM_TAP_DANCE_ENABLE
 #ifdef CUSTOM_SHIFT_KEYS_ENABLE
 #    include "keyrecords/custom_shift_keys.h"
 #endif // CUSTOM_SHIFT_KEYS_ENABLE
 #ifdef SELECT_WORD_ENABLE
 #    include "keyrecords/select_word.h"
 #endif // SELECT_WORD_ENABLE
-#ifdef SENTENCE_CASE_ENABLE
-#    include "keyrecords/sentence_case.h"
-#endif // SENTENCE_CASE_ENABLE
-#ifdef UNICODE_COMMON_ENABLE
-#    include "keyrecords/unicode.h"
-#endif // UNICODE_COMMON_ENABLE
-#ifdef CLAP_TRAP_ENABLE
-#    include "keyrecords/clap_trap.h"
-#endif // CLAP_TRAP_ENABLE
 
 enum userspace_custom_keycodes {
     VRSN = QK_USER,  // Prints QMK Firmware and board info

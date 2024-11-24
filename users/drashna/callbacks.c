@@ -54,6 +54,12 @@ void keyboard_post_init_unicode(void);
 #ifdef ORBITAL_MOUSE_ENABLE
 #    include "orbital_mouse.h"
 #endif // ORBITAL_MOUSE_ENABLE
+#ifdef SENTENCE_CASE_ENABLE
+#    include "keyrecords/sentence_case.h"
+#endif // SENTENCE_CASE_ENABLE
+#ifdef CUSTOM_TAP_DANCE_ENABLE
+#    include "keyrecords/custom_tap_dance.h"
+#endif // CUSTOM_TAP_DANCE_ENABLE
 
 user_runtime_config_t userspace_runtime_state;
 

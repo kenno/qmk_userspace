@@ -2,6 +2,7 @@
 // Unicode
 
 #ifdef UNICODE_COMMON_ENABLE
+#    include "keyrecords/unicode.h"
 
 bool menu_handler_unicode(menu_input_t input) {
     switch (input) {

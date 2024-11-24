@@ -1,6 +1,9 @@
 // Copyright 2021 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "action.h"
+#include "action_tapping.h"
+#include "quantum_keycodes.h"
 #include "process_records.h"
 #include "drashna_layers.h"
 

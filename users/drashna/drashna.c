@@ -4,6 +4,9 @@
 #include "drashna.h"
 #include "drashna_util.h"
 #include <string.h>
+#ifdef UNICODE_COMMON_ENABLE
+#    include "keyrecords/unicode.h"
+#endif // UNICODE_COMMON_ENABLE
 
 userspace_config_t userspace_config;
 
