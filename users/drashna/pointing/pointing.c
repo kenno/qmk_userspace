@@ -5,16 +5,23 @@
 
 #include "pointing_device_auto_mouse.h"
 #include "keyrecords/process_records.h"
+#include "action_util.h"
 #include "drashna_layers.h"
 #include "drashna_runtime.h"
 #include "pointing.h"
 #include "math.h"
 #include <stdlib.h>
+#ifdef AUDIO_ENABLE
+#    include "audio.h"
+#    ifdef AUDIO_CLICKY
+#        include "process_clicky.h"
+#    endif // AUDIO_CLICKY
+#endif     // AUDIO_ENABLE
 
 static uint16_t mouse_debounce_timer = 0;
 
 #ifdef TAPPING_TERM_PER_KEY
-#    define TAP_CHECK get_tapping_term(KC_BTN1, NULL)
+#    define TAP_CHECK get_tapping_term(QK_MOUSE_BUTTON_1, NULL)
 #else // TAPPING_TERM_PER_KEY
 #    ifndef TAPPING_TERM
 #        define TAPPING_TERM 200
