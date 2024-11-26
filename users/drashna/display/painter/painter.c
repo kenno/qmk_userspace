@@ -503,7 +503,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     const bool should_render_this_side = true;
 #endif // SPLIT_KEYBOARD
 
-    if (should_render_this_side && render_menu(device, font, x, y, width, height)) {
+    if (should_render_this_side && painter_render_menu(device, font, x, y, width, height)) {
         force_full_block_redraw = true;
     } else {
         bool     block_redraw = false;

@@ -1,8 +1,8 @@
 #include "display/menu/menu.h"
 #include "display/painter/painter.h"
 
-bool render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
-                 uint16_t width, uint16_t height) {
+bool painter_render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
+                         uint16_t width, uint16_t height) {
     static menu_state_t last_state;
     uint8_t             scroll_offset = 0;
 

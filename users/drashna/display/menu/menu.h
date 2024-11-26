@@ -42,7 +42,5 @@ menu_entry_t *get_current_menu(void);
 menu_entry_t *get_selected_menu_item(void);
 bool          menu_handle_input(menu_input_t input);
 bool          process_record_menu(uint16_t keycode, keyrecord_t *record);
-bool          render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
-                          uint16_t width, uint16_t height);
-void display_menu_set_dirty(void);
+void          display_menu_set_dirty(void);
 uint8_t       get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries);
