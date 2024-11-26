@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "qp.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include "action.h"
 
 typedef enum _menu_flags_t {
     menu_flag_is_parent = (1 << 0),

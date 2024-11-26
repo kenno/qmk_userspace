@@ -13,6 +13,11 @@
 
 #include "menu.inc"
 
+#ifndef DISPLAY_MENU_TIMEOUT
+#    define DISPLAY_MENU_TIMEOUT 30000
+#endif // !DISPLAY_MENU_TIMEOUT
+deferred_token menu_deferred_token = INVALID_DEFERRED_TOKEN;
+
 menu_entry_t *get_current_menu(void) {
     if (userspace_runtime_state.menu_state.menu_stack[0] == 0xFF) {
         return &root;

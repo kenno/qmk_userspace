@@ -256,6 +256,8 @@ __attribute__((weak)) void display_handler_display_inverted(char *text_buffer, s
     strncpy(text_buffer, userspace_config.painter.inverted ? "Inverted" : "Normal", buffer_len - 1);
 }
 
+#ifdef QUANTUM_PAINTER_ENABLE
+
 bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
     switch (input) {
         case menu_input_left:
@@ -268,8 +270,6 @@ bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
             return true;
     }
 }
-
-#ifdef QUANTUM_PAINTER_ENABLE
 
 __attribute__((weak)) void display_handler_display_hue(char *text_buffer, size_t buffer_len, bool painter_is_primary) {
     snprintf(text_buffer, buffer_len - 1, "%d", painter_get_hue(painter_is_primary));

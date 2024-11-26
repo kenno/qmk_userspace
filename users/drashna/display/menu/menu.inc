@@ -18,10 +18,6 @@ static float ag_swap_song[][2] = AG_SWAP_SONG;
 static float cg_norm_song[][2] = CG_NORM_SONG;
 static float cg_swap_song[][2] = CG_SWAP_SONG;
 #endif
-#ifndef DISPLAY_MENU_TIMEOUT
-#    define DISPLAY_MENU_TIMEOUT 30000
-#endif // !DISPLAY_MENU_TIMEOUT
-deferred_token menu_deferred_token = INVALID_DEFERRED_TOKEN;
 
 #define MENU_ENTRY_CHILD(display_text, name)             \
     {                                                    \
@@ -65,7 +61,9 @@ deferred_token menu_deferred_token = INVALID_DEFERRED_TOKEN;
 // Root menu
 
 menu_entry_t root_entries[] = {
+#ifdef QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_MULTI("Display Option", display_option_entries, display_mode_master),
+#endif // QUANTUM_PAINTER_ENABLE
 #ifdef UNICODE_COMMON_ENABLE
     MENU_ENTRY_MULTI("Unicode Settings", unicode_entries, unicode_typing),
 #endif // UNICODE_COMMON_ENABLE
