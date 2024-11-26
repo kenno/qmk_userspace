@@ -52,6 +52,8 @@ ifeq ($(strip $(OLED_ENABLE)), yes)
     ifeq ($(strip $(OLED_DISPLAY_TEST)), yes)
         OPT_DEFS += -DOLED_DISPLAY_TEST
     endif
+    SRC += $(USER_PATH)/display/menu/menu.c \
+        $(USER_PATH)/display/oled/oled_render_menu.c
 endif
 
 ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)

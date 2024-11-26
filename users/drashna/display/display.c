@@ -95,7 +95,7 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
             keep_processing = false;
         }
 #endif // OLED_ENABLE
-#if defined(QUANTUM_PAINTER_ENABLE)
+#if defined(QUANTUM_PAINTER_ENABLE) || defined(OLED_ENABLE)
         if (!process_record_menu(keycode, record)) {
             keep_processing = false;
         }
@@ -126,7 +126,7 @@ void keyboard_post_init_display_driver(void) {
         display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH] = '\0';
     }
 #endif // DISPLAY_KEYLOGGER_ENABLE
-#if defined(QUANTUM_PAINTER_ENABLE)
+#if defined(QUANTUM_PAINTER_ENABLE) || defined(OLED_ENABLE)
     userspace_runtime_state.menu_state = (menu_state_t){
 #    ifdef DISPLAY_MENU_ENABLED_DEFAULT
         .dirty      = true,
