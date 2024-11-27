@@ -51,7 +51,7 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
 
         oled_set_cursor(col, line + 1 + i - scroll_offset);
         oled_write(child == selected ? " *" : "  ", false);
-        snprintf(buf, sizeof(buf), "%s", child->text);
+        snprintf(buf, sizeof(buf), "%s", child->short_text);
 
         if (child->flags & menu_flag_is_value) {
             child->child.display_handler(val, sizeof(val));

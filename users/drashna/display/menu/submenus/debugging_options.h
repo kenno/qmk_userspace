@@ -125,16 +125,16 @@ __attribute__((weak)) void display_handler_quantum_painter_debugging(char *text_
 #endif
 
 menu_entry_t debug_entries[] = {
-    MENU_ENTRY_CHILD("Debugging", debugging_enable), // force formatting
-    MENU_ENTRY_CHILD("Keyboard Debugging", keyboard_debugging),
-    MENU_ENTRY_CHILD("Matrix Debugging", matrix_debugging),
-    MENU_ENTRY_CHILD("Mouse Debugging", mouse_debugging),
+    MENU_ENTRY_CHILD("Debugging", "Enabled", debugging_enable), // force formatting
+    MENU_ENTRY_CHILD("Keyboard Debugging", "Keeb", keyboard_debugging),
+    MENU_ENTRY_CHILD("Matrix Debugging", "Matrix", matrix_debugging),
+    MENU_ENTRY_CHILD("Mouse Debugging", "Mouse", mouse_debugging),
 #if 0
-    MENU_ENTRY_CHILD("Pointing Device Debugging", pointing_debugging),
-    MENU_ENTRY_CHILD("Action Debugging", action_debugging),
-    MENU_ENTRY_CHILD("Split Serial Debugging", split_serial_debugging),
-    MENU_ENTRY_CHILD("Quantum Painter Debugging", quantum_painter_debugging),
+    MENU_ENTRY_CHILD("Pointing Device Debugging", "Pointing", pointing_debugging),
+    MENU_ENTRY_CHILD("Action Debugging", "Action", action_debugging),
+    MENU_ENTRY_CHILD("Split Serial Debugging", "Split", split_serial_debugging),
+    MENU_ENTRY_CHILD("Quantum Painter Debugging", "QP????", quantum_painter_debugging),
 #endif
-    MENU_ENTRY_CHILD("I2C Scanner", i2c_scanner),
-    MENU_ENTRY_CHILD("Matrix Scan Rate Print", scan_rate),
+    MENU_ENTRY_CHILD("I2C Scanner", "I2C Scan", i2c_scanner),
+    MENU_ENTRY_CHILD("Matrix Scan Rate Print", "Scan Rate", scan_rate),
 };

@@ -36,7 +36,7 @@ __attribute__((weak)) void display_handler_bl_level(char *text_buffer, size_t bu
 }
 
 menu_entry_t backlight_entries[] = {
-    MENU_ENTRY_CHILD("Backlight Enabled", bl_enabled),
-    MENU_ENTRY_CHILD("Backlight Level", bl_level),
+    MENU_ENTRY_CHILD("Backlight Enabled", "Enabled", bl_enabled),
+    MENU_ENTRY_CHILD("Backlight Level", "Level", bl_level),
 };
 #endif // BACKLIGHT_ENABLE

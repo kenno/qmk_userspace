@@ -359,21 +359,21 @@ __attribute__((weak)) void display_handler_display_val_secondary(char *text_buff
 
 menu_entry_t display_option_entries[] = {
 #ifdef QUANTUM_PAINTER_ENABLE
-    MENU_ENTRY_CHILD("Display (Master)", display_mode_master),
-    MENU_ENTRY_CHILD("Display (Slave)", display_mode_slave),
-    MENU_ENTRY_CHILD("Image", display_image),
+    MENU_ENTRY_CHILD("Display (Master)", "Master", display_mode_master),
+    MENU_ENTRY_CHILD("Display (Slave)", "Slave" < display_mode_slave),
+    MENU_ENTRY_CHILD("Image", "Image", display_image),
 #endif // QUANTUM_PAINTER_ENABLE
-#    ifdef SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Menu Location", display_menu_location),
+#ifdef SPLIT_KEYBOARD
+    MENU_ENTRY_CHILD("Menu Location", "Side", display_menu_location),
 #endif // SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Rotation", display_rotation),
-    MENU_ENTRY_CHILD("Inverted", display_inverted),
+    MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation),
+    MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted),
 #ifdef QUANTUM_PAINTER_ENABLE
-    MENU_ENTRY_CHILD("Primary Hue", display_hue_primary),
-    MENU_ENTRY_CHILD("Primary Saturation", display_sat_primary),
-    MENU_ENTRY_CHILD("Primary Value", display_val_primary),
-    MENU_ENTRY_CHILD("Secondary Hue", display_hue_secondary),
-    MENU_ENTRY_CHILD("Secondary Saturation", display_sat_secondary),
-    MENU_ENTRY_CHILD("Secondary Value", display_val_secondary),
+    MENU_ENTRY_CHILD("Primary Hue", "P Hue", display_hue_primary),
+    MENU_ENTRY_CHILD("Primary Saturation", "P Sat", display_sat_primary),
+    MENU_ENTRY_CHILD("Primary Value", "P Val", display_val_primary),
+    MENU_ENTRY_CHILD("Secondary Hue", "S Hue", display_hue_secondary),
+    MENU_ENTRY_CHILD("Secondary Saturation", "S Sat", display_sat_secondary),
+    MENU_ENTRY_CHILD("Secondary Value", "S Val", display_val_secondary),
 #endif // QUANTUM_PAINTER_ENABLE
 };

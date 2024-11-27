@@ -243,32 +243,32 @@ __attribute__((weak)) void display_handler_mouse_accel_limit(char *text_buffer, 
 }
 
 menu_entry_t pointing_acceleration_entries[] = {
-    MENU_ENTRY_CHILD("Acceleration", mouse_accel_toggle),
-    MENU_ENTRY_CHILD("Takeoff", mouse_accel_takeoff),
-    MENU_ENTRY_CHILD("Growth Rate", mouse_accel_growth_rate),
-    MENU_ENTRY_CHILD("Offset", mouse_accel_offset),
-    MENU_ENTRY_CHILD("Limit", mouse_accel_limit),
+    MENU_ENTRY_CHILD("Acceleration", "Accel", mouse_accel_toggle),
+    MENU_ENTRY_CHILD("Takeoff", "Takeoff", mouse_accel_takeoff),
+    MENU_ENTRY_CHILD("Growth Rate", "Growth", mouse_accel_growth_rate),
+    MENU_ENTRY_CHILD("Offset", "Offset", mouse_accel_offset),
+    MENU_ENTRY_CHILD("Limit", "Limit", mouse_accel_limit),
 };
 
 menu_entry_t pointing_auto_layer_entries[] = {
-    MENU_ENTRY_CHILD("Layer", auto_mouse_layer),
-    MENU_ENTRY_CHILD("Timeout", auto_mouse_timeout),
-    MENU_ENTRY_CHILD("Debounce", auto_mouse_debounce),
+    MENU_ENTRY_CHILD("Layer", "Layer", auto_mouse_layer),
+    MENU_ENTRY_CHILD("Timeout", "Timeout", auto_mouse_timeout),
+    MENU_ENTRY_CHILD("Debounce", "Debounce", auto_mouse_debounce),
 };
 
 menu_entry_t pointing_entries[] = {
-    MENU_ENTRY_MULTI("Mouse Acceleration", pointing_acceleration_entries, mouse_accel_toggle),
+    MENU_ENTRY_MULTI("Mouse Acceleration", "Accel", pointing_acceleration_entries, mouse_accel_toggle),
 #    if defined(KEYBOARD_handwired_tractyl_manuform) || defined(KEYBOARD_bastardkb_charybdis)
-    MENU_ENTRY_CHILD("DPI Config", dpi_config),
+    MENU_ENTRY_CHILD("DPI Config", "DPI", dpi_config),
 #    endif // KEYBOARD_handwired_tractyl_manuform || KEYBOARD_bastardkb_charybdis
 #    ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
-    MENU_ENTRY_CHILD("Auto Mouse", auto_mouse_enable),
-    MENU_ENTRY_MULTI("Auto Mouse Options", pointing_auto_layer_entries, auto_mouse_layer),
+    MENU_ENTRY_CHILD("Auto Mouse", "AutoMouse", auto_mouse_enable),
+    MENU_ENTRY_MULTI("Auto Mouse Options", "AM Opt", pointing_auto_layer_entries, auto_mouse_layer),
 #    endif // POINTING_DEVICE_AUTO_MOUSE_ENABLE
-    MENU_ENTRY_CHILD("Mouse Jiggler", mouse_jiggler),
-    MENU_ENTRY_CHILD("Allow Jiggler Interrupt", mouse_jiggler_interrupt),
+    MENU_ENTRY_CHILD("Mouse Jiggler", "Jiggler", mouse_jiggler),
+    MENU_ENTRY_CHILD("Allow Jiggler Interrupt", "JigInt?", mouse_jiggler_interrupt),
 #    ifdef AUDIO_ENABLE
-    MENU_ENTRY_CHILD("Mouse Clicky", audio_mouse_clicky),
+    MENU_ENTRY_CHILD("Mouse Clicky", "Clicky", audio_mouse_clicky),
 #    endif
 };
 #endif // POINTING_DEVICE_ENABLE

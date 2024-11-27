@@ -186,13 +186,13 @@ bool menu_handler_rtc_dst(menu_input_t input) {
 }
 
 menu_entry_t rtc_config_entries[] = {
-    MENU_ENTRY_CHILD("Year", rtc_year),
-    MENU_ENTRY_CHILD("Month", rtc_month),
-    MENU_ENTRY_CHILD("Date", rtc_date),
-    MENU_ENTRY_CHILD("Hour", rtc_hour),
-    MENU_ENTRY_CHILD("Minute", rtc_minute),
-    MENU_ENTRY_CHILD("Second", rtc_second),
-    MENU_ENTRY_CHILD("12/24 Hour Format", rtc_hour_format),
-    MENU_ENTRY_CHILD("DST", rtc_dst),
+    MENU_ENTRY_CHILD("Year", "Year", rtc_year),
+    MENU_ENTRY_CHILD("Month", "Month", rtc_month),
+    MENU_ENTRY_CHILD("Date", "Date", rtc_date),
+    MENU_ENTRY_CHILD("Hour", "Hour", rtc_hour),
+    MENU_ENTRY_CHILD("Minute", "Minute", rtc_minute),
+    MENU_ENTRY_CHILD("Second", "Second", rtc_second),
+    MENU_ENTRY_CHILD("12/24 Hour Format", "Format", rtc_hour_format),
+    MENU_ENTRY_CHILD("DST", "DST", rtc_dst),
 };
 #endif // RTC_ENABLE

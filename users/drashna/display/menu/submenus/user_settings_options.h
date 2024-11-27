@@ -82,7 +82,7 @@ __attribute__((weak)) void display_handler_scan_rate(char *text_buffer, size_t b
 }
 
 menu_entry_t user_settings_option_entries[] = {
-    MENU_ENTRY_CHILD("Overwatch Mode", overwatch_mode),
-    MENU_ENTRY_CHILD("Gamepad 1<->2 Swap", gamepad_swap),
-    MENU_ENTRY_CHILD("SOCD Cleaner", clap_trap),
+    MENU_ENTRY_CHILD("Overwatch Mode", "OW", overwatch_mode),
+    MENU_ENTRY_CHILD("Gamepad 1<->2 Swap", "1-2 SWP", gamepad_swap),
+    MENU_ENTRY_CHILD("SOCD Cleaner", "SOCD", clap_trap),
 };

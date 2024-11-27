@@ -28,6 +28,7 @@ typedef enum _menu_input_t {
 typedef struct _menu_entry_t {
     menu_flags_t flags;
     const char  *text;
+    const char  *short_text;
     struct {
         struct _menu_entry_t *children;
         size_t                child_count;

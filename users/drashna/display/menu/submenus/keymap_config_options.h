@@ -1,3 +1,24 @@
+#ifdef AUDIO_ENABLE
+#    include "audio.h"
+
+#    ifndef AG_NORM_SONG
+#        define AG_NORM_SONG SONG(AG_NORM_SOUND)
+#    endif
+#    ifndef AG_SWAP_SONG
+#        define AG_SWAP_SONG SONG(AG_SWAP_SOUND)
+#    endif
+#    ifndef CG_NORM_SONG
+#        define CG_NORM_SONG SONG(AG_NORM_SOUND)
+#    endif
+#    ifndef CG_SWAP_SONG
+#        define CG_SWAP_SONG SONG(AG_SWAP_SOUND)
+#    endif
+static float ag_norm_song[][2] = AG_NORM_SONG;
+static float ag_swap_song[][2] = AG_SWAP_SONG;
+static float cg_norm_song[][2] = CG_NORM_SONG;
+static float cg_swap_song[][2] = CG_SWAP_SONG;
+#endif
+
 bool menu_handler_keycode_ctrl_caps(menu_input_t input) {
     switch (input) {
         case menu_input_left:
@@ -158,13 +179,13 @@ __attribute__((weak)) void display_handler_keycode_autocorrect(char *text_buffer
 }
 
 menu_entry_t keymap_config_entries[] = {
-    MENU_ENTRY_CHILD("Control <-> Capslock", keycode_ctrl_caps),
-    MENU_ENTRY_CHILD("Alt <-> GUI", keycode_alt_gui),
-    MENU_ENTRY_CHILD("Control <-> GUI", keycode_ctrl_gui),
-    MENU_ENTRY_CHILD("Grave <-> Escape", keycode_grave_esc),
-    MENU_ENTRY_CHILD("Backslash <-> Backspace", keycode_bslash_bspc),
-    MENU_ENTRY_CHILD("GUI", keycode_disable_gui),
-    MENU_ENTRY_CHILD("N-Key Roll Over", keycode_nkro),
-    MENU_ENTRY_CHILD("Oneshot Keys", keycode_oneshot),
-    MENU_ENTRY_CHILD("Autocorrect", keycode_autocorrect),
+    MENU_ENTRY_CHILD("Control <-> Capslock", "Ctl-Caps", keycode_ctrl_caps),
+    MENU_ENTRY_CHILD("Alt <-> GUI", "Alt-GUI", keycode_alt_gui),
+    MENU_ENTRY_CHILD("Control <-> GUI", "Ctl-GUI", keycode_ctrl_gui),
+    MENU_ENTRY_CHILD("Grave <-> Escape", "Grv-Esc", keycode_grave_esc),
+    MENU_ENTRY_CHILD("Backslash <-> Backspace", "/-Bspc", keycode_bslash_bspc),
+    MENU_ENTRY_CHILD("GUI", "GUI", keycode_disable_gui),
+    MENU_ENTRY_CHILD("N-Key Roll Over", "NKRO", keycode_nkro),
+    MENU_ENTRY_CHILD("Oneshot Keys", "1SHOT", keycode_oneshot),
+    MENU_ENTRY_CHILD("Autocorrect", "AutoCorr", keycode_autocorrect),
 };

@@ -67,7 +67,7 @@ __attribute__((weak)) void display_handler_unicode_typing(char *text_buffer, siz
 }
 
 menu_entry_t unicode_entries[] = {
-    MENU_ENTRY_CHILD("Unicode mode", unicode),
-    MENU_ENTRY_CHILD("Unicode Typing Mode", unicode_typing),
+    MENU_ENTRY_CHILD("Unicode mode", "Mode", unicode),
+    MENU_ENTRY_CHILD("Unicode Typing Mode", "Typing", unicode_typing),
 };
 #endif // UNICODE_COMMON_ENABLE
