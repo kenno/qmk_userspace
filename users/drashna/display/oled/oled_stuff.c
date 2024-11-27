@@ -1017,6 +1017,7 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
         }
     } else {
         // oled_advance_page(true);
+        if (!oled_render_menu(0, 8, 7, side)) {
 #    if defined(LAYER_MAP_ENABLE)
         oled_set_cursor(1, 7);
 
@@ -1049,6 +1050,7 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
         render_unicode_mode(1, 12);
         oled_render_time(1, 13);
 #    endif
+        }
     }
 }
 #endif
