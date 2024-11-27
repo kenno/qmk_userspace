@@ -1002,7 +1002,7 @@ void oled_render_time_small(uint8_t col, uint8_t line, uint8_t padding) {
     }
 #endif
 }
-bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines);
+bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_left);
 
 #ifdef OLED_DISPLAY_128X128
 __attribute__((weak)) void oled_render_large_display(bool side) {
@@ -1010,7 +1010,7 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
         render_rgb_hsv(1, 6);
         render_rgb_mode(1, 7);
 
-        if (!oled_render_menu(0, 8, 7)) {
+        if (!oled_render_menu(0, 8, 7, side)) {
             render_arasaka_logo(0, 8);
             render_wpm_graph(23, 107, 25, 96);
             oled_render_mario(1, 11);

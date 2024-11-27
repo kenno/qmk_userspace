@@ -117,6 +117,7 @@ __attribute__((weak)) void display_handler_display_image(char *text_buffer, size
     }
     strncpy(text_buffer, screen_saver_image[userspace_config.painter.display_logo].name, buffer_len - 1);
 }
+#endif // QUANTUM_PAINTER_ENABLE
 
 #    ifdef SPLIT_KEYBOARD
 bool menu_handler_display_menu_location(menu_input_t input) {
@@ -154,8 +155,7 @@ __attribute__((weak)) void display_handler_display_menu_location(char *text_buff
     }
     strncpy(text_buffer, "Everywhere", buffer_len);
 }
-#    endif // SPLIT_KEYBOARD
-#endif // QUANTUM_PAINTER_ENABLE
+#endif // SPLIT_KEYBOARD
 
 bool menu_handler_display_rotation(menu_input_t input) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
@@ -257,7 +257,6 @@ __attribute__((weak)) void display_handler_display_inverted(char *text_buffer, s
 }
 
 #ifdef QUANTUM_PAINTER_ENABLE
-
 bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
     switch (input) {
         case menu_input_left:
@@ -363,10 +362,10 @@ menu_entry_t display_option_entries[] = {
     MENU_ENTRY_CHILD("Display (Master)", display_mode_master),
     MENU_ENTRY_CHILD("Display (Slave)", display_mode_slave),
     MENU_ENTRY_CHILD("Image", display_image),
+#endif // QUANTUM_PAINTER_ENABLE
 #    ifdef SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Menu Location", display_menu_location),
-#    endif // SPLIT_KEYBOARD
-#endif // QUANTUM_PAINTER_ENABLE
+#endif // SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Rotation", display_rotation),
     MENU_ENTRY_CHILD("Inverted", display_inverted),
 #ifdef QUANTUM_PAINTER_ENABLE

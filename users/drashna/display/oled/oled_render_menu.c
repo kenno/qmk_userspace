@@ -4,9 +4,9 @@
 
 #define snprintf_nowarn(...) (snprintf(__VA_ARGS__) < 0 ? abort() : (void)0)
 
-bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines) {
-    uint8_t scroll_offset   = 0;
-    char    text_buffer[21] = {0};
+bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_left) {
+    uint8_t     scroll_offset   = 0;
+    char        text_buffer[21] = {0};
     static bool last_state      = false;
 
     if (userspace_runtime_state.menu_state.is_in_menu != last_state) {
@@ -20,6 +20,10 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines) {
             oled_advance_page(true);
         }
         userspace_runtime_state.menu_state.dirty = false;
+    }
+
+    if ((userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_left)) != is_keyboard_left()) {
+        return false;
     }
 
     if (!userspace_runtime_state.menu_state.is_in_menu) {
@@ -60,7 +64,7 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines) {
             snprintf_nowarn(text_buffer, 19, "%s", buf);
         }
         oled_write(text_buffer, false);
-        oled_set_cursor(col + 19, line + 1 + i - scroll_offset);
+        oled_set_cursor(col + 20, line + 1 + i - scroll_offset);
         oled_write(child->flags & menu_flag_is_parent ? ">" : " ", false);
         oled_advance_page(true);
     }

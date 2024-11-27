@@ -63,6 +63,8 @@ static float cg_swap_song[][2] = CG_SWAP_SONG;
 menu_entry_t root_entries[] = {
 #ifdef QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_MULTI("Display Option", display_option_entries, display_mode_master),
+#else // QUANTUM_PAINTER_ENABLE
+    MENU_ENTRY_PARENT("Display Options", display_option_entries),
 #endif // QUANTUM_PAINTER_ENABLE
 #ifdef UNICODE_COMMON_ENABLE
     MENU_ENTRY_MULTI("Unicode Settings", unicode_entries, unicode_typing),
