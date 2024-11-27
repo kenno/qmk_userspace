@@ -1,7 +1,7 @@
 #include "progmem.h"
 
 #if defined(OLED_DISPLAY_128X128)
-#    if defined(MCU_RP) || defined(QMK_MCU_SERIES_STM32F4XX)
+#    if defined(MCU_RP) || defined(QMK_MCU_SERIES_STM32F4XX) // || defined(KEYBOARD_splitkb_kyria_rev3)
 #        define SCREENSAVER_ANIM_ENABLED
 #    endif
 

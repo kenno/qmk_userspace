@@ -157,6 +157,59 @@ __attribute__((weak)) void display_handler_display_menu_location(char *text_buff
 }
 #endif // SPLIT_KEYBOARD
 
+#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
+#    include "display/oled/oled_stuff.h"
+
+bool menu_handler_oled_rotation(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            oled_rotate_screen(false);
+            return false;
+        case menu_input_right:
+            oled_rotate_screen(true);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_rotation(char *text_buffer, size_t buffer_len) {
+    switch (userspace_config.oled.rotation) {
+        case 0:
+            strncpy(text_buffer, "0", buffer_len - 1);
+            return;
+        case 1:
+            strncpy(text_buffer, "90", buffer_len - 1);
+            return;
+        case 2:
+            strncpy(text_buffer, "180", buffer_len - 1);
+            return;
+        case 3:
+            strncpy(text_buffer, "270", buffer_len - 1);
+            return;
+    }
+    strncpy(text_buffer, "Unknown", buffer_len);
+}
+
+bool menu_handler_oled_inverted(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+            userspace_config.oled.inverted = !userspace_config.oled.inverted;
+            eeconfig_update_user_datablock(&userspace_config);
+            oled_invert(userspace_config.oled.inverted);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_inverted(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.oled.inverted ? "Inverted" : "Normal", buffer_len - 1);
+}
+
+#endif
+
 bool menu_handler_display_rotation(menu_input_t input) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     void init_display_ili9341_rotation(void);
@@ -165,13 +218,19 @@ bool menu_handler_display_rotation(menu_input_t input) {
     void init_display_ili9488_rotation(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
     switch (input) {
-#ifdef DISPLAY_FULL_ROTATION_ENABLE
+#if defined(DISPLAY_FULL_ROTATION_ENABLE)
         case menu_input_left:
             userspace_config.painter.rotation = (userspace_config.painter.rotation - 1) % 4;
             if (userspace_config.painter.rotation > 3) {
                 userspace_config.painter.rotation = 3;
             }
             eeconfig_update_user_datablock(&userspace_config);
+#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+            init_display_ili9341_rotation();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+            init_display_ili9488_rotation();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
             return false;
         case menu_input_right:
             userspace_config.painter.rotation = (userspace_config.painter.rotation + 1) % 4;
@@ -205,7 +264,7 @@ bool menu_handler_display_rotation(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_display_rotation(char *text_buffer, size_t buffer_len) {
-#ifdef DISPLAY_FULL_ROTATION_ENABLE
+#if defined(DISPLAY_FULL_ROTATION_ENABLE)
     switch (userspace_config.painter.rotation) {
         case 0:
             strncpy(text_buffer, "0", buffer_len - 1);
@@ -360,15 +419,19 @@ __attribute__((weak)) void display_handler_display_val_secondary(char *text_buff
 menu_entry_t display_option_entries[] = {
 #ifdef QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_CHILD("Display (Master)", "Master", display_mode_master),
-    MENU_ENTRY_CHILD("Display (Slave)", "Slave" < display_mode_slave),
+    MENU_ENTRY_CHILD("Display (Slave)", "Slave", display_mode_slave),
     MENU_ENTRY_CHILD("Image", "Image", display_image),
 #endif // QUANTUM_PAINTER_ENABLE
 #ifdef SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Menu Location", "Side", display_menu_location),
 #endif // SPLIT_KEYBOARD
+#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
+    MENU_ENTRY_CHILD("Rotation", "Rotation", oled_rotation),
+    MENU_ENTRY_CHILD("Inverted", "Inverted", oled_inverted),
+#endif
+#ifdef QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation),
     MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted),
-#ifdef QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_CHILD("Primary Hue", "P Hue", display_hue_primary),
     MENU_ENTRY_CHILD("Primary Saturation", "P Sat", display_sat_primary),
     MENU_ENTRY_CHILD("Primary Value", "P Val", display_val_primary),

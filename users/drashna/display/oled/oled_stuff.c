@@ -131,45 +131,11 @@ bool process_record_user_oled(uint16_t keycode, keyrecord_t *record) {
                 }
                 break;
             case OLED_ROTATE_CW:
-                {
-                    oled_rotation_t rot_temp;
-                    switch (oled_rotation) {
-                        case OLED_ROTATION_0:
-                            rot_temp = OLED_ROTATION_90;
-                            break;
-                        case OLED_ROTATION_90:
-                            rot_temp = OLED_ROTATION_180;
-                            break;
-                        case OLED_ROTATION_180:
-                            rot_temp = OLED_ROTATION_270;
-                            break;
-                        default:
-                            rot_temp = OLED_ROTATION_0;
-                            break;
-                    }
-                    oled_init(rot_temp);
-                    break;
-                }
+                oled_rotate_screen(true);
+                break;
             case OLED_ROTATE_CCW:
-                {
-                    oled_rotation_t rot_temp;
-                    switch (oled_rotation) {
-                        case OLED_ROTATION_0:
-                            rot_temp = OLED_ROTATION_270;
-                            break;
-                        case OLED_ROTATION_90:
-                            rot_temp = OLED_ROTATION_0;
-                            break;
-                        case OLED_ROTATION_180:
-                            rot_temp = OLED_ROTATION_90;
-                            break;
-                        default:
-                            rot_temp = OLED_ROTATION_180;
-                            break;
-                    }
-                    oled_init(rot_temp);
-                    break;
-                }
+                oled_rotate_screen(false);
+                break;
         }
     }
     return true;
@@ -1060,13 +1026,16 @@ __attribute__((weak)) void render_oled_title(bool side) {
     // oled_write_P(PSTR(    "1234567890123"         "1234567890123"), true);
 }
 
-__attribute__((weak)) oled_rotation_t oled_init_keymap(oled_rotation_t rotation, bool has_run) {
-    return rotation;
+__attribute__((weak)) bool oled_init_keymap(oled_rotation_t *rotation, bool has_run) {
+    return true;
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     static bool has_run = false;
-    rotation            = oled_init_keymap(rotation, has_run);
+    if (!oled_init_keymap(&rotation, has_run)) {
+        return rotation;
+    }
+    rotation = userspace_config.oled.rotation;
 
     if (has_run) {
         oled_set_brightness(userspace_config.oled.brightness);
@@ -1187,6 +1156,10 @@ void housekeeping_task_oled(void) {
     }
 }
 
+void keyboard_post_init_oled(void) {
+    oled_invert(userspace_config.oled.inverted);
+}
+
 void oled_shutdown(bool jump_to_bootloader) {
     oled_clear();
 #if defined(OLED_DISPLAY_128X128)
@@ -1239,4 +1212,20 @@ void oled_write_compressed_P(compressed_oled_frame_t frame) {
             oled_write_raw_byte(data, i);
         }
     }
+}
+
+void oled_rotate_screen(bool clockwise) {
+    if (clockwise) {
+        userspace_config.oled.rotation = (userspace_config.oled.rotation - 1) % 4;
+        if (userspace_config.oled.rotation > 3) {
+            userspace_config.oled.rotation = 3;
+        }
+    } else {
+        userspace_config.oled.rotation = (userspace_config.oled.rotation + 1) % 4;
+        if (userspace_config.oled.rotation > 3) {
+            userspace_config.oled.rotation = 0;
+        }
+    }
+    eeconfig_update_user_datablock(&userspace_config);
+    oled_init(userspace_config.oled.rotation);
 }

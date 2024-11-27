@@ -98,10 +98,6 @@ void                       keyboard_post_init_user(void) {
 #if defined(SPLIT_KEYBOARD) && defined(SPLIT_TRANSACTION_IDS_USER)
     keyboard_post_init_transport_sync();
 #endif // SPLIT_KEYBOARD && SPLIT_TRANSACTION_IDS_USER
-#ifdef CUSTOM_QUANTUM_PAINTER_ENABLE
-    void keyboard_post_init_qp(void);
-    keyboard_post_init_quantum_painter();
-#endif // CUSTOM_QUANTUM_PAINTER_ENABLE
 #if defined(__arm__) && HAL_USE_I2C == TRUE
     keyboard_post_init_i2c();
 #endif // HAL_USE_I2C == TRUE

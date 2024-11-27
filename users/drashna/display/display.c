@@ -142,6 +142,13 @@ void keyboard_post_init_display_driver(void) {
         userspace_config.painter.menu_render_side = 3;
     }
 #endif // QUANTUM_PAINTER_ENABLE
+#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
+    keyboard_post_init_oled();
+#endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
+#if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
+    void keyboard_post_init_quantum_painter(void);
+    keyboard_post_init_quantum_painter();
+#endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
 }
 
 bool           console_log_needs_redraw = false;

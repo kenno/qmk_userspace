@@ -33,6 +33,8 @@ typedef union PACKED {
         struct {
             uint8_t brightness  : 8;
             bool    screen_lock : 1;
+            bool    inverted    : 1;
+            uint8_t rotation    : 2;
         } oled;
         struct {
             bool i2c_scanner_enable : 1;
