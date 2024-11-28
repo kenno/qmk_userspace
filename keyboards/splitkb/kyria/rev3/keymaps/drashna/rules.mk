@@ -17,7 +17,6 @@ endif
 ifeq ($(strip $(KEYBOARD)), splitkb/kyria/rev3)
     OVERLOAD_FEATURES = yes
     CONVERT_TO        = proton_c
-    BOOTLOADER        = tinyuf2
     WS2812_DRIVER     = pwm
     SERIAL_DRIVER     = usart
 
@@ -29,9 +28,10 @@ ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
     MOUSEKEY_ENABLE        = yes      # Mouse keys
     TAP_DANCE_ENABLE       = yes
     SWAP_HANDS_ENABLE      = yes
-    LTO_ENABLE             = no
+    LTO_ENABLE             = yes
+    OPT                    = s
     ENCODER_MAP_ENABLE     = yes
-    AUTOCORRECT_ENABLE     = yes
+    AUTOCORRECT_ENABLE     = no
     CAPS_WORD_ENABLE       = yes
     AUDIO_ENABLE           = no
 else
