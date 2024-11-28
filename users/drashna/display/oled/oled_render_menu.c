@@ -52,14 +52,15 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
         oled_set_cursor(col, line + 1 + i - scroll_offset);
         oled_write_P(PSTR(" "), false);
         if (child == selected) {
-            oled_write_P(PSTR("*"), false);
+            oled_write_char(0xC2, false);
         } else {
-            if ((i == scroll_offset && scroll_offset > 0) ||
-                (i == scroll_offset + (num_of_lines - 2) &&
-                 scroll_offset + (num_of_lines - 1) < menu->parent.child_count)) {
-                oled_write_P(PSTR("+"), false);
+            if (i == scroll_offset && scroll_offset > 0) {
+                oled_write_char(0x18, false);
+            } else if (i == scroll_offset + (num_of_lines - 2) &&
+                       scroll_offset + (num_of_lines - 1) < menu->parent.child_count) {
+                oled_write_char(0x19, false);
             } else {
-                oled_write_P(PSTR(" "), false);
+                oled_write_char(0x20, false);
             }
         }
         snprintf(buf, sizeof(buf), "%s", child->short_text);
@@ -76,7 +77,7 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
         }
         oled_write(text_buffer, false);
         oled_set_cursor(col + 20, line + 1 + i - scroll_offset);
-        oled_write(child->flags & menu_flag_is_parent ? ">" : " ", false);
+        oled_write_char(child->flags & menu_flag_is_parent ? 0x10 : 0x20, false);
         oled_advance_page(true);
     }
     return true;
