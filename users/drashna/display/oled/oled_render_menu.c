@@ -50,7 +50,18 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
         char          buf[19] = {0}, val[19] = {0};
 
         oled_set_cursor(col, line + 1 + i - scroll_offset);
-        oled_write(child == selected ? " *" : "  ", false);
+        oled_write_P(PSTR(" "), false);
+        if (child == selected) {
+            oled_write_P(PSTR("*"), false);
+        } else {
+            if ((i == scroll_offset && scroll_offset > 0) ||
+                (i == scroll_offset + (num_of_lines - 2) &&
+                 scroll_offset + (num_of_lines - 1) < menu->parent.child_count)) {
+                oled_write_P(PSTR("+"), false);
+            } else {
+                oled_write_P(PSTR(" "), false);
+            }
+        }
         snprintf(buf, sizeof(buf), "%s", child->short_text);
 
         if (child->flags & menu_flag_is_value) {
