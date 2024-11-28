@@ -1227,5 +1227,9 @@ void oled_rotate_screen(bool clockwise) {
         }
     }
     eeconfig_update_user_datablock(&userspace_config);
+
+    void display_menu_set_dirty(void);
+    display_menu_set_dirty();
+
     oled_init(userspace_config.oled.rotation);
 }

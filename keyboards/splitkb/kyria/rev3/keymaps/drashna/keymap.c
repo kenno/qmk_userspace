@@ -113,15 +113,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 void render_oled_title(bool side) {
     oled_write_P(side ? PSTR("   Splitkb   ") : PSTR("    Kyria    "), true);
 }
-
-oled_rotation_t oled_init_keymap(oled_rotation_t rotation, bool has_run) {
-    if (has_run) return rotation;
-#    ifdef OLED_DISPLAY_128X128
-    return OLED_ROTATION_0;
-#    else
-    return OLED_ROTATION_180;
-#    endif
-}
 #endif
 
 #if defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_LAYERS)
