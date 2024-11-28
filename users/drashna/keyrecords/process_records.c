@@ -9,9 +9,6 @@
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
 #    include "keyrecords/custom_dynamic_macros.h"
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
-#ifdef LAYER_LOCK_ENABLE
-#    include "layer_lock.h"
-#endif // LAYER_LOCK_ENABLE
 #ifdef DISPLAY_DRIVER_ENABLE
 #    include "display/display.h"
 #endif // DISPLAY_DRIVER_ENABLE
@@ -201,9 +198,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef ORBITAL_MOUSE_ENABLE
           && process_orbital_mouse(keycode, record)
 #endif // ORBITAL_MOUSE_ENABLE
-#ifdef LAYER_LOCK_ENABLE
-          && process_layer_lock(keycode, record, LAYER_LOCK)
-#endif // LAYER_LOCK_ENABLE
 #ifdef CLAP_TRAP_ENABLE
           && process_clap_trap(keycode, record)
 #endif // CLAP_TRAP_ENABLE

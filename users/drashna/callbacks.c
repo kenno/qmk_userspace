@@ -37,9 +37,6 @@ void keyboard_post_init_unicode(void);
 #ifdef WATCHDOG_ENABLE
 #    include "watchdog.h"
 #endif // WATCHDOG_ENABLE
-#if defined(LAYER_LOCK_ENABLE) && defined(LAYER_LOCK_IDLE_TIMEOUT)
-#    include "layer_lock.h"
-#endif // LAYER_LOCK_ENABLE && LAYER_LOCK_IDLE_TIMEOUT
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
 #    include "split/transport_sync.h"
@@ -390,9 +387,6 @@ void                       housekeeping_task_user(void) {
 #ifdef WATCHDOG_ENABLE
     watchdog_task();
 #endif // WATCHDOG_ENABLE
-#if defined(LAYER_LOCK_ENABLE) && defined(LAYER_LOCK_IDLE_TIMEOUT)
-    layer_lock_task();
-#endif                               // LAYER_LOCK_ENABLE && LAYER_LOCK_IDLE_TIMEOUT
 #if defined(CUSTOM_TAP_DANCE_ENABLE) // Run Diablo 3 macro checking code.
     run_diablo_macro_check();
 #endif // CUSTOM_TAP_DANCE_ENABLE
