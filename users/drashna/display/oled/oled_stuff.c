@@ -1232,4 +1232,5 @@ void oled_rotate_screen(bool clockwise) {
     display_menu_set_dirty();
 
     oled_init(userspace_config.oled.rotation);
+    oled_invert(userspace_config.oled.inverted);
 }
