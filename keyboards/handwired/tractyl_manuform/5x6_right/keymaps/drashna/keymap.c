@@ -49,14 +49,13 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // clang-format on
 
 #ifdef OLED_ENABLE
-oled_rotation_t oled_init_keymap(oled_rotation_t rotation, bool has_run) {
-    return has_run ? rotation : OLED_ROTATION_180;
-}
-
 void render_oled_title(bool side) {
     oled_write_P(side ? PSTR("   Tractyl   ") : PSTR("   Manuform  "), true);
 }
 #endif
+void eeconfig_init_keymap(void) {
+    userspace_config.oled.rotation = 2; // OLED_ROTATION_180;
+}
 
 #if defined(RGB_MATRIX_ENABLE) && defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)
 const uint8_t led_mapping[RGBLIGHT_LED_COUNT] = {0,  1,  2,  3,  32, 31, 12, 13, 26, 30, 29, 27,

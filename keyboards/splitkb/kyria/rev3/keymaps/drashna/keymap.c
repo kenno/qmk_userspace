@@ -107,6 +107,14 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 #endif
 // clang-format on
 
+void eeconfig_init_keymap(void) {
+#if !defined(OLED_DISPLAY_128X64)
+    userspace_config.oled.rotation = 0; // OLED_ROTATION_180;
+#else
+    userspace_config.oled.rotation = 2; // OLED_ROTATION_180;
+#endif
+}
+
 #ifdef OLED_ENABLE
 #    include "display/oled/oled_stuff.h"
 
