@@ -1,3 +1,5 @@
+// Copyright 2024 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "oled_driver.h"
 #include "timer.h"
