@@ -1,4 +1,4 @@
-AUTOCORRECT_ENABLE               = no
+nAUTOCORRECT_ENABLE               = no
 AUDIO_ENABLE                     = no
 ENCODER_ENABLE                   = no
 CUSTOM_BOOTMAGIC_ENABLE          = no
@@ -12,25 +12,6 @@ WPM_ENABLE                       = no
 
 MOUSE_SHARED_EP                  = no
 
-ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/elite_c)
-    BOOTLOADER                       = qmk-hid
-    BOOTLOADER_SIZE                  = 512
-    CUSTOM_SPLIT_TRANSPORT_SYNC      = no
-    LTO_ENABLE                       = yes
-    MOUSEKEY_ENABLE                  = no
-endif
-ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/arduinomicro)
-    BOOTLOADER                       = qmk-hid
-    BOOTLOADER_SIZE                  = 512
-    CUSTOM_SPLIT_TRANSPORT_SYNC      = no
-    LTO_ENABLE                       = yes
-    MOUSEKEY_ENABLE                  = no
-endif
-ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/teensy2pp)
-    AUTOCORRECT_ENABLE               = no
-    OVERLOAD_FEATURES                = yes
-    LTO_ENABLE                       = yes
-endif
 ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f411)
     BOOTLOADER                       = tinyuf2
     AUTOCORRECT_ENABLE               = yes
