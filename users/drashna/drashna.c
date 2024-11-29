@@ -133,14 +133,18 @@ void oneshot_locked_mods_changed_user(uint8_t mods) {
 #if defined(OS_DETECTION_ENABLE)
 typedef struct {
     bool    swap_ctl_gui;
+#    ifdef UNICODE_COMMON_ENABLE
     uint8_t unicode_input_mode;
+#    endif // UNICODE_COMMON_ENABLE
 } os_detection_config_t;
 
 bool process_detected_host_os_user(os_variant_t detected_os) {
     if (is_keyboard_master()) {
         os_detection_config_t os_detection_config = {
-            .swap_ctl_gui       = false,
+            .swap_ctl_gui = false,
+#    ifdef UNICODE_COMMON_ENABLE
             .unicode_input_mode = UNICODE_MODE_WINCOMPOSE,
+#    endif // UNICODE_COMMON_ENABLE
         };
         switch (detected_os) {
             case OS_UNSURE:
@@ -148,7 +152,9 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
                 break;
             case OS_LINUX:
                 xprintf("Linux Detected\n");
+#    ifdef UNICODE_COMMON_ENABLE
                 os_detection_config.unicode_input_mode = UNICODE_MODE_LINUX;
+#    endif // UNICODE_COMMON_ENABLE
                 break;
             case OS_WINDOWS:
                 xprintf("Windows Detected\n");
@@ -161,27 +167,35 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
             case OS_MACOS:
                 xprintf("MacOS Detected\n");
                 os_detection_config = (os_detection_config_t){
-                    .swap_ctl_gui       = true,
+                    .swap_ctl_gui = true,
+#    ifdef UNICODE_COMMON_ENABLE
                     .unicode_input_mode = UNICODE_MODE_MACOS,
+#    endif // UNICODE_COMMON_ENABLE
                 };
                 userspace_config.pointing.accel.enabled = false;
                 break;
             case OS_IOS:
                 xprintf("iOS Detected\n");
                 os_detection_config = (os_detection_config_t){
-                    .swap_ctl_gui       = true,
+                    .swap_ctl_gui = true,
+#    ifdef UNICODE_COMMON_ENABLE
                     .unicode_input_mode = UNICODE_MODE_MACOS,
+#    endif // UNICODE_COMMON_ENABLE
                 };
                 userspace_config.pointing.accel.enabled = false;
                 break;
 #    if 0
             case OS_PS5:
                 xprintf("PlayStation 5 Detected\n");
+#        ifdef UNICODE_COMMON_ENABLE
                 os_detection_config.unicode_input_mode = UNICODE_MODE_LINUX;
+#        endif // UNICODE_COMMON_ENABLE
                 break;
             case OS_HANDHELD:
                 xprintf("Nintend Switch/Quest 2 Detected\n");
+#        ifdef UNICODE_COMMON_ENABLE
                 os_detection_config.unicode_input_mode = UNICODE_MODE_LINUX;
+#        endif
                 break;
 #    endif
             default:
