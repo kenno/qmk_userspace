@@ -85,7 +85,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // clang-format on
 
 void eeconfig_init_keymap(void) {
-    userspace_config.oled.rotation = 3; // OLED_ROTATION_270;
+    userspace_config.display.rotation = 3; // OLED_ROTATION_270;
 }
 
 #ifdef OLED_ENABLE

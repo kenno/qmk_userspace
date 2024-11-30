@@ -25,7 +25,7 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
         userspace_runtime_state.menu_state.dirty = false;
     }
 
-    if ((userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_left)) != is_keyboard_left()) {
+    if ((userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left)) != is_keyboard_left()) {
         return false;
     }
 

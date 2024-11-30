@@ -101,27 +101,28 @@ bool process_record_user_oled(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         switch (keycode) {
             case OLED_BRIGHTNESS_INC:
-                userspace_config.oled.brightness = qadd8(userspace_config.oled.brightness, OLED_BRIGHTNESS_STEP);
-                oled_set_brightness(userspace_config.oled.brightness);
+                userspace_config.display.oled.brightness =
+                    qadd8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
+                oled_set_brightness(userspace_config.display.oled.brightness);
                 eeconfig_update_user_datablock(&userspace_config);
                 break;
             case OLED_BRIGHTNESS_DEC:
-                userspace_config.oled.brightness = qsub8(userspace_config.oled.brightness, OLED_BRIGHTNESS_STEP);
-                oled_set_brightness(userspace_config.oled.brightness);
+                userspace_config.display.oled.brightness =
+                    qsub8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
+                oled_set_brightness(userspace_config.display.oled.brightness);
                 eeconfig_update_user_datablock(&userspace_config);
                 break;
             case OLED_LOCK:
-                userspace_config.oled.screen_lock = !userspace_config.oled.screen_lock;
+                userspace_config.display.oled.screen_lock = !userspace_config.display.oled.screen_lock;
                 eeconfig_update_user_datablock(&userspace_config);
-                if (userspace_config.oled.screen_lock) {
+                if (userspace_config.display.oled.screen_lock) {
                     oled_on();
                 }
                 break;
             case OLED_ROTATE_CW:
-                oled_rotate_screen(true);
-                break;
             case OLED_ROTATE_CCW:
-                oled_rotate_screen(false);
+                userspace_config.display.rotation = !userspace_config.display.rotation;
+                oled_rotate_screen();
                 break;
         }
     }
@@ -1022,10 +1023,10 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     if (!oled_init_keymap(&rotation, has_run)) {
         return rotation;
     }
-    rotation = userspace_config.oled.rotation;
+    rotation = userspace_config.display.rotation;
 
     if (has_run) {
-        oled_set_brightness(userspace_config.oled.brightness);
+        oled_set_brightness(userspace_config.display.oled.brightness);
         return rotation;
     }
 
@@ -1129,7 +1130,7 @@ void housekeeping_task_oled(void) {
 
     if (is_device_suspended() || is_oled_force_off) {
         is_oled_enabled = false;
-    } else if (userspace_config.oled.screen_lock) {
+    } else if (userspace_config.display.oled.screen_lock) {
         is_oled_enabled = true;
     } else if (last_input_activity_elapsed() < (10 * 60 * 1000)) {
         is_oled_enabled = true;
@@ -1138,13 +1139,13 @@ void housekeeping_task_oled(void) {
         oled_screensaver_enabled = true;
     }
 
-    if (oled_get_brightness() != userspace_config.oled.brightness) {
-        oled_set_brightness(userspace_config.oled.brightness);
+    if (oled_get_brightness() != userspace_config.display.oled.brightness) {
+        oled_set_brightness(userspace_config.display.oled.brightness);
     }
 }
 
 void keyboard_post_init_oled(void) {
-    oled_invert(userspace_config.oled.inverted);
+    oled_invert(userspace_config.display.inverted);
 }
 
 void oled_shutdown(bool jump_to_bootloader) {
@@ -1201,23 +1202,14 @@ void oled_write_compressed_P(compressed_oled_frame_t frame) {
     }
 }
 
-void oled_rotate_screen(bool clockwise) {
-    if (clockwise) {
-        userspace_config.oled.rotation = (userspace_config.oled.rotation - 1) % 4;
-        if (userspace_config.oled.rotation > 3) {
-            userspace_config.oled.rotation = 3;
-        }
-    } else {
-        userspace_config.oled.rotation = (userspace_config.oled.rotation + 1) % 4;
-        if (userspace_config.oled.rotation > 3) {
-            userspace_config.oled.rotation = 0;
-        }
-    }
-    eeconfig_update_user_datablock(&userspace_config);
-
+void oled_rotate_screen(void) {
     void display_menu_set_dirty(void);
     display_menu_set_dirty();
 
-    oled_init(userspace_config.oled.rotation);
-    oled_invert(userspace_config.oled.inverted);
+#if defined(DISPLAY_FULL_ROTATION_ENABLE)
+    oled_init(userspace_config.display.rotation);
+#else  // DISPLAY_FULL_ROTATION_ENABLE
+    oled_init(userspace_config.display.rotation ? OLED_ROTATION_180 : OLED_ROTATION_0);
+#endif // DISPLAY_FULL_ROTATION_ENABLE
+    oled_invert(userspace_config.display.inverted);
 }

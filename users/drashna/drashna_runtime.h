@@ -31,11 +31,21 @@ typedef union PACKED {
             bool song_enable      : 1;
         } gaming;
         struct {
-            uint8_t brightness  : 8;
-            bool    screen_lock : 1;
-            bool    inverted    : 1;
-            uint8_t rotation    : 2;
-        } oled;
+            bool    inverted         : 1;
+            uint8_t rotation         : 2;
+            uint8_t menu_render_side : 2;
+            struct {
+                uint8_t brightness  : 8;
+                bool    screen_lock : 1;
+            } oled;
+            struct {
+                // 3 bits gets 8 modes, 4 bits gets 16, etc
+                uint8_t    display_mode_master : 3;
+                uint8_t    display_mode_slave  : 3;
+                uint8_t    display_logo        : 4;
+                dual_hsv_t hsv;
+            } painter;
+        } display;
         struct {
             bool i2c_scanner_enable : 1;
             bool matrix_scan_print  : 1;
@@ -57,16 +67,6 @@ typedef union PACKED {
                 float takeoff;
             } accel;
         } pointing;
-        struct {
-            // 3 bits gets 8 modes, 4 bits gets 16, etc
-            uint8_t    display_mode_master : 3;
-            uint8_t    display_mode_slave  : 3;
-            uint8_t    display_logo        : 4;
-            dual_hsv_t hsv;
-            bool       inverted         : 1;
-            uint8_t    rotation         : 2;
-            uint8_t    menu_render_side : 2;
-        } painter;
         struct {
             bool   format_24h : 1;
             bool   is_dst     : 1;

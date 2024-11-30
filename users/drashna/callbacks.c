@@ -282,21 +282,21 @@ void                       eeconfig_init_user(void) {
     userspace_config.check            = true;
     userspace_config.rgb.layer_change = true;
 #if defined(OLED_ENABLE)
-    userspace_config.oled.brightness = OLED_BRIGHTNESS;
+    userspace_config.display.oled.brightness = OLED_BRIGHTNESS;
 #else  // OLED_ENABLE
-    userspace_config.oled.brightness = 255;
+    userspace_config.display.oled.brightness = 255;
 #endif // OLED_ENABLE
-    userspace_config.painter.hsv.primary = (HSV){
+    userspace_config.display.painter.hsv.primary = (HSV){
         .h = 128,
         .s = 255,
         .v = 255,
     };
-    userspace_config.painter.hsv.secondary = (HSV){
+    userspace_config.display.painter.hsv.secondary = (HSV){
         .h = 48,
         .s = 255,
         .v = 255,
     };
-    userspace_config.painter.menu_render_side = 3;
+    userspace_config.display.menu_render_side = 3;
 
     userspace_config.pointing.accel.growth_rate         = POINTING_DEVICE_ACCEL_GROWTH_RATE;
     userspace_config.pointing.accel.offset              = POINTING_DEVICE_ACCEL_OFFSET;

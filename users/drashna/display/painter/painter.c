@@ -491,10 +491,10 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                                uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool is_left) {
     static bool force_full_block_redraw = false;
 #ifdef SPLIT_KEYBOARD
-    bool           should_render_this_side = userspace_config.painter.menu_render_side & (1 << (uint8_t)!is_left);
+    bool           should_render_this_side = userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left);
     static uint8_t last_menu_side          = 0xFF;
-    if (last_menu_side != userspace_config.painter.menu_render_side) {
-        last_menu_side          = userspace_config.painter.menu_render_side;
+    if (last_menu_side != userspace_config.display.menu_render_side) {
+        last_menu_side          = userspace_config.display.menu_render_side;
         force_full_block_redraw = true;
     }
     // if slave side can't be detected, we need to force render, just to be safe
@@ -511,8 +511,8 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
         bool     block_redraw = false;
         uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
 
-        uint8_t current_display_mode =
-            is_left ? userspace_config.painter.display_mode_master : userspace_config.painter.display_mode_slave;
+        uint8_t current_display_mode = is_left ? userspace_config.display.painter.display_mode_master
+                                               : userspace_config.display.painter.display_mode_slave;
 
         static uint8_t last_display_mode[2] = {0xFF};
         if (last_display_mode[is_left] != current_display_mode) {
@@ -1128,7 +1128,7 @@ void shutdown_quantum_painter(bool jump_to_bootloader) {
  * @return HSV
  */
 dual_hsv_t painter_get_dual_hsv(void) {
-    return userspace_config.painter.hsv;
+    return userspace_config.display.painter.hsv;
 }
 
 /**
@@ -1140,10 +1140,11 @@ dual_hsv_t painter_get_dual_hsv(void) {
  * @param write_to_eeprom save changes to eeprom?
  */
 void painter_sethsv_eeprom_helper(uint8_t hue, uint8_t sat, uint8_t val, bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
-    hsv->h   = hue;
-    hsv->s   = sat;
-    hsv->v   = val;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
+    hsv->h     = hue;
+    hsv->s     = sat;
+    hsv->v     = val;
     if (write_to_eeprom) {
         eeconfig_update_user_datablock(&userspace_config);
     }
@@ -1177,7 +1178,7 @@ void painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary) {
  * @return HSV
  */
 hsv_t painter_get_hsv(bool primary) {
-    return primary ? userspace_config.painter.hsv.primary : userspace_config.painter.hsv.secondary;
+    return primary ? userspace_config.display.painter.hsv.primary : userspace_config.display.painter.hsv.secondary;
 }
 
 /**
@@ -1186,7 +1187,7 @@ hsv_t painter_get_hsv(bool primary) {
  * @return uint8_t
  */
 uint8_t painter_get_hue(bool primary) {
-    return primary ? userspace_config.painter.hsv.primary.h : userspace_config.painter.hsv.secondary.h;
+    return primary ? userspace_config.display.painter.hsv.primary.h : userspace_config.display.painter.hsv.secondary.h;
 }
 
 /**
@@ -1195,7 +1196,7 @@ uint8_t painter_get_hue(bool primary) {
  * @return uint8_t
  */
 uint8_t painter_get_sat(bool primary) {
-    return primary ? userspace_config.painter.hsv.primary.s : userspace_config.painter.hsv.secondary.s;
+    return primary ? userspace_config.display.painter.hsv.primary.s : userspace_config.display.painter.hsv.secondary.s;
 }
 
 /**
@@ -1204,7 +1205,7 @@ uint8_t painter_get_sat(bool primary) {
  * @return uint8_t
  */
 uint8_t painter_get_val(bool primary) {
-    return primary ? userspace_config.painter.hsv.primary.v : userspace_config.painter.hsv.secondary.v;
+    return primary ? userspace_config.display.painter.hsv.primary.v : userspace_config.display.painter.hsv.secondary.v;
 }
 
 /**
@@ -1213,7 +1214,8 @@ uint8_t painter_get_val(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_increase_hue_helper(bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(qadd8(hsv->h, PAINTER_HUE_STEP), hsv->s, hsv->v, write_to_eeprom, primary);
 }
 
@@ -1237,7 +1239,8 @@ void painter_increase_hue(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_decrease_hue_helper(bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(qsub8(hsv->h, PAINTER_HUE_STEP), hsv->s, hsv->v, write_to_eeprom, primary);
 }
 
@@ -1261,7 +1264,8 @@ void painter_decrease_hue(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_increase_sat_helper(bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, qadd8(hsv->s, PAINTER_SAT_STEP), hsv->v, write_to_eeprom, primary);
 }
 
@@ -1285,7 +1289,8 @@ void painter_increase_sat(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_decrease_sat_helper(bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, qsub8(hsv->s, PAINTER_SAT_STEP), hsv->v, write_to_eeprom, primary);
 }
 
@@ -1309,7 +1314,8 @@ void painter_decrease_sat(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_increase_val_helper(bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, hsv->s, qadd8(hsv->v, PAINTER_VAL_STEP), write_to_eeprom, primary);
 }
 
@@ -1333,7 +1339,8 @@ void painter_increase_val(bool primary) {
  * @param write_to_eeprom Save to eeprom?
  */
 void painter_decrease_val_helper(bool write_to_eeprom, bool primary) {
-    hsv_t* hsv = primary ? &userspace_config.painter.hsv.primary : &userspace_config.painter.hsv.secondary;
+    hsv_t* hsv =
+        primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
     painter_sethsv_eeprom_helper(hsv->h, hsv->s, qsub8(hsv->v, PAINTER_VAL_STEP), write_to_eeprom, primary);
 }
 

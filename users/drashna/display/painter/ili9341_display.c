@@ -44,7 +44,7 @@ static bool has_run = false, forced_reinit = false;
 
 void init_display_ili9341_inversion(void) {
     qp_comms_start(display);
-    qp_comms_command(display, userspace_config.painter.inverted ? ILI9XXX_CMD_INVERT_ON : ILI9XXX_CMD_INVERT_OFF);
+    qp_comms_command(display, userspace_config.display.inverted ? ILI9XXX_CMD_INVERT_ON : ILI9XXX_CMD_INVERT_OFF);
     qp_comms_stop(display);
     if (has_run) {
         forced_reinit = true;
@@ -55,7 +55,7 @@ void init_display_ili9341_rotation(void) {
     uint16_t width;
     uint16_t height;
 
-    qp_init(display, userspace_config.painter.rotation ? QP_ROTATION_0 : QP_ROTATION_180);
+    qp_init(display, userspace_config.display.rotation ? QP_ROTATION_0 : QP_ROTATION_180);
     qp_get_geometry(display, &width, &height, NULL, NULL, NULL);
     qp_clear(display);
     qp_rect(display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
@@ -128,7 +128,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
     }
 
     static dual_hsv_t curr_hsv = {0};
-    if (memcmp(&curr_hsv, &userspace_config.painter.hsv, sizeof(dual_hsv_t)) != 0) {
+    if (memcmp(&curr_hsv, &userspace_config.display.painter.hsv, sizeof(dual_hsv_t)) != 0) {
         curr_hsv   = painter_get_dual_hsv();
         hue_redraw = true;
     }
@@ -157,10 +157,10 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
         static uint8_t display_mode = 0xFF;
-        if (display_mode != userspace_config.painter.display_mode_master || screen_saver_redraw == false) {
-            display_mode        = userspace_config.painter.display_mode_master;
+        if (display_mode != userspace_config.display.painter.display_mode_master || screen_saver_redraw == false) {
+            display_mode        = userspace_config.display.painter.display_mode_master;
             screen_saver_redraw = true;
-            screen_saver        = qp_load_image_mem(screen_saver_image[userspace_config.painter.display_logo].data);
+            screen_saver = qp_load_image_mem(screen_saver_image[userspace_config.display.painter.display_logo].data);
             if (screen_saver != NULL) {
                 qp_drawimage(display, 0, 0, screen_saver);
                 qp_close_image(screen_saver);
