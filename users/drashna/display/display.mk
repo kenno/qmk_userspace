@@ -15,8 +15,7 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
 
         SRC += $(USER_PATH)/display/painter/painter.c \
                $(USER_PATH)/display/painter/graphics.qgf.c \
-               $(USER_PATH)/display/painter/qp_render_menu.c \
-               $(USER_PATH)/display/menu/menu.c
+               $(USER_PATH)/display/painter/qp_render_menu.c
 
         ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
             OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
@@ -52,13 +51,14 @@ ifeq ($(strip $(OLED_ENABLE)), yes)
     ifeq ($(strip $(OLED_DISPLAY_TEST)), yes)
         OPT_DEFS += -DOLED_DISPLAY_TEST
     endif
-    SRC += $(USER_PATH)/display/menu/menu.c \
-        $(USER_PATH)/display/oled/oled_render_menu.c
+    SRC += $(USER_PATH)/display/oled/oled_render_menu.c
 endif
 
 ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)
     DEFERRED_EXEC_ENABLE = yes
-    SRC += $(USER_PATH)/display/display.c
+    SRC += $(USER_PATH)/display/display.c \
+        $(USER_PATH)/display/menu/menu.c
+
     OPT_DEFS += -DDISPLAY_DRIVER_ENABLE
     ifeq ($(strip $(DISPLAY_KEYLOGGER_ENABLE)), yes)
         OPT_DEFS += -DDISPLAY_KEYLOGGER_ENABLE
