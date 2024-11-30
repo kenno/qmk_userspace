@@ -97,7 +97,7 @@ keypos_t layer_remap[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {
     { {   6,   0 }, {   5,   0 }, {   4,   0 }, {   3,   0 }, {   2,   0 }, {   1,   0 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, {   1,   4 }, {   2,   4 }, {   3,   4 }, {   4,   4 }, {   5,   4 }, {   6,   4 } },
     { {   6,   1 }, {   5,   1 }, {   4,   1 }, {   3,   1 }, {   2,   1 }, {   1,   1 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, {   1,   5 }, {   2,   5 }, {   3,   5 }, {   4,   5 }, {   5,   5 }, {   6,   5 } },
     { {   6,   2 }, {   5,   2 }, {   4,   2 }, {   3,   2 }, {   2,   2 }, {   1,   2 }, {   3,   3 }, {   0,   2 }, { 255, 255 }, { 255, 255 }, {   0,   6 }, {   3,   7 }, {   1,   6 }, {   2,   6 }, {   3,   6 }, {   4,   6 }, {   5,   6 }, {   6,   6 } },
-    { { 255, 255 }, { 255, 255 }, { 255, 255 }, {   4,   3 }, {   2,   3 }, {   1,   3 }, {   5,   3 }, {   0,   3 }, { 255, 255 }, { 255, 255 }, {   0,   7 }, {   5,   7 }, {   1,   7 }, {   2,   7 }, {   4,   7 }, {   1, 253 }, { 255, 255 }, { 255, 255 } },
+    { { 255, 255 }, { 255, 255 }, { 255, 255 }, {   4,   3 }, {   2,   3 }, {   1,   3 }, {   5,   3 }, {   0,   3 }, { 255, 255 }, { 255, 255 }, {   0,   7 }, {   5,   7 }, {   1,   7 }, {   2,   7 }, {   4,   7 }, { 255, 255 }, { 255, 255 }, { 255, 255 } },
     { { 255, 255 }, {   0, 252 }, {   0, 253 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, {   1, 252 }, {   1, 253 }, { 255, 255 } },
 };
 #endif
@@ -105,16 +105,16 @@ keypos_t layer_remap[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {
 
 #ifdef ENCODER_MAP_ENABLE
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [_DEFAULT_LAYER_1] = { ENCODER_CCW_CW( KC_VOLD, KC_VOLU ), ENCODER_CCW_CW( KC_WH_D, KC_WH_U ) },
+    [_DEFAULT_LAYER_1] = { ENCODER_CCW_CW( KC_VOLD, KC_VOLU ), ENCODER_CCW_CW( KC_WH_U, KC_WH_D ) },
     [_DEFAULT_LAYER_2] = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_DEFAULT_LAYER_3] = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_DEFAULT_LAYER_4] = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_GAMEPAD]         = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_DIABLO]          = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
-    [_MOUSE]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( KC_WH_D, KC_WH_U ) },
+    [_MOUSE]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( KC_WH_U, KC_WH_D ) },
     [_MEDIA]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
-    [_RAISE]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( KC_PGDN, KC_PGUP ) },
-    [_LOWER]           = { ENCODER_CCW_CW( RGB_MOD, RGB_RMOD), ENCODER_CCW_CW( RGB_HUD, RGB_HUI ) },
+    [_RAISE]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( KC_PGUP, KC_PGDN ) },
+    [_LOWER]           = { ENCODER_CCW_CW( RM_PREV, RM_NEXT ), ENCODER_CCW_CW( RM_HUEU, RM_HUED ) },
     [_ADJUST]          = { ENCODER_CCW_CW( CK_DOWN, CK_UP   ), ENCODER_CCW_CW( _______, _______ ) },
 };
 #endif
