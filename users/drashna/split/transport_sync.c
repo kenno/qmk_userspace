@@ -276,8 +276,8 @@ void update_slave_state(void) {
         init_display_ili9341_rotation();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #    if defined(OLED_ENABLE)
-        void oled_rotate_screen(void);
-        oled_rotate_screen();
+        void oled_post_init(void);
+        oled_post_init();
 #    endif // OLED_ENABLE
     }
 #endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE

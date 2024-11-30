@@ -101,16 +101,10 @@ bool process_record_user_oled(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         switch (keycode) {
             case OLED_BRIGHTNESS_INC:
-                userspace_config.display.oled.brightness =
-                    qadd8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
-                oled_set_brightness(userspace_config.display.oled.brightness);
-                eeconfig_update_user_datablock(&userspace_config);
+                oled_brightness_increase_step();
                 break;
             case OLED_BRIGHTNESS_DEC:
-                userspace_config.display.oled.brightness =
-                    qsub8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
-                oled_set_brightness(userspace_config.display.oled.brightness);
-                eeconfig_update_user_datablock(&userspace_config);
+                oled_brightness_decrease_step();
                 break;
             case OLED_LOCK:
                 userspace_config.display.oled.screen_lock = !userspace_config.display.oled.screen_lock;
@@ -120,9 +114,10 @@ bool process_record_user_oled(uint16_t keycode, keyrecord_t *record) {
                 }
                 break;
             case OLED_ROTATE_CW:
+                display_rotate_screen(true);
+                break;
             case OLED_ROTATE_CCW:
-                userspace_config.display.rotation = !userspace_config.display.rotation;
-                oled_rotate_screen();
+                display_rotate_screen(false);
                 break;
         }
     }
@@ -973,36 +968,36 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
         // oled_advance_page(true);
         if (!oled_render_menu(0, 8, 7, side)) {
 #    if defined(LAYER_MAP_ENABLE)
-        oled_set_cursor(1, 7);
+            oled_set_cursor(1, 7);
 
-        for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {
-            oled_set_cursor(1 + 1, 7 + i);
-            for (uint8_t j = 0; j < LAYER_MAP_COLS; j++) {
-                uint16_t keycode = extract_basic_keycode(layer_map[i][j], NULL, false);
+            for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {
+                oled_set_cursor(1 + 1, 7 + i);
+                for (uint8_t j = 0; j < LAYER_MAP_COLS; j++) {
+                    uint16_t keycode = extract_basic_keycode(layer_map[i][j], NULL, false);
 
-                char code = 0;
-                if (keycode > 0xFF) {
-                    if (keycode == UC_IRNY) {
-                        code = 0xFD;
-                    } else if (keycode == UC_CLUE) {
-                        code = 0xFE;
-                    } else {
-                        keycode = 0;
+                    char code = 0;
+                    if (keycode > 0xFF) {
+                        if (keycode == UC_IRNY) {
+                            code = 0xFD;
+                        } else if (keycode == UC_CLUE) {
+                            code = 0xFE;
+                        } else {
+                            keycode = 0;
+                        }
                     }
-                }
-                if (keycode < ARRAY_SIZE(code_to_name)) {
-                    code = pgm_read_byte(&code_to_name[keycode]);
-                }
+                    if (keycode < ARRAY_SIZE(code_to_name)) {
+                        code = pgm_read_byte(&code_to_name[keycode]);
+                    }
 
-                oled_write_char(code, peek_matrix_layer_map(i, j));
+                    oled_write_char(code, peek_matrix_layer_map(i, j));
+                }
             }
-        }
 
 #    else
-        render_autocorrected_info(1, 7);
-        render_os(1, 11);
-        render_unicode_mode(1, 12);
-        oled_render_time(1, 13);
+            render_autocorrected_info(1, 7);
+            render_os(1, 11);
+            render_unicode_mode(1, 12);
+            oled_render_time(1, 13);
 #    endif
         }
     }
@@ -1201,15 +1196,48 @@ void oled_write_compressed_P(compressed_oled_frame_t frame) {
         }
     }
 }
+/**
+ * @brief Re-initializes the OLED display with the specified rotation and inversion settings.
+ *
+ * This function is called after the OLED display has been initialized. It sets the rotation
+ * and inversion settings based on the user's configuration.
+ *
+ * @note If DISPLAY_FULL_ROTATION_ENABLE is defined, the rotation is set directly from the
+ *       user's configuration. Otherwise, the rotation is set to either 0 or 180 degrees
+ *       based on the user's configuration.
+ */
 
-void oled_rotate_screen(void) {
-    void display_menu_set_dirty(void);
-    display_menu_set_dirty();
-
+void oled_post_init(void) {
 #if defined(DISPLAY_FULL_ROTATION_ENABLE)
     oled_init(userspace_config.display.rotation);
 #else  // DISPLAY_FULL_ROTATION_ENABLE
     oled_init(userspace_config.display.rotation ? OLED_ROTATION_180 : OLED_ROTATION_0);
 #endif // DISPLAY_FULL_ROTATION_ENABLE
     oled_invert(userspace_config.display.inverted);
+}
+
+/**
+ * @brief Increases the OLED display brightness by a predefined step.
+ *
+ * This function increments the current OLED brightness by a constant value
+ * defined by OLED_BRIGHTNESS_STEP. It then updates the OLED display with the
+ * new brightness value and saves the updated configuration to persistent storage.
+ */
+void oled_brightness_increase_step(void) {
+    userspace_config.display.oled.brightness = qadd8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
+    oled_set_brightness(userspace_config.display.oled.brightness);
+    eeconfig_update_user_datablock(&userspace_config);
+}
+
+/**
+ * @brief Decreases the OLED display brightness by a predefined step.
+ *
+ * This function reduces the current brightness level of the OLED display
+ * by a constant value defined by `OLED_BRIGHTNESS_STEP`. It then updates
+ * the display brightness and saves the new configuration to persistent storage.
+ */
+void oled_brightness_decrease_step(void) {
+    userspace_config.display.oled.brightness = qsub8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
+    oled_set_brightness(userspace_config.display.oled.brightness);
+    eeconfig_update_user_datablock(&userspace_config);
 }

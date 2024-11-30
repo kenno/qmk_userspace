@@ -54,7 +54,9 @@ void oled_render_time(uint8_t col, uint8_t line);
 void render_os(uint8_t col, uint8_t line);
 void oled_write_compressed(compressed_oled_frame_t frame);
 void oled_write_compressed_P(compressed_oled_frame_t frame);
-void oled_rotate_screen(void);
+void oled_post_init(void);
+void oled_brightness_increase_step(void);
+void oled_brightness_decrease_step(void);
 
 void render_wpm_graph(uint8_t start_offset, uint8_t cutoff, uint8_t max_lines_graph, uint8_t vertical_offset);
 void oled_pan_section(bool left, uint16_t y_start, uint16_t y_end, uint16_t x_start, uint16_t x_end);

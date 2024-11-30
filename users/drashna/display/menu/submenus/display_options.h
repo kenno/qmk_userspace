@@ -40,66 +40,16 @@ __attribute__((weak)) void display_handler_display_menu_location(char *text_buff
 }
 #endif // SPLIT_KEYBOARD
 
-#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
-#    include "display/oled/oled_stuff.h"
-#endif
 bool menu_handler_display_rotation(menu_input_t input) {
-#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    void init_display_ili9341_rotation(void);
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    void init_display_ili9488_rotation(void);
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+    void display_rotate_screen(bool clockwise);
+
     switch (input) {
-#if defined(DISPLAY_FULL_ROTATION_ENABLE)
         case menu_input_left:
-            userspace_config.display.rotation = (userspace_config.display.rotation - 1) % 4;
-            if (userspace_config.display.rotation > 3) {
-                userspace_config.display.rotation = 3;
-            }
-            eeconfig_update_user_datablock(&userspace_config);
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-            init_display_ili9341_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-            init_display_ili9488_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef OLED_ENABLE
-            oled_rotate_screen();
-#    endif // OLED_ENABLE;
+            display_rotate_screen(false);
             return false;
         case menu_input_right:
-            userspace_config.display.rotation = (userspace_config.display.rotation + 1) % 4;
-            if (userspace_config.display.rotation > 3) {
-                userspace_config.display.rotation = 0;
-            }
-            eeconfig_update_user_datablock(&userspace_config);
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-            init_display_ili9341_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-            init_display_ili9488_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef OLED_ENABLE
-            oled_rotate_screen();
-#    endif // OLED_ENABLE;
+            display_rotate_screen(true);
             return false;
-#else
-        case menu_input_left:
-        case menu_input_right:
-            userspace_config.display.rotation ^= 1;
-            eeconfig_update_user_datablock(&userspace_config);
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-            init_display_ili9341_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-            init_display_ili9488_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef OLED_ENABLE
-            oled_rotate_screen();
-#    endif // OLED_ENABLE;
-            return false;
-#endif
         default:
             return true;
     }
@@ -148,7 +98,8 @@ bool menu_handler_display_inverted(menu_input_t input) {
             init_display_ili9488_inversion();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #ifdef OLED_ENABLE
-            oled_invert(userspace_config.display.inverted);
+            void oled_post_init(void);
+            oled_post_init();
 #endif // OLED_ENABLE;
             return false;
         default:
@@ -161,24 +112,16 @@ __attribute__((weak)) void display_handler_display_inverted(char *text_buffer, s
 }
 
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
-#    include "lib/lib8tion/lib8tion.h"
-#    ifndef OLED_BRIGHTNESS_STEP
-#        define OLED_BRIGHTNESS_STEP 32
-#    endif
+void oled_brightness_increase_step(void);
+void oled_brightness_decrease_step(void);
 
 bool menu_handler_oled_brightness(menu_input_t input) {
     switch (input) {
         case menu_input_left:
-            userspace_config.display.oled.brightness =
-                qsub8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
-            oled_set_brightness(userspace_config.display.oled.brightness);
-            eeconfig_update_user_datablock(&userspace_config);
+            oled_brightness_decrease_step();
             return false;
         case menu_input_right:
-            userspace_config.display.oled.brightness =
-                qadd8(userspace_config.display.oled.brightness, OLED_BRIGHTNESS_STEP);
-            oled_set_brightness(userspace_config.display.oled.brightness);
-            eeconfig_update_user_datablock(&userspace_config);
+            oled_brightness_increase_step();
             return false;
         default:
             return true;

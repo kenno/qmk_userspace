@@ -194,3 +194,33 @@ void display_sendchar_hook(uint8_t c) {
         console_log_needs_redraw                                    = true;
     }
 }
+
+void display_rotate_screen(bool clockwise) {
+    void display_menu_set_dirty(void);
+    display_menu_set_dirty();
+#if defined(DISPLAY_FULL_ROTATION_ENABLE)
+    if (clockwise) {
+        userspace_config.display.rotation = (userspace_config.display.rotation + 1) % 4;
+        if (userspace_config.display.rotation > 3) {
+            userspace_config.display.rotation = 0;
+        }
+    } else {
+        userspace_config.display.rotation = (userspace_config.display.rotation - 1) % 4;
+        if (userspace_config.display.rotation > 3) {
+            userspace_config.display.rotation = 3;
+        }
+    }
+#else
+    userspace_config.display.rotation = !userspace_config.display.rotation;
+#endif
+    eeconfig_update_user_datablock(&userspace_config);
+#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+    init_display_ili9341_rotation();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+    init_display_ili9488_rotation();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef OLED_ENABLE
+    oled_post_init();
+#endif // OLED_ENABLE;
+}
