@@ -23,22 +23,23 @@ ifeq ($(strip $(KEYBOARD)), splitkb/kyria/rev3)
 endif
 
 ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
-    RGB_MATRIX_ENABLE      = yes
-    CONSOLE_ENABLE         = yes      # Console for debug
-    MOUSEKEY_ENABLE        = yes      # Mouse keys
-    TAP_DANCE_ENABLE       = yes
-    SWAP_HANDS_ENABLE      = yes
-    LTO_ENABLE             = yes
-    OPT                    = s
-    ENCODER_MAP_ENABLE     = yes
-    AUTOCORRECT_ENABLE     = no
-    CAPS_WORD_ENABLE       = yes
-    AUDIO_ENABLE           = no
-    LAYER_MAP_ENABLE       = yes
+    RGB_MATRIX_ENABLE        = yes
+    CONSOLE_ENABLE           = yes      # Console for debug
+    MOUSEKEY_ENABLE          = yes      # Mouse keys
+    TAP_DANCE_ENABLE         = yes
+    SWAP_HANDS_ENABLE        = yes
+    LTO_ENABLE               = yes
+    OPT                      = s
+    ENCODER_MAP_ENABLE       = yes
+    AUTOCORRECT_ENABLE       = no
+    CAPS_WORD_ENABLE         = yes
+    AUDIO_ENABLE             = no
+    LAYER_MAP_ENABLE         = yes
+    DISPLAY_KEYLOGGER_ENABLE = yes
 else
-    LTO_ENABLE             = yes
-    BOOTLOADER             = qmk-hid
-    BOOTLOADER_SIZE        = 512
-    OS_DETECTION_ENABLE    = no
-    CUSTOM_UNICODE_ENABLE  = no
+    LTO_ENABLE               = yes
+    BOOTLOADER               = qmk-hid
+    BOOTLOADER_SIZE          = 512
+    OS_DETECTION_ENABLE      = no
+    CUSTOM_UNICODE_ENABLE    = no
 endif
