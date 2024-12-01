@@ -62,6 +62,13 @@
         }
 
 #    define ENCODER_RESOLUTION 2
+// faster i2c? 1MHz, maybe?
+#    define I2C1_TIMINGR_PRESC  0U
+#    define I2C1_TIMINGR_SCLDEL 10U
+#    define I2C1_TIMINGR_SDADEL 1U
+#    define I2C1_TIMINGR_SCLH   13U
+#    define I2C1_TIMINGR_SCLL   31U
+
 #else
 #    define BOOTMAGIC_ROW          0
 #    define BOOTMAGIC_COLUMN       7
