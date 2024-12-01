@@ -966,7 +966,7 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
         }
     } else {
         // oled_advance_page(true);
-        if (!oled_render_menu(0, 8, 7, side)) {
+        if (!oled_render_menu(0, 7, 8, side)) {
 #    if defined(LAYER_MAP_ENABLE)
             oled_set_cursor(1, 7);
 
