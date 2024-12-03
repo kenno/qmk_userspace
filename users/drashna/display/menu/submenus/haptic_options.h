@@ -3,6 +3,7 @@
 // Haptic
 
 #ifdef HAPTIC_ENABLE
+#    include "haptic.h"
 
 extern haptic_config_t haptic_config;
 

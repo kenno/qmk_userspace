@@ -8,8 +8,8 @@
 #include <printf.h>
 #include "display/menu/menu.h"
 #include "keyrecords/process_records.h"
-#include "process_keycode/process_unicode_common.h"
 #include "unicode.h"
+#include "deferred_exec.h"
 
 #include "menu.inc"
 
