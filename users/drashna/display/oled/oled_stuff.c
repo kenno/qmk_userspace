@@ -574,9 +574,6 @@ void render_pointing_dpi_status(uint16_t cpi, uint8_t padding, uint8_t col, uint
 #ifndef OLED_MATI_SPEED
 #    define OLED_MATI_SPEED 60
 #endif
-#ifndef OLED_PET_ARRAY
-#    define OLED_PET_ARRAY tora_the_cat_animation
-#endif
 
 // #define ANIM_FRAME_DURATION 500 // how long each frame lasts in ms
 //  #define SLEEP_TIMER 60000 // should sleep after this period of 0 wpm, needs fixing
@@ -591,7 +588,8 @@ static uint8_t animation_type  = 0;
 void render_pet(uint8_t col, uint8_t line) {
     for (uint8_t i = 0; i < 4; i++) {
         oled_set_cursor(col, line + i);
-        oled_write_raw_P(pet_animiations[1][animation_type][animation_frame][i], OLED_ANIM_SIZE);
+        oled_write_raw_P(pet_animiations[userspace_config.display.oled.pet_index][animation_type][animation_frame][i],
+                         OLED_ANIM_SIZE);
     }
 }
 

@@ -131,6 +131,59 @@ bool menu_handler_oled_brightness(menu_input_t input) {
 __attribute__((weak)) void display_handler_oled_brightness(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.display.oled.brightness);
 }
+
+bool menu_handler_oled_lock(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+            userspace_config.display.oled.screen_lock = !userspace_config.display.oled.screen_lock;
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_lock(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.display.oled.screen_lock ? "Enabled" : "Disabled", buffer_len - 1);
+}
+
+bool menu_handler_oled_pet_animation(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.display.oled.pet_index = (userspace_config.display.oled.pet_index - 1) % 3;
+            if (userspace_config.display.oled.pet_index > 2) {
+                userspace_config.display.oled.pet_index = 2;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.display.oled.pet_index = (userspace_config.display.oled.pet_index + 1) % 3;
+            if (userspace_config.display.oled.pet_index > 2) {
+                userspace_config.display.oled.pet_index = 0;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_pet_animation(char *text_buffer, size_t buffer_len) {
+    switch (userspace_config.display.oled.pet_index) {
+        case 0:
+            strncpy(text_buffer, "Tora the Cat", buffer_len - 1);
+            return;
+        case 1:
+            strncpy(text_buffer, "Kitty", buffer_len - 1);
+            return;
+        case 2:
+            strncpy(text_buffer, "Luna", buffer_len - 1);
+            return;
+    }
+
+    strncpy(text_buffer, "Cthulhu", buffer_len);
+}
 #endif
 
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
@@ -361,6 +414,8 @@ menu_entry_t display_option_entries[] = {
     MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted),
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
     MENU_ENTRY_CHILD("Brightness", "Brightness", oled_brightness),
+    MENU_ENTRY_CHILD("Screen Lock", "Lock", oled_lock),
+    MENU_ENTRY_CHILD("Pet Animation", "Pet", oled_pet_animation),
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
     MENU_ENTRY_CHILD("Display (Master)", "Master", display_mode_master),
