@@ -73,14 +73,16 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
             if (child->flags & menu_flag_is_parent) {
                 snprintf_nowarn(text_buffer, 19, "%s [%s]", buf, val);
             } else {
-                snprintf_nowarn(text_buffer, 19, "%s: %s", buf, val);
+                snprintf_nowarn(text_buffer, 20, "%s: %s", buf, val);
             }
         } else {
             snprintf_nowarn(text_buffer, 19, "%s", buf);
         }
         oled_write(text_buffer, false);
-        oled_set_cursor(col + 20, line + 1 + i - scroll_offset);
-        oled_write_char(child->flags & menu_flag_is_parent ? 0x10 : 0x20, false);
+        if (child->flags & menu_flag_is_parent) {
+            oled_set_cursor(col + 20, line + 1 + i - scroll_offset);
+            oled_write_char(0x10, false);
+        }
         oled_advance_page(true);
     }
     return true;
