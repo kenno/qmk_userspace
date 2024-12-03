@@ -286,6 +286,9 @@ void                       eeconfig_init_user(void) {
 #else  // OLED_ENABLE
     userspace_config.display.oled.brightness = 255;
 #endif // OLED_ENABLE
+    userspace_config.display.oled.pet.kaki_speed  = 40;
+    userspace_config.display.oled.pet.mati_speed  = 60;
+    userspace_config.display.oled.pet.sleep_speed = 10;
     userspace_config.display.painter.hsv.primary = (HSV){
         .h = 128,
         .s = 255,

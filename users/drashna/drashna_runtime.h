@@ -37,7 +37,12 @@ typedef union PACKED {
             struct {
                 uint8_t brightness  : 8;
                 bool    screen_lock : 1;
-                uint8_t pet_index   : 2;
+                struct {
+                    uint8_t index       : 2;
+                    uint8_t sleep_speed : 8;
+                    uint8_t kaki_speed  : 8;
+                    uint8_t mati_speed  : 8;
+                } pet;
             } oled;
             struct {
                 // 3 bits gets 8 modes, 4 bits gets 16, etc

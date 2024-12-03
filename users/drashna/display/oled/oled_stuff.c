@@ -588,7 +588,7 @@ static uint8_t animation_type  = 0;
 void render_pet(uint8_t col, uint8_t line) {
     for (uint8_t i = 0; i < 4; i++) {
         oled_set_cursor(col, line + i);
-        oled_write_raw_P(pet_animiations[userspace_config.display.oled.pet_index][animation_type][animation_frame][i],
+        oled_write_raw_P(pet_animiations[userspace_config.display.oled.pet.index][animation_type][animation_frame][i],
                          OLED_ANIM_SIZE);
     }
 }
@@ -604,17 +604,17 @@ uint32_t pet_animation_phases(uint32_t triger_time, void *cb_arg) {
 #endif
     {
 #ifdef WPM_ENABLE
-        if (get_current_wpm() <= OLED_SLEEP_SPEED) {
+        if (get_current_wpm() <= userspace_config.display.oled.pet.sleep_speed) {
 #endif
             animation_frame     = (animation_frame + 1) % OLED_SLEEP_FRAMES;
             animation_type      = 0;
             anim_frame_duration = 500;
 #ifdef WPM_ENABLE
-        } else if (get_current_wpm() <= OLED_KAKI_SPEED) {
+        } else if (get_current_wpm() <= userspace_config.display.oled.pet.kaki_speed) {
             animation_frame     = (animation_frame + 1) % OLED_KAKI_FRAMES;
             animation_type      = 1;
             anim_frame_duration = 500;
-        } else if (get_current_wpm() <= OLED_MATI_SPEED) {
+        } else if (get_current_wpm() <= userspace_config.display.oled.pet.mati_speed) {
             animation_frame     = (animation_frame + 1) % OLED_MATI_FRAMES;
             animation_type      = 2;
             anim_frame_duration = 500;

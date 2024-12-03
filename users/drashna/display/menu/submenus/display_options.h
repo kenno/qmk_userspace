@@ -151,16 +151,16 @@ __attribute__((weak)) void display_handler_oled_lock(char *text_buffer, size_t b
 bool menu_handler_oled_pet_animation(menu_input_t input) {
     switch (input) {
         case menu_input_left:
-            userspace_config.display.oled.pet_index = (userspace_config.display.oled.pet_index - 1) % 3;
-            if (userspace_config.display.oled.pet_index > 2) {
-                userspace_config.display.oled.pet_index = 2;
+            userspace_config.display.oled.pet.index = (userspace_config.display.oled.pet.index - 1) % 3;
+            if (userspace_config.display.oled.pet.index > 2) {
+                userspace_config.display.oled.pet.index = 2;
             }
             eeconfig_update_user_datablock(&userspace_config);
             return false;
         case menu_input_right:
-            userspace_config.display.oled.pet_index = (userspace_config.display.oled.pet_index + 1) % 3;
-            if (userspace_config.display.oled.pet_index > 2) {
-                userspace_config.display.oled.pet_index = 0;
+            userspace_config.display.oled.pet.index = (userspace_config.display.oled.pet.index + 1) % 3;
+            if (userspace_config.display.oled.pet.index > 2) {
+                userspace_config.display.oled.pet.index = 0;
             }
             eeconfig_update_user_datablock(&userspace_config);
             return false;
@@ -170,7 +170,7 @@ bool menu_handler_oled_pet_animation(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_oled_pet_animation(char *text_buffer, size_t buffer_len) {
-    switch (userspace_config.display.oled.pet_index) {
+    switch (userspace_config.display.oled.pet.index) {
         case 0:
             strncpy(text_buffer, "Tora the Cat", buffer_len - 1);
             return;
@@ -184,6 +184,82 @@ __attribute__((weak)) void display_handler_oled_pet_animation(char *text_buffer,
 
     strncpy(text_buffer, "Cthulhu", buffer_len);
 }
+
+bool menu_handler_oled_pet_sleep_speed(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.display.oled.pet.sleep_speed = (userspace_config.display.oled.pet.sleep_speed - 1) % 100;
+            if (userspace_config.display.oled.pet.sleep_speed > 100) {
+                userspace_config.display.oled.pet.sleep_speed = 100;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.display.oled.pet.sleep_speed = (userspace_config.display.oled.pet.sleep_speed + 1) % 100;
+            if (userspace_config.display.oled.pet.sleep_speed > 100) {
+                userspace_config.display.oled.pet.sleep_speed = 0;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_pet_sleep_speed(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.display.oled.pet.sleep_speed);
+}
+
+bool menu_handler_oled_pet_kaki_speed(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.display.oled.pet.kaki_speed = (userspace_config.display.oled.pet.kaki_speed - 5) % 200;
+            if (userspace_config.display.oled.pet.kaki_speed > 200) {
+                userspace_config.display.oled.pet.kaki_speed = 200;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.display.oled.pet.kaki_speed = (userspace_config.display.oled.pet.kaki_speed + 5) % 200;
+            if (userspace_config.display.oled.pet.kaki_speed > 200) {
+                userspace_config.display.oled.pet.kaki_speed = 0;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_pet_kaki_speed(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.display.oled.pet.kaki_speed);
+}
+
+bool menu_handler_oled_pet_mati_speed(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            userspace_config.display.oled.pet.mati_speed = (userspace_config.display.oled.pet.mati_speed - 5) % 200;
+            if (userspace_config.display.oled.pet.mati_speed > 200) {
+                userspace_config.display.oled.pet.mati_speed = 200;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        case menu_input_right:
+            userspace_config.display.oled.pet.mati_speed = (userspace_config.display.oled.pet.mati_speed + 5) % 200;
+            if (userspace_config.display.oled.pet.mati_speed > 200) {
+                userspace_config.display.oled.pet.mati_speed = 0;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_oled_pet_mati_speed(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.display.oled.pet.mati_speed);
+}
+
 #endif
 
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
@@ -406,6 +482,15 @@ __attribute__((weak)) void display_handler_display_val_secondary(char *text_buff
 }
 #endif // QUANTUM_PAINTER_ENABLE
 
+menu_entry_t oled_pets_entries[] = {
+#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
+    MENU_ENTRY_CHILD("Pet Animation", "Pet", oled_pet_animation),
+    MENU_ENTRY_CHILD("Sleep WPM (Max)", "Sleep WPM", oled_pet_sleep_speed),
+    MENU_ENTRY_CHILD("Kaki WPM (Min)", "Kaki WPM", oled_pet_kaki_speed),
+    MENU_ENTRY_CHILD("Mati WPM (Min)", "Mati WPM", oled_pet_mati_speed),
+#endif
+};
+
 menu_entry_t display_option_entries[] = {
 #ifdef SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Menu Location", "Side", display_menu_location),
@@ -415,7 +500,7 @@ menu_entry_t display_option_entries[] = {
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
     MENU_ENTRY_CHILD("Brightness", "Brightness", oled_brightness),
     MENU_ENTRY_CHILD("Screen Lock", "Lock", oled_lock),
-    MENU_ENTRY_CHILD("Pet Animation", "Pet", oled_pet_animation),
+    MENU_ENTRY_MULTI("Pet Animation", "Pet", oled_pets_entries, oled_pet_animation),
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
     MENU_ENTRY_CHILD("Display (Master)", "Master", display_mode_master),
