@@ -85,7 +85,7 @@ void painter_init_assets(void) {
     qmk_banner      = qp_load_image_mem(gfx_qmk_powered_by);
     akira_explosion = qp_load_image_mem(gfx_akira_explosion);
 
-    nyan_cat = qp_load_image_mem(gfx_nyan_cat);
+    nyan_cat = qp_load_image_mem(gfx_large_nyan_cat);
 }
 
 /**
@@ -561,8 +561,8 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 break;
             case 3:
                 if (nyan_token == INVALID_DEFERRED_TOKEN) {
-                    nyan_token = qp_animate(device, surface_xpos + (width - nyan_cat->width) / 2,
-                                            surface_ypos + (height - nyan_cat->height) / 2, nyan_cat);
+                    nyan_token = qp_animate(device, x + (width - nyan_cat->width) / 2,
+                                            y + (height - nyan_cat->height) / 2, nyan_cat);
                 }
                 break;
             case 4:

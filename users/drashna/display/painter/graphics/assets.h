@@ -14,4 +14,5 @@
 #include "display/painter/graphics/frame.qgf.h"
 #include "display/painter/graphics/frame_top.qgf.h"
 #include "display/painter/graphics/frame_bottom.qgf.h"
+#include "display/painter/graphics/large_nyan_cat.qgf.h"
 #include "display/painter/graphics/nyan_cat.qgf.h"
