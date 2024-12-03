@@ -151,7 +151,7 @@ void keyboard_post_init_display_driver(void) {
 #endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
 }
 
-bool           console_log_needs_redraw = false;
+bool           console_log_needs_redraw = false, console_has_redrawn = false;
 static uint8_t log_write_idx            = 0;
 static char    loglines[DISPLAY_CONSOLE_LOG_LINE_NUM + 1][DISPLAY_CONSOLE_LOG_LINE_LENGTH + 2];
 char*          logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM + 1];
@@ -186,12 +186,14 @@ void display_sendchar_hook(uint8_t c) {
         log_write_idx                                 = 0;
         logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM][0] = 0;
         console_log_needs_redraw                      = true;
+        console_has_redrawn                           = false;
     } else if (log_write_idx >= (DISPLAY_CONSOLE_LOG_LINE_LENGTH)) {
         // Ignore.
     } else {
         logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM][log_write_idx++] = c;
         logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM][log_write_idx]   = 0;
         console_log_needs_redraw                                    = true;
+        console_has_redrawn                                         = false;
     }
 }
 

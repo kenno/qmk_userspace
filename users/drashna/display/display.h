@@ -50,5 +50,5 @@ extern bool keylogger_has_changed;
 #        define DISPLAY_CONSOLE_LOG_LINE_LENGTH 38
 #    endif // OLED_ENABLE && !QUANTUM_PAINTER_ENABLE
 #endif     // DISPLAY_CONSOLE_LOG_LINE_LENGTH
-extern bool  console_log_needs_redraw;
+extern bool  console_log_needs_redraw, console_has_redrawn;
 extern char* logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM + 1];
