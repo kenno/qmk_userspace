@@ -34,6 +34,8 @@ painter_image_handle_t mouse_icon;
 painter_image_handle_t gamepad_icon;
 painter_image_handle_t qmk_banner;
 painter_image_handle_t akira_explosion;
+painter_image_handle_t nyan_cat;
+deferred_token         nyan_token = INVALID_DEFERRED_TOKEN;
 
 painter_image_array_t screen_saver_image[] = {
     [__COUNTER__] = {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
@@ -82,6 +84,8 @@ void painter_init_assets(void) {
     gamepad_icon    = qp_load_image_mem(gfx_gamepad_24x24);
     qmk_banner      = qp_load_image_mem(gfx_qmk_powered_by);
     akira_explosion = qp_load_image_mem(gfx_akira_explosion);
+
+    nyan_cat = qp_load_image_mem(gfx_nyan_cat);
 }
 
 /**
@@ -412,7 +416,6 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     uint16_t       width     = offset + max_width;
     uint16_t       height    = 320;
 
-
     hsv_t hsv = painter_get_hsv(color_side);
 
     // frame top
@@ -507,6 +510,10 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
 
     if (should_render_this_side && painter_render_menu(device, font, x, y, width, height)) {
         force_full_block_redraw = true;
+        if (nyan_token != INVALID_DEFERRED_TOKEN) {
+            qp_stop_animation(nyan_token);
+            nyan_token = INVALID_DEFERRED_TOKEN;
+        }
     } else {
         bool     block_redraw = false;
         uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
@@ -517,13 +524,17 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
         static uint8_t last_display_mode[2] = {0xFF};
         if (last_display_mode[is_left] != current_display_mode) {
             last_display_mode[is_left] = current_display_mode;
-            force_full_block_redraw = true;
+            force_full_block_redraw    = true;
         }
 
         if (force_full_block_redraw || force_redraw) {
             qp_rect(device, x, y, width - 1, height - 1, 0, 0, 0, true);
             force_full_block_redraw = false;
             block_redraw            = true;
+        }
+        if (nyan_token != INVALID_DEFERRED_TOKEN && current_display_mode != 3) {
+            qp_stop_animation(nyan_token);
+            nyan_token = INVALID_DEFERRED_TOKEN;
         }
 
         switch (current_display_mode) {
@@ -548,6 +559,12 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 painter_render_qmk_info(device, font, x, y + 5, width, force_redraw || block_redraw, curr_hsv);
                 break;
             case 3:
+                if (nyan_token == INVALID_DEFERRED_TOKEN) {
+                    nyan_token = qp_animate(device, surface_xpos + (width - nyan_cat->width) / 2,
+                                            surface_ypos + (height - nyan_cat->height) / 2, nyan_cat);
+                }
+                break;
+            case 4:
                 //  Layer Map render
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (is_left) {
@@ -1142,9 +1159,9 @@ dual_hsv_t painter_get_dual_hsv(void) {
 void painter_sethsv_eeprom_helper(uint8_t hue, uint8_t sat, uint8_t val, bool write_to_eeprom, bool primary) {
     hsv_t* hsv =
         primary ? &userspace_config.display.painter.hsv.primary : &userspace_config.display.painter.hsv.secondary;
-    hsv->h     = hue;
-    hsv->s     = sat;
-    hsv->v     = val;
+    hsv->h = hue;
+    hsv->s = sat;
+    hsv->v = val;
     if (write_to_eeprom) {
         eeconfig_update_user_datablock(&userspace_config);
     }
