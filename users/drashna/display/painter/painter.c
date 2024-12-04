@@ -25,7 +25,10 @@
 #ifdef LAYER_MAP_ENABLE
 #    include "features/layer_map.h"
 #endif
-
+#ifdef MULTITHREADED_PAINTER_ENABLE
+thread_t*     painter_thread         = NULL;
+volatile bool painter_thread_running = true;
+#endif
 painter_font_handle_t font_thintel, font_mono, font_oled;
 
 painter_image_handle_t frame_top, frame_bottom;
@@ -1052,6 +1055,30 @@ void qp_backlight_disable(void) {
 #endif // BACKLIGHT_ENABLE
 }
 
+#ifdef MULTITHREADED_PAINTER_ENABLE
+static THD_WORKING_AREA(waUIThread, 1024);
+static THD_FUNCTION(UIThread, arg) {
+    (void)arg;
+    chRegSetThreadName("ui");
+#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+    init_display_ili9341();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+    init_display_ili9488();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+
+    while (painter_thread_running) {
+#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+        ili9341_draw_user();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+        ili9488_draw_user();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+        wait_ms(10);
+    }
+}
+#endif // MULTITHREADED_PAINTER_ENABLE
+
 void housekeeping_task_quantum_painter(void) {
 #ifdef SPLIT_KEYBOARD
     if (!is_keyboard_master()) {
@@ -1086,12 +1113,14 @@ void housekeeping_task_quantum_painter(void) {
         }
     }
 #endif // RTC_ENABLE
-#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+#ifndef MULTITHREADED_PAINTER_ENABLE
+#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     ili9341_draw_user();
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     ili9488_draw_user();
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#endif     // MULTITHREADED_PAINTER_ENABLE
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0
     if (is_keyboard_master() && (last_input_activity_elapsed() > QUANTUM_PAINTER_DISPLAY_TIMEOUT)) {
         qp_backlight_disable();
@@ -1118,12 +1147,16 @@ void keyboard_post_init_quantum_painter(void) {
     gpio_set_pin_output_push_pull(BACKLIGHT_PIN);
     gpio_write_pin_high(BACKLIGHT_PIN);
 #endif
-#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef MULTITHREADED_PAINTER_ENABLE
+    painter_thread = chThdCreateStatic(waUIThread, sizeof(waUIThread), LOWPRIO, UIThread, NULL);
+#else
+#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     init_display_ili9341();
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     init_display_ili9488();
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#endif     // MULTITHREADED_PAINTER_ENABLE
 }
 
 void suspend_power_down_quantum_painter(void) {
@@ -1147,6 +1180,15 @@ void suspend_wakeup_init_quantum_painter(void) {
 }
 
 void shutdown_quantum_painter(bool jump_to_bootloader) {
+#ifdef MULTITHREADED_PAINTER_ENABLE
+    // if the painter thread is running, wait for it to finish
+    if (painter_thread != NULL) {
+        painter_thread_running = false;
+        while (!chThdTerminatedX(painter_thread)) {
+            chThdSleepMilliseconds(10);
+        }
+    }
+#endif // MULTITHREADED_PAINTER_ENABLE
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     ili9341_display_shutdown(jump_to_bootloader);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE

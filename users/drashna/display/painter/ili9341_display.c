@@ -121,11 +121,13 @@ __attribute__((weak)) bool screen_saver_sanity_checks(void) {
 __attribute__((weak)) void ili9341_draw_user(void) {
     bool            hue_redraw          = forced_reinit;
     static bool     screen_saver_redraw = false;
+#ifndef MULTITHREADED_PAINTER_ENABLE
     static uint32_t last_tick           = 0;
     uint32_t        now                 = timer_read32();
     if (TIMER_DIFF_32(now, last_tick) < (QUANTUM_PAINTER_TASK_THROTTLE)) {
         return;
     }
+#endif // MULTITHREADED_PAINTER_ENABLE
 
     static dual_hsv_t curr_hsv = {0};
     if (memcmp(&curr_hsv, &userspace_config.display.painter.hsv, sizeof(dual_hsv_t)) != 0) {
@@ -571,7 +573,9 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         screen_saver_redraw = false;
     }
     qp_flush(display);
+#ifndef MULTITHREADED_PAINTER_ENABLE
     last_tick = now;
+#endif
 }
 
 void ili9341_display_shutdown(bool jump_to_bootloader) {

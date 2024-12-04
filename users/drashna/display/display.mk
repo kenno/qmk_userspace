@@ -24,7 +24,9 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
         ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
             OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
         endif
-
+        ifeq ($(strip $(MULTITHREADED_PAINTER_ENABLE)), yes)
+            OPT_DEFS += -DMULTITHREADED_PAINTER_ENABLE
+        endif
     endif
 endif
 

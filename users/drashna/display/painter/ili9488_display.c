@@ -94,7 +94,9 @@ __attribute__((weak)) void ili9488_draw_user(void) {
     static uint32_t last_tick  = 0;
     uint32_t        now        = timer_read32();
     if (TIMER_DIFF_32(now, last_tick) < (QUANTUM_PAINTER_TASK_THROTTLE)) {
+#ifndef MULTITHREADED_PAINTER_ENABLE
         return;
+#endif // MULTITHREADED_PAINTER_ENABLE
     }
 
     static dual_hsv_t curr_hsv = {0};
