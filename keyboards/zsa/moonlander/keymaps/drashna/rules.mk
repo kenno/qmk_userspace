@@ -12,3 +12,6 @@ BOOTLOADER = tinyuf2
 
 RGBLIGHT_ENABLE = yes
 RGBLIGHT_DRIVER = custom
+
+LTO_ENABLE = yes
+OPT = fast
