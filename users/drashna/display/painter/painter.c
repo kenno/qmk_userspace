@@ -8,6 +8,7 @@
 #include "drashna_runtime.h"
 #include "drashna_util.h"
 #include "version.h"
+#include "hardware_id.h"
 
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
@@ -815,7 +816,17 @@ void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font
                                     curr_hsv->primary.v, 0, 0, 0);
         qp_drawtext_recolor(device, xpos, y, font, __VERSION__, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
+        xpos = x + 5;
         y += font->line_height + 4;
+        xpos += qp_drawtext_recolor(device, xpos, y, font, "Serial: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                    curr_hsv->primary.v, 0, 0, 0);
+        hardware_id_t id = get_hardware_id();
+        snprintf(buf, sizeof(buf), "%02X%02X%02X%02X%02X%02X", id.data[0], id.data[1], id.data[2], id.data[3],
+                 id.data[4], id.data[5]);
+        qp_drawtext_recolor(device, xpos, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                            curr_hsv->secondary.v, 0, 0, 0);
+        y += font->line_height + 4;
+
         qp_drawimage(device, x, y, qmk_banner);
     }
 }
