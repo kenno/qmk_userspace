@@ -35,7 +35,7 @@ painter_device_t display, menu_surface;
 
 extern painter_image_handle_t windows_logo, apple_logo, linux_logo;
 extern painter_image_handle_t mouse_icon, gamepad_icon;
-extern painter_image_handle_t akira_explosion, rebecca_edgerunners;
+extern painter_image_handle_t akira_explosion;
 
 #define SURFACE_MENU_WIDTH  236
 #define SURFACE_MENU_HEIGHT 121
@@ -522,7 +522,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
         }
         if (hue_redraw || nuke_redraw) {
             if (is_showing_nuke) {
-                qp_drawimage(display, 2 + width, 32, rebecca_edgerunners);
+                qp_rect(display, 2, 32, 79, 170, 0, 0, 0, true);
             } else {
                 qp_drawimage(display, 2 + width, 32, akira_explosion);
             }
