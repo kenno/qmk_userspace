@@ -107,7 +107,7 @@ __attribute__((weak)) bool screen_saver_sanity_checks(void) {
         return false;
     }
     // if the difference between the last tick and this one is more than 10 times the throttle, doubt.
-    if (diff > ((QUANTUM_PAINTER_TASK_THROTTLE) * 10)) {
+    if (diff > 1000) {
         return false;
     }
     // if last activity has been been a third of the timeout, believe.
