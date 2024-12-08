@@ -456,12 +456,12 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         qp_line(device, xpos + 121, 122, xpos + 121, 171, hsv.h, hsv.s, hsv.v);
         qp_line(device, xpos + 186, 122, xpos + 186, 171, hsv.h, hsv.s, hsv.v);
     } else {
-        // horizontal line below scan rate + wpm
+        // horizontal line below scan rate
         qp_line(device, xpos + 2, 31, xpos + 80, 31, hsv.h, hsv.s, hsv.v);
-        // vertical line next to pointing device block
+        // vertical line next to nuke block
         qp_line(device, xpos + 80, 16, xpos + 80, 170, hsv.h, hsv.s, hsv.v);
 
-        // lines for unicode typing mode and mode
+        // lines for haptic feedback block
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
     }
     // line above menu block
