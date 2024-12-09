@@ -819,7 +819,12 @@ void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font
         y += font->line_height + 4;
         xpos += qp_drawtext_recolor(device, xpos, y, font, "Built with: ", curr_hsv->primary.h, curr_hsv->primary.s,
                                     curr_hsv->primary.v, 0, 0, 0);
-        qp_drawtext_recolor(device, xpos, y, font, __VERSION__, curr_hsv->secondary.h, curr_hsv->secondary.s,
+        xpos += qp_drawtext_recolor(device, xpos, y, font, __VERSION__, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                                    curr_hsv->secondary.v, 0, 0, 0) +
+                10;
+        xpos += qp_drawtext_recolor(device, xpos, y, font, "Newlib: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                    curr_hsv->primary.v, 0, 0, 0);
+        qp_drawtext_recolor(device, xpos, y, font, _NEWLIB_VERSION, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
         xpos = x + 5;
         y += font->line_height + 4;
