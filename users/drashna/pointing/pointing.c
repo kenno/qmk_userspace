@@ -55,8 +55,8 @@ static const int8_t deltas[32]          = {0, -1, -2, -2, -3, -3, -4, -4, -4, -4
 typedef struct {
     mouse_xy_report_t x;
     mouse_xy_report_t y;
-    int8_t            v;
-    int8_t            h;
+    mouse_hv_report_t v;
+    mouse_hv_report_t h;
 } mouse_movement_t;
 mouse_movement_t total_mouse_movement = {0, 0, 0, 0};
 
