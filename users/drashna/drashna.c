@@ -10,7 +10,7 @@
 
 userspace_config_t userspace_config;
 
-#if defined(__arm__) && HAL_USE_I2C == TRUE
+#ifdef I2C_DRIVER_REQUIRED
 #    include "i2c_master.h"
 #    include "debug.h"
 
