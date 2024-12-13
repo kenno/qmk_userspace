@@ -122,7 +122,7 @@ void keylogger_string_sync(uint8_t initiator2target_buffer_size, const void* ini
 void send_device_suspend_state(bool status) {
     if (is_device_suspended() != status && is_keyboard_master()) {
         userspace_runtime_state.internals.is_device_suspended = status;
-        transaction_rpc_send(RPC_ID_userspace_runtime_state_SYNC, sizeof(userspace_runtime_state),
+        transaction_rpc_send(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, sizeof(userspace_runtime_state),
                              &userspace_runtime_state);
         wait_ms(5);
     }
@@ -134,7 +134,7 @@ void send_device_suspend_state(bool status) {
  */
 void keyboard_post_init_transport_sync(void) {
     // Register keyboard state sync split transaction
-    transaction_register_rpc(RPC_ID_userspace_runtime_state_SYNC, userspace_runtime_state_sync);
+    transaction_register_rpc(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, userspace_runtime_state_sync);
     transaction_register_rpc(RPC_ID_USER_CONFIG_SYNC, user_config_sync);
     transaction_register_rpc(RPC_ID_USER_AUTOCORRECT_STR, autocorrect_string_sync);
     transaction_register_rpc(RPC_ID_USER_DISPLAY_KEYLOG_STR, keylogger_string_sync);
@@ -318,7 +318,7 @@ void sync_userspace_runtime_state(bool* needs_sync, uint32_t* last_sync, user_ru
         *needs_sync = true;
     }
     if (*needs_sync) {
-        if (transaction_rpc_send(RPC_ID_userspace_runtime_state_SYNC, sizeof(userspace_runtime_state),
+        if (transaction_rpc_send(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, sizeof(userspace_runtime_state),
                                  &userspace_runtime_state)) {
             last_sync[0] = timer_read32();
         }
