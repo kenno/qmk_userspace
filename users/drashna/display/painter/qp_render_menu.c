@@ -71,11 +71,12 @@ bool painter_render_menu(painter_device_t display, painter_font_handle_t font, u
                 } else {
                     snprintf(buf, sizeof(buf), ": %s", val);
                 }
+                // TODO: fix text truncation with elipses for super short values
                 if (child == selected) {
-                    qp_drawtext_recolor(display, x, y, font, truncate_text(buf, render_width - x, font, false, true), 0,
-                                        0, 0, hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
+                    qp_drawtext_recolor(display, x, y, font, truncate_text(buf, render_width - x, font, false, false),
+                                        0, 0, 0, hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
                 } else {
-                    qp_drawtext_recolor(display, x, y, font, truncate_text(buf, render_width - x, font, false, true),
+                    qp_drawtext_recolor(display, x, y, font, truncate_text(buf, render_width - x, font, false, false),
                                         hsv.primary.h, hsv.primary.s, hsv.primary.v, 0, 0, 0);
                 }
             }
