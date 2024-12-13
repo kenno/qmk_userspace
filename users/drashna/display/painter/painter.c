@@ -501,7 +501,8 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
  * @param is_left If true, indicates that the menu block is on the left side rendering.
  */
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool is_left) {
+                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool is_left,
+                               bool is_thicc) {
     static bool force_full_block_redraw = false;
 #ifdef SPLIT_KEYBOARD
     bool           should_render_this_side = userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left);
@@ -518,7 +519,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     const bool should_render_this_side = true;
 #endif // SPLIT_KEYBOARD
 
-    if (should_render_this_side && painter_render_menu(device, font, x, y, width, height)) {
+    if (should_render_this_side && painter_render_menu(device, font, x, y, width, height, is_thicc)) {
         force_full_block_redraw = true;
         if (nyan_token != INVALID_DEFERRED_TOKEN) {
             qp_stop_animation(nyan_token);

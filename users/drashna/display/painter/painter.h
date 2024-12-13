@@ -52,7 +52,8 @@ void painter_render_haptic(painter_device_t device, painter_font_handle_t font, 
 void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, uint16_t width,
                          bool force_redraw, dual_hsv_t* curr_hsv, bool wide_load);
 void painter_render_menu_block(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
-                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool side);
+                               uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv, bool side,
+                               bool is_thicc);
 void painter_render_keylogger(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv);
 void painter_render_autocorrect(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
@@ -67,7 +68,7 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv);
 bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader);
 bool painter_render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
-                         uint16_t width, uint16_t height);
+                         uint16_t width, uint16_t height, bool is_thicc);
 
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);

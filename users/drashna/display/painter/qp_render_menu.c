@@ -5,7 +5,7 @@
 #include "display/painter/painter.h"
 
 bool painter_render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
-                         uint16_t width, uint16_t height) {
+                         uint16_t width, uint16_t height, bool is_thicc) {
     static menu_state_t last_state;
     uint8_t             scroll_offset = 0;
 
@@ -46,9 +46,10 @@ bool painter_render_menu(painter_device_t display, painter_font_handle_t font, u
                         hsv.secondary.s, hsv.secondary.v, true);
                 qp_drawtext_recolor(display, start_x + 1, y, font, ">", 0, 0, 0, hsv.secondary.h, hsv.secondary.s,
                                     hsv.secondary.v);
-                x += qp_drawtext_recolor(display, x, y, font,
-                                         truncate_text(child->text, render_width, font, false, true), 0, 0, 0,
-                                         hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
+                x += qp_drawtext_recolor(
+                    display, x, y, font,
+                    truncate_text(is_thicc ? child->text : child->short_text, render_width, font, false, true), 0, 0, 0,
+                    hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
             } else {
                 if ((i == scroll_offset && scroll_offset > 0) ||
                     (i == scroll_offset + visible_entries - 1 &&
@@ -56,18 +57,10 @@ bool painter_render_menu(painter_device_t display, painter_font_handle_t font, u
                     qp_drawtext_recolor(display, start_x + 1, y, font, "+", hsv.primary.h, hsv.primary.s, hsv.primary.v,
                                         0, 255, 0);
                 }
-                x += qp_drawtext_recolor(display, x, y, font,
-                                         truncate_text(child->text, render_width, font, false, true), hsv.primary.h,
-                                         hsv.primary.s, hsv.primary.v, 0, 255, 0);
-            }
-            if (child->flags & menu_flag_is_parent) {
-                if (child == selected) {
-                    qp_drawtext_recolor(display, render_width - (qp_textwidth(font, ">") + 2), y, font, ">", 0, 0, 0,
-                                        hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
-                } else {
-                    qp_drawtext_recolor(display, render_width - (qp_textwidth(font, ">") + 2), y, font, ">",
-                                        hsv.primary.h, hsv.primary.s, hsv.primary.v, 0, 0, 0);
-                }
+                x += qp_drawtext_recolor(
+                    display, x, y, font,
+                    truncate_text(is_thicc ? child->text : child->short_text, render_width - x, font, false, true),
+                    hsv.primary.h, hsv.primary.s, hsv.primary.v, 0, 255, 0);
             }
             if (child->flags & menu_flag_is_value) {
                 char buf[32] = {0}, val[29] = {0};
@@ -79,10 +72,20 @@ bool painter_render_menu(painter_device_t display, painter_font_handle_t font, u
                     snprintf(buf, sizeof(buf), ": %s", val);
                 }
                 if (child == selected) {
-                    qp_drawtext_recolor(display, x, y, font, buf, 0, 0, 0, hsv.secondary.h, hsv.secondary.s,
-                                        hsv.secondary.v);
+                    qp_drawtext_recolor(display, x, y, font, truncate_text(buf, render_width - x, font, false, true), 0,
+                                        0, 0, hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
                 } else {
-                    qp_drawtext_recolor(display, x, y, font, buf, hsv.primary.h, hsv.primary.s, hsv.primary.v, 0, 0, 0);
+                    qp_drawtext_recolor(display, x, y, font, truncate_text(buf, render_width - x, font, false, true),
+                                        hsv.primary.h, hsv.primary.s, hsv.primary.v, 0, 0, 0);
+                }
+            }
+            if (child->flags & menu_flag_is_parent) {
+                if (child == selected) {
+                    qp_drawtext_recolor(display, render_width - (qp_textwidth(font, ">") + 2), y, font, ">", 0, 0, 0,
+                                        hsv.secondary.h, hsv.secondary.s, hsv.secondary.v);
+                } else {
+                    qp_drawtext_recolor(display, render_width - (qp_textwidth(font, ">") + 2), y, font, ">",
+                                        hsv.primary.h, hsv.primary.s, hsv.primary.v, 0, 0, 0);
                 }
             }
             y += font->line_height + 2;

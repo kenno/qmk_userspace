@@ -536,7 +536,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
                                 &curr_hsv.primary);
 
         painter_render_menu_block(display, font_oled, 2 + width, 172, 2 + SURFACE_MENU_WIDTH - 1 + width,
-                                  172 + SURFACE_MENU_HEIGHT - 1, hue_redraw, &curr_hsv, false);
+                                  172 + SURFACE_MENU_HEIGHT - 1, hue_redraw, &curr_hsv, false, false);
     }
     forced_reinit = false;
     qp_flush(display);
