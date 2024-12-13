@@ -486,7 +486,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
 #endif // RTC_ENABLE
 
         painter_render_menu_block(display, font_oled, 2, 172, 2 + SURFACE_MENU_WIDTH - 1, 172 + SURFACE_MENU_HEIGHT - 1,
-                                  hue_redraw, &curr_hsv, true);
+                                  hue_redraw, &curr_hsv, true, false);
     } // else
     // right side
     {
