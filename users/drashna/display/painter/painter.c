@@ -465,7 +465,7 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         // lines for haptic feedback block
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
 
-        qp_rect(device, xpos + 81, 81, xpos + 237, 170, hsv.h, hsv.s, hsv.v, true);
+        // qp_rect(device, xpos + 81, 81, xpos + 237, 170, hsv.h, hsv.s, hsv.v, true);
     }
     // line above menu block
     qp_line(device, xpos + 2, 171, xpos + 237, 171, hsv.h, hsv.s, hsv.v);
