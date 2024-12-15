@@ -335,7 +335,8 @@ void painter_render_haptic(painter_device_t device, painter_font_handle_t font, 
                                      curr_hsv->primary.v, 0, 0, 0) +
                  4;
         snprintf(buf, sizeof(buf), "%20s",
-                 truncate_text(get_haptic_drv2605l_effect_name(haptic_get_mode()), 120, font, true, false));
+                 truncate_text(haptic_get_enable() ? get_haptic_drv2605l_effect_name(haptic_get_mode()) : "Off", 120,
+                               font, true, false));
         qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
     }
