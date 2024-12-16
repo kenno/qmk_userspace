@@ -66,8 +66,8 @@ typedef union PACKED {
             } accel;
             bool audio_mouse_clicky : 1;
             struct {
-                bool     enable : 1;
-                uint8_t  layer : MAX_LAYER_BITS;
+                bool     enable   : 1;
+                uint8_t  layer    : 6;
                 uint16_t timeout  : 16;
                 uint8_t  debounce : 8;
             } auto_mouse_layer;
