@@ -8,6 +8,7 @@
 #include "action_util.h"
 #include "drashna_layers.h"
 #include "drashna_runtime.h"
+#include "drashna_util.h"
 #include "pointing.h"
 #include "math.h"
 #include <stdlib.h>
@@ -126,7 +127,8 @@ void mouse_jiggler_check(report_mouse_t* mouse_report) {
             mouse_report->y += deltas[(phase + 8) & 31];
             phase = (phase + 1) & 31;
         } else if (timer_elapsed32(mouse_jiggler_debounce_timer) >
-                   (userspace_config.pointing.mouse_jiggler.timeout * 1000)) {
+                       (userspace_config.pointing.mouse_jiggler.timeout * 1000) &&
+                   !is_device_suspended()) {
             userspace_runtime_state.pointing.mouse_jiggler.running = true;
         }
         jiggler_threshold   = (mouse_movement_t){.x = 0, .y = 0, .h = 0, .v = 0};
