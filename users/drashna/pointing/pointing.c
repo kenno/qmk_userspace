@@ -282,7 +282,8 @@ bool process_record_pointing(uint16_t keycode, keyrecord_t* record) {
             break;
         default:
             if (!IS_MOUSE_KEYCODE(keycode)) {
-                mouse_debounce_timer = timer_read();
+                mouse_debounce_timer         = timer_read();
+                mouse_jiggler_debounce_timer = timer_read32();
                 if (userspace_runtime_state.pointing.mouse_jiggler.running && record->event.pressed) {
                     userspace_runtime_state.pointing.mouse_jiggler.running = false;
                 }
