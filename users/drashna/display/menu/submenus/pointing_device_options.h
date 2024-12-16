@@ -93,15 +93,11 @@ __attribute__((weak)) void display_handler_auto_mouse_debounce(char *text_buffer
 }
 #    endif // POINTING_DEVICE_AUTO_MOUSE_ENABLE
 
-extern uint16_t mouse_jiggler_timer;
-
 bool menu_handler_mouse_jiggler(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
-            userspace_runtime_state.pointing.mouse_jiggler_enable =
-                !userspace_runtime_state.pointing.mouse_jiggler_enable;
-            mouse_jiggler_timer = timer_read();
+            pointing_device_mouse_jiggler_toggle();
             return false;
         default:
             return true;
@@ -109,23 +105,30 @@ bool menu_handler_mouse_jiggler(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_mouse_jiggler(char *text_buffer, size_t buffer_len) {
-    snprintf(text_buffer, buffer_len - 1, "%s", userspace_runtime_state.pointing.mouse_jiggler_enable ? "on" : "off");
+    snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.pointing.mouse_jiggler.enable ? "on" : "off");
 }
 
-bool menu_handler_mouse_jiggler_interrupt(menu_input_t input) {
+bool menu_handler_mouse_jiggler_timeout(menu_input_t input) {
     switch (input) {
         case menu_input_left:
+            if (userspace_config.pointing.mouse_jiggler.timeout != 0) {
+                userspace_config.pointing.mouse_jiggler.timeout--;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
         case menu_input_right:
-            userspace_config.pointing.mouse_jiggler_interrupt = !userspace_config.pointing.mouse_jiggler_interrupt;
-            mouse_jiggler_timer                               = timer_read();
+            if (userspace_config.pointing.mouse_jiggler.timeout != 255) {
+                userspace_config.pointing.mouse_jiggler.timeout++;
+            }
+            eeconfig_update_user_datablock(&userspace_config);
             return false;
         default:
             return true;
     }
 }
 
-__attribute__((weak)) void display_handler_mouse_jiggler_interrupt(char *text_buffer, size_t buffer_len) {
-    snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.pointing.mouse_jiggler_interrupt ? "on" : "off");
+__attribute__((weak)) void display_handler_mouse_jiggler_timeout(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.pointing.mouse_jiggler.timeout);
 }
 
 #    if defined(KEYBOARD_handwired_tractyl_manuform) || defined(KEYBOARD_bastardkb_charybdis)
@@ -266,7 +269,7 @@ menu_entry_t pointing_entries[] = {
     MENU_ENTRY_MULTI("Auto Mouse Options", "AM Opt", pointing_auto_layer_entries, auto_mouse_layer),
 #    endif // POINTING_DEVICE_AUTO_MOUSE_ENABLE
     MENU_ENTRY_CHILD("Mouse Jiggler", "Jiggler", mouse_jiggler),
-    MENU_ENTRY_CHILD("Allow Jiggler Interrupt", "JigInt?", mouse_jiggler_interrupt),
+    MENU_ENTRY_CHILD("Mouse Jiggler Timeout", "JiggleTime", mouse_jiggler_timeout),
 #    ifdef AUDIO_ENABLE
     MENU_ENTRY_CHILD("Mouse Clicky", "Clicky", audio_mouse_clicky),
 #    endif

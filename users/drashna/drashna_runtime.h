@@ -58,20 +58,23 @@ typedef union PACKED {
         } debug;
         struct {
             struct {
-                bool     enable : 1;
-                uint8_t  layer : MAX_LAYER_BITS;
-                uint16_t timeout  : 16;
-                uint8_t  debounce : 8;
-            } auto_mouse_layer;
-            bool mouse_jiggler_interrupt : 1;
-            bool audio_mouse_clicky      : 1;
-            struct {
                 bool  enabled : 1;
                 float growth_rate;
                 float offset;
                 float limit;
                 float takeoff;
             } accel;
+            bool audio_mouse_clicky : 1;
+            struct {
+                bool     enable : 1;
+                uint8_t  layer : MAX_LAYER_BITS;
+                uint16_t timeout  : 16;
+                uint8_t  debounce : 8;
+            } auto_mouse_layer;
+            struct {
+                bool    enable  : 1;
+                uint8_t timeout : 8;
+            } mouse_jiggler;
         } pointing;
         struct {
             bool   format_24h : 1;
@@ -133,7 +136,9 @@ typedef struct PACKED {
     keymap_config_t keymap_config;
     debug_config_t  debug_config;
     struct {
-        bool mouse_jiggler_enable : 1;
+        struct {
+            bool running : 1;
+        } mouse_jiggler;
     } pointing;
 } user_runtime_config_t;
 

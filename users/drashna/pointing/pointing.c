@@ -49,9 +49,10 @@ static float accel_off_song[][2] = POINTING_ACCEL_OFF_SONG;
 #define _CONSTRAIN(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 #define CONSTRAIN_REPORT(val)      (mouse_xy_report_t) _CONSTRAIN(val, XY_REPORT_MIN, XY_REPORT_MAX)
 
-uint16_t            mouse_jiggler_timer = 0;
-static const int8_t deltas[32]          = {0, -1, -2, -2, -3, -3, -4, -4, -4, -4, -3, -3, -2, -2, -1, 0,
-                                           0, 1,  2,  2,  3,  3,  4,  4,  4,  4,  3,  3,  2,  2,  1,  0};
+static uint16_t     mouse_jiggler_timer          = 0;
+static uint32_t     mouse_jiggler_debounce_timer = 0;
+static const int8_t deltas[32]                   = {0, -1, -2, -2, -3, -3, -4, -4, -4, -4, -3, -3, -2, -2, -1, 0,
+                                                    0, 1,  2,  2,  3,  3,  4,  4,  4,  4,  3,  3,  2,  2,  1,  0};
 typedef struct {
     mouse_xy_report_t x;
     mouse_xy_report_t y;
@@ -114,17 +115,22 @@ bool mouse_movement_threshold_check(report_mouse_t* mouse_report, mouse_movement
 void mouse_jiggler_check(report_mouse_t* mouse_report) {
     static mouse_movement_t jiggler_threshold = {0, 0, 0, 0};
     if (mouse_movement_threshold_check(mouse_report, &jiggler_threshold, MOUSE_JIGGLER_THRESHOLD)) {
-        userspace_runtime_state.pointing.mouse_jiggler_enable = false;
-        jiggler_threshold                                     = (mouse_movement_t){.x = 0, .y = 0, .h = 0, .v = 0};
+        userspace_runtime_state.pointing.mouse_jiggler.running = false;
+        jiggler_threshold                                      = (mouse_movement_t){.x = 0, .y = 0, .h = 0, .v = 0};
     }
-    if (userspace_runtime_state.pointing.mouse_jiggler_enable &&
+    if (userspace_config.pointing.mouse_jiggler.enable &&
         timer_elapsed(mouse_jiggler_timer) > MOUSE_JIGGLER_INTERVAL_MS) {
-        static uint8_t phase = 0;
-        mouse_report->x += deltas[phase];
-        mouse_report->y += deltas[(phase + 8) & 31];
-        phase               = (phase + 1) & 31;
-        mouse_jiggler_timer = timer_read();
+        if (userspace_runtime_state.pointing.mouse_jiggler.running) {
+            static uint8_t phase = 0;
+            mouse_report->x += deltas[phase];
+            mouse_report->y += deltas[(phase + 8) & 31];
+            phase = (phase + 1) & 31;
+        } else if (timer_elapsed32(mouse_jiggler_debounce_timer) >
+                   (userspace_config.pointing.mouse_jiggler.timeout * 1000)) {
+            userspace_runtime_state.pointing.mouse_jiggler.running = true;
+        }
         jiggler_threshold   = (mouse_movement_t){.x = 0, .y = 0, .h = 0, .v = 0};
+        mouse_jiggler_timer = timer_read();
     }
 }
 
@@ -133,7 +139,13 @@ __attribute__((weak)) report_mouse_t pointing_device_task_keymap(report_mouse_t 
 }
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    static report_mouse_t last_mouse_report = {0};
     mouse_jiggler_check(&mouse_report);
+
+    if (memcmp(&mouse_report, &last_mouse_report, sizeof(report_mouse_t)) != 0) {
+        last_mouse_report            = mouse_report;
+        mouse_jiggler_debounce_timer = timer_read32();
+    }
 
     if (timer_elapsed(mouse_debounce_timer) < TAP_CHECK) {
         mouse_report.x = 0;
@@ -214,9 +226,7 @@ bool process_record_pointing(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
         case PD_JIGGLER:
             if (record->event.pressed) {
-                mouse_jiggler_timer = timer_read();
-                userspace_runtime_state.pointing.mouse_jiggler_enable =
-                    !userspace_runtime_state.pointing.mouse_jiggler_enable;
+                pointing_device_mouse_jiggler_toggle();
             }
             break;
         case PD_ACCEL_TOGGLE:
@@ -273,9 +283,8 @@ bool process_record_pointing(uint16_t keycode, keyrecord_t* record) {
         default:
             if (!IS_MOUSE_KEYCODE(keycode)) {
                 mouse_debounce_timer = timer_read();
-                if (userspace_runtime_state.pointing.mouse_jiggler_enable && record->event.pressed &&
-                    !userspace_config.pointing.mouse_jiggler_interrupt) {
-                    userspace_runtime_state.pointing.mouse_jiggler_enable = false;
+                if (userspace_runtime_state.pointing.mouse_jiggler.running && record->event.pressed) {
+                    userspace_runtime_state.pointing.mouse_jiggler.running = false;
                 }
             }
             break;
@@ -323,6 +332,13 @@ bool is_mouse_record_user(uint16_t keycode, keyrecord_t* record) {
     return false;
 }
 #endif
+
+void pointing_device_mouse_jiggler_toggle(void) {
+    mouse_jiggler_timer          = timer_read();
+    mouse_jiggler_debounce_timer = timer_read32() + (userspace_config.pointing.mouse_jiggler.timeout - 5) * 1000;
+    userspace_config.pointing.mouse_jiggler.enable = !userspace_config.pointing.mouse_jiggler.enable;
+    eeconfig_update_user_datablock(&userspace_config);
+}
 
 /**
  * @brief Gets the takeoff value for the acceleration curve
