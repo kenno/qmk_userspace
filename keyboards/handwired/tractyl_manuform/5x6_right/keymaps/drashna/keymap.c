@@ -41,8 +41,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_DIABLO]          = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_MOUSE]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_MEDIA]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
-    [_RAISE]           = { ENCODER_CCW_CW( OL_BINC, OL_BDEC ), ENCODER_CCW_CW( OL_CCW,  OL_CW   ) },
-    [_LOWER]           = { ENCODER_CCW_CW( RGB_MOD, RGB_RMOD), ENCODER_CCW_CW( RGB_HUI, RGB_HUD ) },
+    [_RAISE]           = { ENCODER_CCW_CW( RM_NEXT, RM_PREV ), ENCODER_CCW_CW( RM_HUEU, RM_HUEU ) },
+    [_LOWER]           = { ENCODER_CCW_CW( UG_NEXT, UG_PREV ), ENCODER_CCW_CW( UG_HUEU, UG_HUED ) },
     [_ADJUST]          = { ENCODER_CCW_CW( CK_UP,   CK_DOWN ), ENCODER_CCW_CW( KC_PGDN, KC_PGUP ) },
 };
 #endif
