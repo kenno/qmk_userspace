@@ -10,6 +10,6 @@ PER_KEY_TAPPING       = yes
 
 
 QUANTUM_PAINTER_ENABLE = yes
-QUANTUM_PAINTER_DRIVERS += gc9a01_spi
+QUANTUM_PAINTER_DRIVERS += gc9a01_spi surface
 
 SRC += bkb_logo_mod.qgf.c
