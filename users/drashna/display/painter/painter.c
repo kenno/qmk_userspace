@@ -428,10 +428,21 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     hsv_t hsv = painter_get_hsv(color_side);
 
     // frame top
-    qp_drawimage_recolor(device, xpos + 1, 2, frame_top, hsv.h, hsv.s, hsv.v, 0, 0, 0);
+    // qp_drawimage_recolor(device, xpos + 1, 2, frame_top, hsv.h, hsv.s, hsv.v, 0, 0, 0);
+
+    // draw top of frame
+    qp_line(device, xpos + 8, 2, width - 8, 2, hsv.h, hsv.s, hsv.v);
+    // draw angled bits
+    qp_line(device, xpos + 1, 6 + 2, xpos + 6 + 1, 0 + 2, hsv.h, hsv.s, hsv.v);
+    qp_line(device, width - 6 - 2, 0 + 2, width - 2, 6 + 2, hsv.h, hsv.s, hsv.v);
+
+    for (uint8_t line = 0; line < 13; line++) {
+        qp_line(device, xpos + 14 + line, 2 + 1 + line, width - 2 - 14 - line, 2 + 1 + line, hsv.h, hsv.s, hsv.v);
+    }
+
     // lines for frame sides
-    qp_line(device, xpos + 1, frame_top->height, xpos + 1, height - frame_bottom->height, hsv.h, hsv.s, hsv.v);
-    qp_line(device, width - 2, frame_top->height, width - 2, height - frame_bottom->height, hsv.h, hsv.s, hsv.v);
+    qp_line(device, xpos + 1, 7 + 2, xpos + 1, height - 7 - 1, hsv.h, hsv.s, hsv.v);
+    qp_line(device, width - 2, 7 + 2, width - 2, height - 7 - 1, hsv.h, hsv.s, hsv.v);
 
     // horizontal line below rgb
     qp_line(device, xpos + 80, 54, xpos + 237, 54, hsv.h, hsv.s, hsv.v);
@@ -471,8 +482,21 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_line(device, xpos + 2, 171, xpos + 237, 171, hsv.h, hsv.s, hsv.v);
     // line above rtc
     qp_line(device, xpos + 2, 292, xpos + 237, 292, hsv.h, hsv.s, hsv.v);
+
+    // draw angled bits
+    qp_line(device, xpos + 1, height - 6 - 2, xpos + 6 + 1, height - 2, hsv.h, hsv.s, hsv.v);
+    qp_line(device, width - 6 - 2, height - 2, width - 2, height - 6 - 2, hsv.h, hsv.s, hsv.v);
+
+    for (uint8_t line = 0; line < 11; line++) {
+        qp_line(device, xpos + 14 + line, height - 3 - line, width - 2 - 14 - line, height - 3 - line, hsv.h, hsv.s,
+                hsv.v);
+    }
+
     // frame bottom
-    qp_drawimage_recolor(device, xpos + 1, height - frame_bottom->height, frame_bottom, hsv.h, hsv.s, hsv.v, 0, 0, 0);
+    qp_line(device, xpos + 8, height - 2, width - 8, height - 2, hsv.h, hsv.s, hsv.v);
+
+    // qp_drawimage_recolor(device, xpos + 1, height - frame_bottom->height, frame_bottom, hsv.h, hsv.s, hsv.v, 0, 0,
+    // 0);
 
     char title[50] = {0};
     snprintf(title, sizeof(title), "%s", PRODUCT);
