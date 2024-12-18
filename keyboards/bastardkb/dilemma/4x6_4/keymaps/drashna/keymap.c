@@ -231,7 +231,8 @@ uint16_t get_tapping_term_keymap(uint16_t keycode, keyrecord_t *record) {
 #    include "qp_surface.h"
 #    include "bkb_logo_mod.qgf.h"
 
-static painter_device_t       display, display_surface;
+static painter_device_t       display;
+static painter_device_t       display_surface;
 static painter_image_handle_t my_image;
 // static deferred_token         my_anim;
 #    define SURFACE_BUFFER_WIDTH  240
@@ -251,10 +252,11 @@ void keyboard_post_init_keymap(void) {
         qp_clear(display);
         qp_clear(display_surface);
         my_image = qp_load_image_mem(gfx_bkb_logo_mod);
+        // qp_drawimage(display, 0, 0, my_image);
         qp_drawimage(display_surface, 0, 0, my_image);
         // my_anim = qp_animate(display_surface, 0, 0, my_image);
-        qp_flush(display);
         qp_surface_draw(display_surface, display, 0, 0, false);
+        qp_flush(display);
     }
 #endif // QUANTUM_PAINTER_ENABLE
 #ifdef RGB_MATRIX_ENABLE
