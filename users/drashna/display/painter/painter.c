@@ -31,7 +31,6 @@ volatile bool painter_thread_running = true;
 #endif
 painter_font_handle_t font_thintel, font_mono, font_oled;
 
-painter_image_handle_t frame_top, frame_bottom;
 painter_image_handle_t lock_caps_on, lock_caps_off;
 painter_image_handle_t lock_num_on, lock_num_off;
 painter_image_handle_t lock_scrl_on, lock_scrl_off;
@@ -73,9 +72,6 @@ void painter_init_assets(void) {
     font_thintel = qp_load_font_mem(font_thintel15);
     font_mono    = qp_load_font_mem(font_ProggyTiny15);
     font_oled    = qp_load_font_mem(font_oled_font);
-
-    frame_top    = qp_load_image_mem(gfx_frame_top);
-    frame_bottom = qp_load_image_mem(gfx_frame_bottom);
 
     windows_logo = qp_load_image_mem(gfx_windows_logo);
     apple_logo   = qp_load_image_mem(gfx_apple_logo);
@@ -417,9 +413,6 @@ void painter_render_totp(painter_device_t device, painter_font_handle_t font, ui
  */
 void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset,
                           bool color_side) {
-    painter_image_handle_t frame_top    = qp_load_image_mem(gfx_frame_top),
-                           frame_bottom = qp_load_image_mem(gfx_frame_bottom);
-
     const uint16_t max_width = 240;
     uint16_t       xpos      = offset;
     uint16_t       width     = offset + max_width;
@@ -507,9 +500,6 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     uint16_t title_xpos = (max_width - title_width) / 2;
     qp_drawtext_recolor(device, xpos + title_xpos, 4, font_title,
                         truncate_text(title, title_width, font_title, false, false), 0, 0, 0, hsv.h, hsv.s, hsv.v);
-
-    qp_close_image(frame_top);
-    qp_close_image(frame_bottom);
 }
 
 /**
