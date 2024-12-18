@@ -17,6 +17,17 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
         endif
 	    QUANTUM_PAINTER_DRIVERS += surface
 
+        SRC += $(USER_PATH)/display/painter/fonts.qff.c \
+            $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
+            $(USER_PATH)/display/painter/graphics/qmk_powered_by.qgf.c \
+            $(USER_PATH)/display/painter/graphics/akira_explosion.qgf.c \
+            $(USER_PATH)/display/painter/graphics/asuka-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/anime-girl-jacket-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/neon-genesis-evangelion-initial-machine-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/samurai-cyberpunk-minimal-dark-8k-b3-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/large_nyan_cat.qgf.c \
+            $(USER_PATH)/display/painter/graphics/nyan_cat.qgf.c
+
         SRC += $(USER_PATH)/display/painter/painter.c \
                $(USER_PATH)/display/painter/graphics.qgf.c \
                $(USER_PATH)/display/painter/qp_render_menu.c
@@ -30,19 +41,6 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
     endif
 endif
 
-ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
-    SRC += \
-        $(USER_PATH)/display/painter/fonts.qff.c \
-        $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
-        $(USER_PATH)/display/painter/graphics/qmk_powered_by.qgf.c \
-        $(USER_PATH)/display/painter/graphics/akira_explosion.qgf.c \
-        $(USER_PATH)/display/painter/graphics/asuka-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/anime-girl-jacket-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/neon-genesis-evangelion-initial-machine-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/samurai-cyberpunk-minimal-dark-8k-b3-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/large_nyan_cat.qgf.c \
-        $(USER_PATH)/display/painter/graphics/nyan_cat.qgf.c
-endif
 
 ifeq ($(strip $(OLED_ENABLE)), yes)
     ifeq ($(strip $(CUSTOM_OLED_DRIVER)), yes)
