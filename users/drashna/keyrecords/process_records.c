@@ -384,7 +384,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 __attribute__((weak)) void post_process_record_keymap(uint16_t keycode, keyrecord_t *record) {}
 void                       post_process_record_user(uint16_t keycode, keyrecord_t *record) {
-#if defined(OS_DETECTION_ENABLE) && defined(UNICODE_COMMON_ENABLE)
+#if defined(OS_DETECTION_ENABLE)
     switch (keycode) {
         case QK_MAGIC_SWAP_LCTL_LGUI:
         case QK_MAGIC_SWAP_RCTL_RGUI:
@@ -394,7 +394,9 @@ void                       post_process_record_user(uint16_t keycode, keyrecord_
         case QK_MAGIC_UNSWAP_CTL_GUI:
         case QK_MAGIC_TOGGLE_CTL_GUI:
             clear_keyboard();
+#    if defined(UNICODE_COMMON_ENABLE)
             set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS : UNICODE_MODE_WINCOMPOSE);
+#    endif
             break;
     }
 #endif // OS_DETECTION_ENABLE && UNICODE_COMMON_ENABLE
