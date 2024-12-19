@@ -343,39 +343,53 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
 #if defined(OS_DETECTION_ENABLE)
         case QK_MAGIC_SWAP_LCTL_LGUI:
-            keymap_config.swap_lctl_lgui = true;
+            if (record->event.pressed) {
+                keymap_config.swap_lctl_lgui = true;
+            }
             return false;
         case QK_MAGIC_SWAP_RCTL_RGUI:
-            keymap_config.swap_rctl_rgui = true;
+            if (record->event.pressed) {
+                keymap_config.swap_rctl_rgui = true;
+            }
             return false;
         case QK_MAGIC_SWAP_CTL_GUI:
-            keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = true;
+            if (record->event.pressed) {
+                keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = true;
 #    ifdef AUDIO_ENABLE
-            PLAY_SONG(cg_swap_song);
+                PLAY_SONG(cg_swap_song);
 #    endif
+            }
             return false;
         case QK_MAGIC_UNSWAP_LCTL_LGUI:
-            keymap_config.swap_lctl_lgui = false;
+            if (record->event.pressed) {
+                keymap_config.swap_lctl_lgui = false;
+            }
             return false;
         case QK_MAGIC_UNSWAP_RCTL_RGUI:
-            keymap_config.swap_rctl_rgui = false;
+            if (record->event.pressed) {
+                keymap_config.swap_rctl_rgui = false;
+            }
             return false;
         case QK_MAGIC_UNSWAP_CTL_GUI:
-            keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = false;
+            if (record->event.pressed) {
+                keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = false;
 #    ifdef AUDIO_ENABLE
-            PLAY_SONG(cg_norm_song);
+                PLAY_SONG(cg_norm_song);
 #    endif
+            }
             return false;
         case QK_MAGIC_TOGGLE_CTL_GUI:
-            keymap_config.swap_lctl_lgui = !keymap_config.swap_lctl_lgui;
-            keymap_config.swap_rctl_rgui = keymap_config.swap_lctl_lgui;
+            if (record->event.pressed) {
+                keymap_config.swap_lctl_lgui = !keymap_config.swap_lctl_lgui;
+                keymap_config.swap_rctl_rgui = keymap_config.swap_lctl_lgui;
 #    ifdef AUDIO_ENABLE
-            if (keymap_config.swap_rctl_rgui) {
-                PLAY_SONG(cg_swap_song);
-            } else {
-                PLAY_SONG(cg_norm_song);
-            }
+                if (keymap_config.swap_rctl_rgui) {
+                    PLAY_SONG(cg_swap_song);
+                } else {
+                    PLAY_SONG(cg_norm_song);
+                }
 #    endif
+            }
             return false;
 #endif
     }
