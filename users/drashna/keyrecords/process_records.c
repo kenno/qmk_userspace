@@ -37,6 +37,18 @@
 #    include "keyrecords/clap_trap.h"
 #endif // CLAP_TRAP_ENABLE
 
+#ifdef AUDIO_ENABLE
+#    include "audio.h"
+#    ifndef CG_NORM_SONG
+#        define CG_NORM_SONG SONG(AG_NORM_SOUND)
+#    endif
+#    ifndef CG_SWAP_SONG
+#        define CG_SWAP_SONG SONG(AG_SWAP_SOUND)
+#    endif
+static float cg_norm_song[][2] = CG_NORM_SONG;
+static float cg_swap_song[][2] = CG_SWAP_SONG;
+#endif
+
 uint16_t copy_paste_timer;
 
 __attribute__((weak)) void konami_code_handler(void) {
@@ -329,6 +341,43 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
 #endif // AUDIO_ENABLE
             break;
+#if defined(OS_DETECTION_ENABLE)
+        case QK_MAGIC_SWAP_LCTL_LGUI:
+            keymap_config.swap_lctl_lgui = true;
+            return false;
+        case QK_MAGIC_SWAP_RCTL_RGUI:
+            keymap_config.swap_rctl_rgui = true;
+            return false;
+        case QK_MAGIC_SWAP_CTL_GUI:
+            keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = true;
+#    ifdef AUDIO_ENABLE
+            PLAY_SONG(cg_swap_song);
+#    endif
+            return false;
+        case QK_MAGIC_UNSWAP_LCTL_LGUI:
+            keymap_config.swap_lctl_lgui = false;
+            return false;
+        case QK_MAGIC_UNSWAP_RCTL_RGUI:
+            keymap_config.swap_rctl_rgui = false;
+            return false;
+        case QK_MAGIC_UNSWAP_CTL_GUI:
+            keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = false;
+#    ifdef AUDIO_ENABLE
+            PLAY_SONG(cg_norm_song);
+#    endif
+            return false;
+        case QK_MAGIC_TOGGLE_CTL_GUI:
+            keymap_config.swap_lctl_lgui = !keymap_config.swap_lctl_lgui;
+            keymap_config.swap_rctl_rgui = keymap_config.swap_lctl_lgui;
+#    ifdef AUDIO_ENABLE
+            if (keymap_config.swap_rctl_rgui) {
+                PLAY_SONG(cg_swap_song);
+            } else {
+                PLAY_SONG(cg_norm_song);
+            }
+#    endif
+            return false;
+#endif
     }
     return true;
 }
@@ -344,6 +393,7 @@ void                       post_process_record_user(uint16_t keycode, keyrecord_
         case QK_MAGIC_UNSWAP_RCTL_RGUI:
         case QK_MAGIC_UNSWAP_CTL_GUI:
         case QK_MAGIC_TOGGLE_CTL_GUI:
+            clear_keyboard();
             set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS : UNICODE_MODE_WINCOMPOSE);
             break;
     }
