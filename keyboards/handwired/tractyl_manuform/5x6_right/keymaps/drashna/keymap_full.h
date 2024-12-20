@@ -116,8 +116,4 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
-void matrix_output_unselect_delay(uint8_t line, bool key_pressed) {
-    for (int32_t i = 0; i < 30; i++) {
-        __asm__ volatile("nop" ::: "memory");
-    }
-}
+// clang-format on
