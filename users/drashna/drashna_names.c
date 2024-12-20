@@ -239,26 +239,74 @@ const char *keycode_name(uint16_t keycode, bool shifted) {
                 if (!name) return "Unknown";
                 return name;
             }
-        case QK_MOMENTARY ... QK_MOMENTARY_MAX:
-            {
-                const char *n = get_numeric_str(buf1, sizeof(buf1), QK_MOMENTARY_GET_LAYER(keycode), ' ');
-                while (*n == ' ')
-                    ++n;
-                fill_one_param_name(buffer, "MO", n, sizeof(buffer));
-                return buffer;
-            }
+        case QK_MODS ... QK_MODS_MAX:
+            fill_two_param_name(buffer, "MOD", mod_name(QK_MODS_GET_MODS(keycode)),
+                                key_name_hid(QK_MODS_GET_BASIC_KEYCODE(keycode), shifted), sizeof(buffer));
+            return buffer;
         case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-            {
-                fill_two_param_name(buffer, "MT", mod_name(QK_MOD_TAP_GET_MODS(keycode)),
-                                    key_name_hid(QK_MOD_TAP_GET_TAP_KEYCODE(keycode), shifted), sizeof(buffer));
-                return buffer;
-            }
+            fill_two_param_name(buffer, "MT", mod_name(QK_MOD_TAP_GET_MODS(keycode)),
+                                key_name_hid(QK_MOD_TAP_GET_TAP_KEYCODE(keycode), shifted), sizeof(buffer));
+            return buffer;
         case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
+            fill_two_param_name(buffer, "LT", layer_name(QK_LAYER_TAP_GET_LAYER(keycode)),
+                                key_name_hid(QK_LAYER_TAP_GET_TAP_KEYCODE(keycode), shifted), sizeof(buffer));
+            return buffer;
+        case QK_LAYER_MOD ... QK_LAYER_MOD_MAX:
+            fill_two_param_name(buffer, "LM", mod_name(QK_LAYER_MOD_GET_MODS(keycode)),
+                                layer_name(QK_LAYER_MOD_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_TO ... QK_TO_MAX:
+            fill_one_param_name(buffer, "TO", layer_name(QK_TO_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_MOMENTARY ... QK_MOMENTARY_MAX:
+            fill_one_param_name(buffer, "MO", layer_name(QK_MOMENTARY_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_DEF_LAYER ... QK_DEF_LAYER_MAX:
+            fill_one_param_name(buffer, "DF", layer_name(QK_DEF_LAYER_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_TOGGLE_LAYER ... QK_TOGGLE_LAYER_MAX:
+            fill_one_param_name(buffer, "TG", layer_name(QK_TOGGLE_LAYER_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_ONE_SHOT_LAYER ... QK_ONE_SHOT_LAYER_MAX:
+            fill_one_param_name(buffer, "OSL", layer_name(QK_ONE_SHOT_LAYER_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_ONE_SHOT_MOD ... QK_ONE_SHOT_MOD_MAX:
+            fill_one_param_name(buffer, "OSM", mod_name(QK_ONE_SHOT_MOD_GET_MODS(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_LAYER_TAP_TOGGLE ... QK_LAYER_TAP_TOGGLE_MAX:
+            fill_one_param_name(buffer, "TT", layer_name(QK_LAYER_TAP_TOGGLE_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_PERSISTENT_DEF_LAYER ... QK_PERSISTENT_DEF_LAYER_MAX:
+            fill_one_param_name(buffer, "PDF", layer_name(QK_PERSISTENT_DEF_LAYER_GET_LAYER(keycode)), sizeof(buffer));
+            return buffer;
+        case QK_SWAP_HANDS ... QK_SWAP_HANDS_MAX:
             {
-                fill_two_param_name(buffer, "LT", layer_name(QK_LAYER_TAP_GET_LAYER(keycode)),
-                                    key_name_hid(QK_LAYER_TAP_GET_TAP_KEYCODE(keycode), shifted), sizeof(buffer));
-                return buffer;
+                uint8_t coded_key = QK_SWAP_HANDS_GET_TAP_KEYCODE(keycode);
+                xprintf("coded_key: %d, 0x%04X\n", coded_key, coded_key);
+                switch (QK_SWAP_HANDS_GET_TAP_KEYCODE(keycode)) {
+                    case KC_A ... KC_NUM_LOCK:
+                        fill_one_param_name(buffer, "SH_T", key_name_hid(coded_key, shifted), sizeof(buffer));
+                        return buffer;
+                    case QK_SWAP_HANDS_TOGGLE & 0xFF:
+                        return "SH_TOGG";
+                    case QK_SWAP_HANDS_TAP_TOGGLE & 0xFF:
+                        return "SH_TT";
+                    case QK_SWAP_HANDS_MOMENTARY_ON & 0xFF:
+                        return "SH_MON";
+                    case QK_SWAP_HANDS_MOMENTARY_OFF & 0xFF:
+                        return "SH_MOFF";
+                    case QK_SWAP_HANDS_OFF & 0xFF:
+                        return "SH_OFF";
+                    case QK_SWAP_HANDS_ON & 0xFF:
+                        return "SH_ON";
+                    case QK_SWAP_HANDS_ONE_SHOT & 0xFF:
+                        return "SH_OSL";
+                }
             }
+        case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+            fill_one_param_name(buffer, "TD", get_numeric_str(buf1, sizeof(buf1), QK_TAP_DANCE_GET_INDEX(keycode), ' '),
+                                sizeof(buffer));
+            return buffer;
     }
     return "Unknown";
 }
