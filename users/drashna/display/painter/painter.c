@@ -1183,6 +1183,7 @@ void housekeeping_task_quantum_painter(void) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
         st7789_170x320_draw_user();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+        last_tick = now;
     }
 #endif     // MULTITHREADED_PAINTER_ENABLE
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0

@@ -533,7 +533,6 @@ __attribute__((weak)) void ili9488_draw_user(void) {
     }
     forced_reinit = false;
     qp_flush(display);
-    last_tick = now;
 }
 
 void ili9488_display_shutdown(bool jump_to_bootloader) {

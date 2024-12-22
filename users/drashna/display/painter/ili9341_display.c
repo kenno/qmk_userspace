@@ -566,9 +566,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         screen_saver_redraw = false;
     }
     qp_flush(display);
-#ifndef MULTITHREADED_PAINTER_ENABLE
-    last_tick = now;
-#endif
 }
 
 void ili9341_display_shutdown(bool jump_to_bootloader) {
