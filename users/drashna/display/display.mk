@@ -19,15 +19,19 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
     endif
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)),yes)
         CUSTOM_QUANTUM_PAINTER_ST7789 := yes
+        QUANTUM_PAINTER_DRIVERS += surface
+        SRC += $(USER_PATH)/display/painter/st7789_135x240.c
+        OPT_DEFS += -DST7789_NO_AUTOMATIC_VIEWPORT_OFFSETS -DCUSTOM_QUANTUM_PAINTER_ST7789_135X240
+    endif
+    ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)),yes)
+        CUSTOM_QUANTUM_PAINTER_ST7789 := yes
+        SRC += $(USER_PATH)/display/painter/st7789_170x320.c
+        OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ST7789_170X320
     endif
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ST7789)),yes)
         CUSTOM_QUANTUM_PAINTER_ENABLE = yes
-        QUANTUM_PAINTER_DRIVERS += st7789_spi surface
+        QUANTUM_PAINTER_DRIVERS += st7789_spi
         OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ST7789
-        ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)),yes)
-            SRC += $(USER_PATH)/display/painter/st7789_135x240.c
-            OPT_DEFS += -DST7789_NO_AUTOMATIC_VIEWPORT_OFFSETS -DCUSTOM_QUANTUM_PAINTER_ST7789_135X240
-        endif
     endif
 endif
 

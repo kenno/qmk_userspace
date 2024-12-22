@@ -22,6 +22,9 @@
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
 #    include "display/painter/st7789_135x240.h"
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+#    include "display/painter/st7789_170x320.h"
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
 #endif // RTC_ENABLE
@@ -1095,6 +1098,9 @@ static THD_FUNCTION(UIThread, arg) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
     init_display_st7789_135x240();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    init_display_st7789_170x320();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 
     while (painter_thread_running) {
 #    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
@@ -1106,6 +1112,9 @@ static THD_FUNCTION(UIThread, arg) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
         st7789_135x240_draw_user();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+        st7789_170x320_draw_user();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
         wait_ms(10);
     }
 }
@@ -1128,6 +1137,9 @@ void housekeeping_task_quantum_painter(void) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
                 st7789_135x240_display_power(false);
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+                st7789_170x320_display_power(false);
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 
             } else {
 #    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
@@ -1139,6 +1151,9 @@ void housekeeping_task_quantum_painter(void) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
                 st7789_135x240_display_power(true);
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+                st7789_170x320_display_power(true);
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
             }
         }
     }
@@ -1162,6 +1177,9 @@ void housekeeping_task_quantum_painter(void) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
     st7789_135x240_draw_user();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    st7789_170x320_draw_user();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 #endif     // MULTITHREADED_PAINTER_ENABLE
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0
     if (is_keyboard_master() && (last_input_activity_elapsed() > QUANTUM_PAINTER_DISPLAY_TIMEOUT)) {
@@ -1201,6 +1219,9 @@ void keyboard_post_init_quantum_painter(void) {
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
     init_display_st7789_135x240();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    init_display_st7789_170x320();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 #endif     // MULTITHREADED_PAINTER_ENABLE
 }
 
@@ -1215,6 +1236,9 @@ void suspend_power_down_quantum_painter(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
     st7789_135x240_display_power(false);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    st7789_170x320_display_power(false);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 }
 
 void suspend_wakeup_init_quantum_painter(void) {
@@ -1227,6 +1251,9 @@ void suspend_wakeup_init_quantum_painter(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
     st7789_135x240_display_power(true);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    st7789_170x320_display_power(true);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
     qp_backlight_enable();
 }
 
@@ -1249,6 +1276,9 @@ void shutdown_quantum_painter(bool jump_to_bootloader) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
     st7789_135x240_display_shutdown(jump_to_bootloader);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    st7789_170x320_display_shutdown(jump_to_bootloader);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 
 #ifdef BACKLIGHT_ENABLE
     qp_backlight_enable();
