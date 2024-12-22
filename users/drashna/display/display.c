@@ -132,14 +132,15 @@ void keyboard_post_init_display_driver(void) {
 #if defined(QUANTUM_PAINTER_ENABLE) || defined(OLED_ENABLE)
     userspace_runtime_state.menu_state = (menu_state_t){
 #    ifdef DISPLAY_MENU_ENABLED_DEFAULT
-        .dirty      = true,
-        .is_in_menu = true,
+        .dirty          = true,
+        .is_in_menu     = true,
+        .selected_child = 0x01,
 #    else
-        .dirty      = false,
-        .is_in_menu = false,
-#    endif // DISPLAY_MENU_ENABLED_DEFAULT
-        .menu_stack     = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
+        .dirty          = false,
+        .is_in_menu     = false,
         .selected_child = 0xFF,
+#    endif // DISPLAY_MENU_ENABLED_DEFAULT
+        .menu_stack = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
     };
     if (userspace_config.display.menu_render_side == 0) {
         userspace_config.display.menu_render_side = 3;

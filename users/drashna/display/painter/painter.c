@@ -19,6 +19,9 @@
 #if defined(QUANTUM_PAINTER_ILI9488_ENABLE)
 #    include "display/painter/ili9488_display.h"
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE && CUSTOM_QUANTUM_PAINTER_ILI9341
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+#    include "display/painter/st7789_135x240.h"
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
 #endif // RTC_ENABLE
@@ -1089,6 +1092,9 @@ static THD_FUNCTION(UIThread, arg) {
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     init_display_ili9488();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    init_display_st7789_135x240();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 
     while (painter_thread_running) {
 #    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
@@ -1097,6 +1103,9 @@ static THD_FUNCTION(UIThread, arg) {
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
         ili9488_draw_user();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+        st7789_135x240_draw_user();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
         wait_ms(10);
     }
 }
@@ -1116,6 +1125,10 @@ void housekeeping_task_quantum_painter(void) {
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
                 ili9488_display_power(false);
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+                st7789_135x240_display_power(false);
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+
             } else {
 #    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
                 ili9341_display_power(true);
@@ -1123,6 +1136,9 @@ void housekeeping_task_quantum_painter(void) {
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
                 ili9488_display_power(true);
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+                st7789_135x240_display_power(true);
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
             }
         }
     }
@@ -1143,6 +1159,9 @@ void housekeeping_task_quantum_painter(void) {
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     ili9488_draw_user();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    st7789_135x240_draw_user();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 #endif     // MULTITHREADED_PAINTER_ENABLE
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0
     if (is_keyboard_master() && (last_input_activity_elapsed() > QUANTUM_PAINTER_DISPLAY_TIMEOUT)) {
@@ -1179,6 +1198,9 @@ void keyboard_post_init_quantum_painter(void) {
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     init_display_ili9488();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    init_display_st7789_135x240();
+#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 #endif     // MULTITHREADED_PAINTER_ENABLE
 }
 
@@ -1190,6 +1212,9 @@ void suspend_power_down_quantum_painter(void) {
 #ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     ili9488_display_power(false);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    st7789_135x240_display_power(false);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 }
 
 void suspend_wakeup_init_quantum_painter(void) {
@@ -1199,6 +1224,9 @@ void suspend_wakeup_init_quantum_painter(void) {
 #ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     ili9488_display_power(true);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    st7789_135x240_display_power(true);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
     qp_backlight_enable();
 }
 
@@ -1218,6 +1246,9 @@ void shutdown_quantum_painter(bool jump_to_bootloader) {
 #ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     ili9488_display_shutdown(jump_to_bootloader);
 #endif // QUANTUM_PAINTER_ILI9488_ENABLE
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    st7789_135x240_display_shutdown(jump_to_bootloader);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 
 #ifdef BACKLIGHT_ENABLE
     qp_backlight_enable();
