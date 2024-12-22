@@ -1168,18 +1168,22 @@ void housekeeping_task_quantum_painter(void) {
     }
 #endif // RTC_ENABLE
 #ifndef MULTITHREADED_PAINTER_ENABLE
+    static uint32_t last_tick = 0;
+    uint32_t        now       = timer_read32();
+    if (TIMER_DIFF_32(now, last_tick) >= (QUANTUM_PAINTER_TASK_THROTTLE)) {
 #    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    ili9341_draw_user();
+        ili9341_draw_user();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    ili9488_draw_user();
+        ili9488_draw_user();
 #    endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-    st7789_135x240_draw_user();
+        st7789_135x240_draw_user();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 #    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-    st7789_170x320_draw_user();
+        st7789_170x320_draw_user();
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+    }
 #endif     // MULTITHREADED_PAINTER_ENABLE
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0
     if (is_keyboard_master() && (last_input_activity_elapsed() > QUANTUM_PAINTER_DISPLAY_TIMEOUT)) {
