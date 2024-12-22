@@ -2,8 +2,6 @@ CUSTOM_QUANTUM_PAINTER_ENABLE ?= no
 CUSTOM_OLED_DRIVER ?= yes
 
 ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
-    DISPLAY_DRIVER_REQUIRED  = yes
-    POST_CONFIG_H += $(USER_PATH)/display/painter/config.h
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ILI9341)),yes)
         CUSTOM_QUANTUM_PAINTER_ENABLE = yes
         QUANTUM_PAINTER_DRIVERS += ili9341_spi
@@ -37,6 +35,8 @@ endif
 
 ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
     OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ENABLE
+    DISPLAY_DRIVER_REQUIRED  = yes
+    POST_CONFIG_H += $(USER_PATH)/display/painter/config.h
     SRC += $(USER_PATH)/display/painter/fonts.qff.c \
         $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
         $(USER_PATH)/display/painter/graphics/qmk_powered_by.qgf.c \
