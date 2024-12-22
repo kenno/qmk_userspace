@@ -5,7 +5,6 @@
 
 #include "qp.h"
 #include "qp_comms.h"
-#include "qp_surface.h"
 #include "qp_st77xx_opcodes.h"
 #include "display/painter/painter.h"
 #include "display/painter/st7789_170x320.h"
