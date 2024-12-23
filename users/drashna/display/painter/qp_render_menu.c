@@ -4,16 +4,17 @@
 #include "display/menu/menu.h"
 #include "display/painter/painter.h"
 
+extern bool has_flushed_menu;
+
 bool painter_render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
                          uint16_t width, uint16_t height, bool is_thicc) {
     static menu_state_t last_state;
     uint8_t             scroll_offset = 0;
 
-    if (memcmp(&last_state, &userspace_runtime_state.menu_state, sizeof(menu_state_t)) == 0) {
+    if (memcmp(&last_state, &userspace_runtime_state.menu_state, sizeof(menu_state_t)) == 0 && has_flushed_menu) {
         return userspace_runtime_state.menu_state.is_in_menu;
     }
 
-    userspace_runtime_state.menu_state.dirty = false;
     memcpy(&last_state, &userspace_runtime_state.menu_state, sizeof(menu_state_t));
 
     uint16_t render_width = width - start_x;

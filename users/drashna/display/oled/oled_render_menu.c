@@ -6,6 +6,7 @@
 #include "oled_driver.h"
 
 #define snprintf_nowarn(...) (snprintf(__VA_ARGS__) < 0 ? abort() : (void)0)
+extern bool has_flushed_menu;
 
 bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_left) {
     uint8_t     scroll_offset   = 0;
@@ -15,6 +16,7 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
     if (userspace_runtime_state.menu_state.is_in_menu != last_state) {
         last_state                               = userspace_runtime_state.menu_state.is_in_menu;
         userspace_runtime_state.menu_state.dirty = true;
+        has_flushed_menu                         = false;
     }
 
     if (userspace_runtime_state.menu_state.dirty) {
@@ -22,7 +24,6 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
         for (uint8_t i = 0; i < num_of_lines; i++) {
             oled_advance_page(true);
         }
-        userspace_runtime_state.menu_state.dirty = false;
     }
 
     if (!(userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left))) {

@@ -17,6 +17,7 @@
 #    define DISPLAY_MENU_TIMEOUT 30000
 #endif // !DISPLAY_MENU_TIMEOUT
 deferred_token menu_deferred_token = INVALID_DEFERRED_TOKEN;
+bool           has_flushed_menu    = true;
 
 menu_entry_t *get_current_menu(void) {
     if (userspace_runtime_state.menu_state.menu_stack[0] == 0xFF) {
@@ -290,5 +291,6 @@ uint8_t get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries) {
 }
 
 void display_menu_set_dirty(void) {
+    has_flushed_menu                         = false;
     userspace_runtime_state.menu_state.dirty = true;
 }

@@ -1186,6 +1186,11 @@ void housekeeping_task_quantum_painter(void) {
         last_tick = now;
     }
 #endif     // MULTITHREADED_PAINTER_ENABLE
+    extern bool has_flushed_menu;
+    if (!has_flushed_menu) {
+        has_flushed_menu                         = true;
+        userspace_runtime_state.menu_state.dirty = false;
+    }
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0
     if (is_keyboard_master() && (last_input_activity_elapsed() > QUANTUM_PAINTER_DISPLAY_TIMEOUT)) {
         qp_backlight_disable();
