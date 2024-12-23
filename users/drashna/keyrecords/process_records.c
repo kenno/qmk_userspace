@@ -346,11 +346,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case QK_MAGIC_SWAP_LCTL_LGUI:
             if (record->event.pressed) {
                 keymap_config.swap_lctl_lgui = true;
+                clear_keyboard();
+#    if defined(UNICODE_COMMON_ENABLE)
+                set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS
+                                                                         : UNICODE_MODE_WINCOMPOSE);
+#    endif
             }
             return false;
         case QK_MAGIC_SWAP_RCTL_RGUI:
             if (record->event.pressed) {
                 keymap_config.swap_rctl_rgui = true;
+                clear_keyboard();
             }
             return false;
         case QK_MAGIC_SWAP_CTL_GUI:
@@ -359,16 +365,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #    ifdef AUDIO_ENABLE
                 PLAY_SONG(cg_swap_song);
 #    endif
+                clear_keyboard();
+#    if defined(UNICODE_COMMON_ENABLE)
+                set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS
+                                                                         : UNICODE_MODE_WINCOMPOSE);
+#    endif
             }
             return false;
         case QK_MAGIC_UNSWAP_LCTL_LGUI:
             if (record->event.pressed) {
                 keymap_config.swap_lctl_lgui = false;
+                clear_keyboard();
+#    if defined(UNICODE_COMMON_ENABLE)
+                set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS
+                                                                         : UNICODE_MODE_WINCOMPOSE);
+#    endif
             }
             return false;
         case QK_MAGIC_UNSWAP_RCTL_RGUI:
             if (record->event.pressed) {
                 keymap_config.swap_rctl_rgui = false;
+                clear_keyboard();
             }
             return false;
         case QK_MAGIC_UNSWAP_CTL_GUI:
@@ -376,6 +393,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = false;
 #    ifdef AUDIO_ENABLE
                 PLAY_SONG(cg_norm_song);
+#    endif
+                clear_keyboard();
+#    if defined(UNICODE_COMMON_ENABLE)
+                set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS
+                                                                         : UNICODE_MODE_WINCOMPOSE);
 #    endif
             }
             return false;
@@ -390,6 +412,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     PLAY_SONG(cg_norm_song);
                 }
 #    endif
+                clear_keyboard();
+#    if defined(UNICODE_COMMON_ENABLE)
+                set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS
+                                                                         : UNICODE_MODE_WINCOMPOSE);
+#    endif
             }
             return false;
 #endif
@@ -399,22 +426,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 __attribute__((weak)) void post_process_record_keymap(uint16_t keycode, keyrecord_t *record) {}
 void                       post_process_record_user(uint16_t keycode, keyrecord_t *record) {
-#if defined(OS_DETECTION_ENABLE)
-    switch (keycode) {
-        case QK_MAGIC_SWAP_LCTL_LGUI:
-        case QK_MAGIC_SWAP_RCTL_RGUI:
-        case QK_MAGIC_SWAP_CTL_GUI:
-        case QK_MAGIC_UNSWAP_LCTL_LGUI:
-        case QK_MAGIC_UNSWAP_RCTL_RGUI:
-        case QK_MAGIC_UNSWAP_CTL_GUI:
-        case QK_MAGIC_TOGGLE_CTL_GUI:
-            clear_keyboard();
-#    if defined(UNICODE_COMMON_ENABLE)
-            set_unicode_input_mode_soft(keymap_config.swap_lctl_lgui ? UNICODE_MODE_MACOS : UNICODE_MODE_WINCOMPOSE);
-#    endif
-            break;
-    }
-#endif // OS_DETECTION_ENABLE && UNICODE_COMMON_ENABLE
     post_process_record_keymap(keycode, record);
 }
 
