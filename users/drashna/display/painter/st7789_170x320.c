@@ -62,7 +62,7 @@ void init_display_st7789_170x320_rotation(void) {
     uint16_t height;
 
     qp_init(st7789_display, userspace_config.display.rotation ? QP_ROTATION_0 : QP_ROTATION_180);
-    qp_set_viewport_offsets(st7789_display, 35, 0);
+    // qp_set_viewport_offsets(st7789_display, 35, 0);
     qp_get_geometry(st7789_display, &width, &height, NULL, NULL, NULL);
     qp_clear(st7789_display);
     qp_rect(st7789_display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
@@ -79,11 +79,11 @@ void init_display_st7789_170x320_rotation(void) {
 }
 
 void init_display_st7789_170x320(void) {
-    st7789_display = qp_st7789_make_spi_device(170, 320, ST7789_CS_PIN, ST7789_DC_PIN, ST7789_RST_PIN,
+    st7789_display = qp_st7789_make_spi_device(240, 320, ST7789_CS_PIN, ST7789_DC_PIN, ST7789_RST_PIN,
                                                ST7789_SPI_DIVIDER, ST7789_SPI_MODE);
 
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
-    st7789_170x320_surface_display = qp_make_rgb565_surface(170, 320, display_buffer);
+    st7789_170x320_surface_display = qp_make_rgb565_surface(240, 320, display_buffer);
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
 
     init_display_st7789_170x320_rotation();
@@ -109,7 +109,28 @@ __attribute__((weak)) void st7789_170x320_draw_user(void) {
     uint16_t height;
     qp_get_geometry(st7789_display, &width, &height, NULL, NULL, NULL);
 
-    painter_render_menu(st7789_170x320_surface_display, font_oled, 0, 0, width, height, false);
+    static bool force_redraw = false;
+
+    if (painter_render_menu(st7789_170x320_surface_display, font_oled, 35, 0, 240 - 1, height, false)) {
+        force_redraw = true;
+    } else {
+        static uint8_t display_logo = 0xFF;
+        if (display_logo != (userspace_config.display.painter.display_logo)) {
+            display_logo = userspace_config.display.painter.display_logo;
+            force_redraw = true;
+        }
+        if (force_redraw) {
+            painter_image_handle_t screen_saver = qp_load_image_mem(screen_saver_image[display_logo].data);
+
+            if (screen_saver != NULL) {
+                qp_drawimage(st7789_170x320_surface_display, 0, 0, screen_saver);
+                qp_close_image(screen_saver);
+            }
+            force_redraw = false;
+        } else {
+            return;
+        }
+    }
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
     qp_surface_draw(st7789_170x320_surface_display, st7789_display, 0, 0, 0);
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
