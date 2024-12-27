@@ -42,6 +42,8 @@ static painter_device_t st7789_135x240_display;
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 static painter_device_t st7789_135x240_surface_display;
 static uint8_t          display_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(135, 240, 16)];
+#else
+#    define st7789_135x240_surface_display st7789_135x240_display
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 
 static bool has_run = false, forced_reinit = false;
@@ -100,14 +102,13 @@ void st7789_135x240_display_power(bool on) {
 }
 
 __attribute__((weak)) void st7789_135x240_draw_user(void) {
-    uint16_t width  = 170;
-    uint16_t height = 320;
+    uint16_t width  = 135;
+    uint16_t height = 240;
+    qp_get_geometry(st7789_135x240_surface_display, &width, &height, NULL, NULL, NULL);
 
+    painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, width, height, false);
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
-    painter_render_menu(st7789_display, font_oled, 0, 0, width, height, false);
     qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 0, 0, 0);
-#else  // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
-    painter_render_menu(st7789_135x240_display, font_oled, 0, 0, width, height, false);
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 
     qp_flush(st7789_135x240_display);
