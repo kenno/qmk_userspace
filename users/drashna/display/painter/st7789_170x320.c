@@ -6,6 +6,7 @@
 #include "qp.h"
 #include "qp_comms.h"
 #include "qp_st77xx_opcodes.h"
+#include "qp_surface.h"
 #include "display/painter/painter.h"
 #include "display/painter/st7789_170x320.h"
 
@@ -108,9 +109,9 @@ __attribute__((weak)) void st7789_170x320_draw_user(void) {
 
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
     painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, 135, 240, false);
-    qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 0, 0, 0);
+    qp_surface_draw(st7789_135x240_surface_display, st7789_display, 0, 0, 0);
 #else  // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
-    painter_render_menu(st7789_135x240_display, font_oled, 0, 0, 135, 240, false);
+    painter_render_menu(st7789_display, font_oled, 0, 0, 135, 240, false);
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 
     painter_render_menu(st7789_display, font_oled, 0, 0, width, height, false);
