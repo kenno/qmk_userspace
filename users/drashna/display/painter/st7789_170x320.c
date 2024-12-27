@@ -16,11 +16,26 @@
 #    define ST7789_DC_PIN DISPLAY_DC_PIN
 #endif // ST7789_DC_PIN
 #ifndef ST7789_RST_PIN
-#    define ST7789_RST_PIN DISPLAY_RST_PIN
-#endif // ST7789_RST_PIN
+#    ifndef DISPLAY_RST_PIN
+#        define ST7789_RST_PIN NO_PIN
+#    else // DISPLAY_RST_PIN
+#        define ST7789_RST_PIN DISPLAY_RST_PIN
+#    endif // DISPLAY_RST_PIN
+#endif     // ST7789_RST_PIN
 #ifndef ST7789_SPI_DIVIDER
-#    define ST7789_SPI_DIVIDER DISPLAY_SPI_DIVIDER
-#endif // ST7789_SPI_DIVIDER
+#    ifndef DISPLAY_SPI_DIVIDER
+#        define ST7789_SPI_DIVIDER 1
+#    else // DISPLAY_SPI_DIVIDER
+#        define ST7789_SPI_DIVIDER DISPLAY_SPI_DIVIDER
+#    endif // DISPLAY_SPI_DIVIDER
+#endif     // ST7789_SPI_DIVIDER
+#ifndef ST7789_SPI_MODE
+#    ifndef DISPLAY_SPI_MODE
+#        define ST7789_SPI_MODE 3
+#    else // DISPLAY_SPI_MODE
+#        define ST7789_SPI_MODE DISPLAY_SPI_MODE
+#    endif // DISPLAY_SPI_MODE
+#endif     // ST7789_SPI_MODE
 
 static painter_device_t st7789_display;
 
@@ -57,8 +72,8 @@ void init_display_st7789_170x320_rotation(void) {
 }
 
 void init_display_st7789_170x320(void) {
-    st7789_display =
-        qp_st7789_make_spi_device(170, 320, ST7789_CS_PIN, ST7789_DC_PIN, ST7789_RST_PIN, ST7789_SPI_DIVIDER, 3);
+    st7789_display = qp_st7789_make_spi_device(170, 320, ST7789_CS_PIN, ST7789_DC_PIN, ST7789_RST_PIN,
+                                               ST7789_SPI_DIVIDER, ST7789_SPI_MODE);
     init_display_st7789_170x320_rotation();
 
     qp_flush(st7789_display);

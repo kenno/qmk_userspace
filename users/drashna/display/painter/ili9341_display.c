@@ -30,16 +30,45 @@
 #    include "features/keyboard_lock.h"
 #endif // KEYBOARD_LOCK_ENABLE
 
-painter_device_t              display, menu_surface;
+static painter_device_t       display;
 painter_image_handle_t        screen_saver;
 extern painter_image_handle_t windows_logo, apple_logo, linux_logo;
 extern painter_image_handle_t mouse_icon, gamepad_icon;
 extern painter_image_handle_t akira_explosion;
 
+#ifndef ILI9341_CS_PIN
+#    define ILI9341_CS_PIN DISPLAY_CS_PIN
+#endif // ILI9341_CS_PIN
+#ifndef ILI9341_DC_PIN
+#    define ILI9341_DC_PIN DISPLAY_DC_PIN
+#endif // ILI9341_DC_PIN
+#ifndef ILI9341_RST_PIN
+#    ifndef DISPLAY_RST_PIN
+#        define ILI9341_RST_PIN NO_PIN
+#    else // DISPLAY_RST_PIN
+#        define ILI9341_RST_PIN DISPLAY_RST_PIN
+#    endif // DISPLAY_RST_PIN
+#endif     // ILI9341_RST_PIN
+#ifndef ILI9341_SPI_DIVIDER
+#    ifndef DISPLAY_SPI_DIVIDER
+#        define ILI9341_SPI_DIVIDER 1
+#    else // DISPLAY_SPI_DIVIDER
+#        define ILI9341_SPI_DIVIDER DISPLAY_SPI_DIVIDER
+#    endif // DISPLAY_SPI_DIVIDER
+#endif     // ILI9341_SPI_DIVIDER
+#ifndef ILI9341_SPI_MODE
+#    ifndef DISPLAY_SPI_MODE
+#        define ILI9341_SPI_MODE 0
+#    else // DISPLAY_SPI_MODE
+#        define ILI9341_SPI_MODE DISPLAY_SPI_MODE
+#    endif // DISPLAY_SPI_MODE
+#endif     // ILI9341_SPI_MODE
+
 #define SURFACE_MENU_WIDTH  236
 #define SURFACE_MENU_HEIGHT 120
+static uint8_t   menu_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, 16)];
+painter_device_t menu_surface;
 
-uint8_t     menu_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, 16)];
 static bool has_run = false, forced_reinit = false;
 
 void init_display_ili9341_inversion(void) {
@@ -79,8 +108,8 @@ void init_display_ili9341_rotation(void) {
  *
  */
 void init_display_ili9341(void) {
-    display =
-        qp_ili9341_make_spi_device(240, 320, DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, DISPLAY_SPI_DIVIDER, 0);
+    display = qp_ili9341_make_spi_device(240, 320, ILI9341_CS_PIN, ILI9341_DC_PIN, ILI9341_RST_PIN, ILI9341_SPI_DIVIDER,
+                                         ILI9341_SPI_MODE);
     menu_surface = qp_make_rgb565_surface(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, menu_buffer);
 
     wait_ms(50);
@@ -119,8 +148,8 @@ __attribute__((weak)) bool screen_saver_sanity_checks(void) {
 }
 
 __attribute__((weak)) void ili9341_draw_user(void) {
-    bool            hue_redraw          = forced_reinit;
-    static bool     screen_saver_redraw = false;
+    bool        hue_redraw          = forced_reinit;
+    static bool screen_saver_redraw = false;
 
     static dual_hsv_t curr_hsv = {0};
     if (memcmp(&curr_hsv, &userspace_config.display.painter.hsv, sizeof(dual_hsv_t)) != 0) {

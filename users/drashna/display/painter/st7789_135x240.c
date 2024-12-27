@@ -10,18 +10,33 @@
 #include "display/painter/painter.h"
 #include "display/painter/st7789_135x240.h"
 
-#ifndef ST7789_CS_PIN
-#    define ST7789_CS_PIN DISPLAY_CS_PIN
-#endif // ST7789_CS_PIN
-#ifndef ST7789_DC_PIN
-#    define ST7789_DC_PIN DISPLAY_DC_PIN
-#endif // ST7789_DC_PIN
-#ifndef ST7789_RST_PIN
-#    define ST7789_RST_PIN DISPLAY_RST_PIN
-#endif // ST7789_RST_PIN
-#ifndef ST7789_SPI_DIVIDER
-#    define ST7789_SPI_DIVIDER DISPLAY_SPI_DIVIDER
-#endif // ST7789_SPI_DIVIDER
+#ifndef ST7789_MINI_CS_PIN
+#    define ST7789_MINI_CS_PIN DISPLAY_CS_PIN
+#endif // ST7789_MINI_CS_PIN
+#ifndef ST7789_MINI_DC_PIN
+#    define ST7789_MINI_DC_PIN DISPLAY_DC_PIN
+#endif // ST7789_MINI_DC_PIN
+#ifndef ST7789_MINI_RST_PIN
+#    ifndef DISPLAY_RST_PIN
+#        define ST7789_MINI_RST_PIN NO_PIN
+#    else // DISPLAY_RST_PIN
+#        define ST7789_MINI_RST_PIN DISPLAY_RST_PIN
+#    endif // DISPLAY_RST_PIN
+#endif     // ST7789_MINI_RST_PIN
+#ifndef ST7789_MINI_SPI_DIVIDER
+#    ifndef DISPLAY_SPI_DIVIDER
+#        define ST7789_MINI_SPI_DIVIDER 1
+#    else // DISPLAY_SPI_DIVIDER
+#        define ST7789_MINI_SPI_DIVIDER DISPLAY_SPI_DIVIDER
+#    endif // DISPLAY_SPI_DIVIDER
+#endif     // ST7789_MINI_SPI_DIVIDER
+#ifndef ST7789_MINI_SPI_MODE
+#    ifndef DISPLAY_SPI_MODE
+#        define ST7789_MINI_SPI_MODE 3
+#    else // DISPLAY_SPI_MODE
+#        define ST7789_MINI_SPI_MODE DISPLAY_SPI_MODE
+#    endif // DISPLAY_SPI_MODE
+#endif     // ST7789_MINI_SPI_MODE
 
 static painter_device_t st7789_135x240_display;
 static painter_device_t st7789_135x240_surface_display;
@@ -58,7 +73,8 @@ void init_display_st7789_135x240_rotation(void) {
 
 void init_display_st7789_135x240(void) {
     st7789_135x240_display =
-        qp_st7789_make_spi_device(170, 320, ST7789_CS_PIN, ST7789_DC_PIN, ST7789_RST_PIN, ST7789_SPI_DIVIDER, 3);
+        qp_st7789_make_spi_device(170, 320, ST7789_MINI_CS_PIN, ST7789_MINI_DC_PIN, ST7789_MINI_RST_PIN,
+                                  ST7789_MINI_SPI_DIVIDER, ST7789_MINI_SPI_MODE);
     st7789_135x240_surface_display = qp_make_rgb565_surface(135, 240, display_buffer);
 
     init_display_st7789_135x240_rotation();

@@ -31,14 +31,45 @@
 #    include "features/keyboard_lock.h"
 #endif // KEYBOARD_LOCK_ENABLE
 
-painter_device_t display, menu_surface;
+static painter_device_t display;
 
 extern painter_image_handle_t windows_logo, apple_logo, linux_logo;
 extern painter_image_handle_t mouse_icon, gamepad_icon;
 extern painter_image_handle_t akira_explosion;
 
+#ifndef ILI9488_CS_PIN
+#    define ILI9488_CS_PIN DISPLAY_CS_PIN
+#endif // ILI9488_CS_PIN
+#ifndef ILI9488_DC_PIN
+#    define ILI9488_DC_PIN DISPLAY_DC_PIN
+#endif // ILI9488_DC_PIN
+#ifndef ILI9488_RST_PIN
+#    ifndef DISPLAY_RST_PIN
+#        define ILI9488_RST_PIN NO_PIN
+#    else // DISPLAY_RST_PIN
+#        define ILI9488_RST_PIN DISPLAY_RST_PIN
+#    endif // DISPLAY_RST_PIN
+#endif     // ILI9488_RST_PIN
+#ifndef ILI9488_SPI_DIVIDER
+#    ifndef DISPLAY_SPI_DIVIDER
+#        define ILI9488_SPI_DIVIDER 1
+#    else // DISPLAY_SPI_DIVIDER
+#        define ILI9488_SPI_DIVIDER DISPLAY_SPI_DIVIDER
+#    endif // DISPLAY_SPI_DIVIDER
+#endif     // ILI9488_SPI_DIVIDER
+#ifndef ILI9488_SPI_MODE
+#    ifndef DISPLAY_SPI_MODE
+#        define ILI9488_SPI_MODE 0
+#    else // DISPLAY_SPI_MODE
+#        define ILI9488_SPI_MODE DISPLAY_SPI_MODE
+#    endif // DISPLAY_SPI_MODE
+#endif     // ILI9488_SPI_MODE
+
 #define SURFACE_MENU_WIDTH  236
-#define SURFACE_MENU_HEIGHT 121
+#define SURFACE_MENU_HEIGHT 120
+static uint8_t   menu_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, 16)];
+painter_device_t menu_surface;
+
 static bool has_run = false, forced_reinit = false;
 
 void init_display_ili9488_inversion(void) {
@@ -64,13 +95,13 @@ void init_display_ili9488_rotation(void) {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Initial render of frame/logo
 
-        painter_render_frame(display, font_thintel, true, 0, true);
-        painter_render_frame(display, font_thintel, false, 240, false);
-        qp_power(display, true);
-        qp_flush(display);
-        if (has_run) {
-            forced_reinit = true;
-        }
+    painter_render_frame(display, font_thintel, true, 0, true);
+    painter_render_frame(display, font_thintel, false, 240, false);
+    qp_power(display, true);
+    qp_flush(display);
+    if (has_run) {
+        forced_reinit = true;
+    }
     has_run = true;
 }
 
@@ -79,7 +110,8 @@ void init_display_ili9488_rotation(void) {
  *
  */
 void init_display_ili9488(void) {
-    display = qp_ili9488_make_spi_device(320, 480, DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, 1, 0);
+    display = qp_ili9488_make_spi_device(320, 480, ILI9488_CS_PIN, ILI9488_DC_PIN, ILI9488_RST_PIN, ILI9488_SPI_DIVIDER,
+                                         ILI9488_SPI_MODE);
     wait_ms(50);
 
     init_display_ili9488_rotation();
@@ -90,7 +122,7 @@ void ili9488_display_power(bool on) {
 }
 
 __attribute__((weak)) void ili9488_draw_user(void) {
-    bool            hue_redraw = forced_reinit;
+    bool hue_redraw = forced_reinit;
 
     static dual_hsv_t curr_hsv = {0};
     if (memcmp(&curr_hsv, &userspace_config.display.painter.hsv, sizeof(dual_hsv_t)) != 0) {
@@ -316,8 +348,8 @@ __attribute__((weak)) void ili9488_draw_user(void) {
         ypos                             = 80 + 4;
         static uint8_t last_unicode_mode = UNICODE_MODE_COUNT;
         if (hue_redraw || last_unicode_mode != get_unicode_input_mode()) {
-            last_unicode_mode = get_unicode_input_mode();
-            xpos              = 80 + 4;
+            last_unicode_mode   = get_unicode_input_mode();
+            xpos                = 80 + 4;
             uint8_t xpos_offset = xpos +
                                   qp_drawtext_recolor(display, xpos, ypos, font_oled, "Unicode", curr_hsv.primary.h,
                                                       curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0) +
@@ -523,7 +555,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
 #if defined(HAPTIC_ENABLE)
         painter_render_haptic(display, font_oled, 83 + width, 58, hue_redraw, &curr_hsv);
 #endif // HAPTIC_ENABLE
-        ypos = height - (16 + font_oled->line_height);
+        ypos                           = height - (16 + font_oled->line_height);
         static uint16_t last_rtc_timer = 0;
         painter_render_rtc_time(display, font_oled, 5 + width, ypos, width + width, hue_redraw, &last_rtc_timer,
                                 &curr_hsv.primary);
