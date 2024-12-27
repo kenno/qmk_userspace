@@ -64,10 +64,12 @@ extern painter_image_handle_t akira_explosion;
 #    endif // DISPLAY_SPI_MODE
 #endif     // ILI9341_SPI_MODE
 
-#define SURFACE_MENU_WIDTH  236
-#define SURFACE_MENU_HEIGHT 120
-static uint8_t   menu_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, 16)];
-painter_device_t menu_surface;
+#ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
+#    define SURFACE_MENU_WIDTH  236
+#    define SURFACE_MENU_HEIGHT 120
+static uint8_t          menu_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, 16)];
+static painter_device_t menu_surface;
+#endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
 
 static bool has_run = false, forced_reinit = false;
 
@@ -110,11 +112,16 @@ void init_display_ili9341_rotation(void) {
 void init_display_ili9341(void) {
     display = qp_ili9341_make_spi_device(240, 320, ILI9341_CS_PIN, ILI9341_DC_PIN, ILI9341_RST_PIN, ILI9341_SPI_DIVIDER,
                                          ILI9341_SPI_MODE);
+#ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
     menu_surface = qp_make_rgb565_surface(SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, menu_buffer);
+#endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
 
     wait_ms(50);
 
+#ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
     qp_init(menu_surface, QP_ROTATION_0);
+#endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
+
     init_display_ili9341_rotation();
 }
 
@@ -587,10 +594,15 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
 #endif // SPLIT_KEYBOARD
         }
+#ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
         painter_render_menu_block(menu_surface, font_oled, 0, 0, SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT,
                                   screen_saver_redraw || hue_redraw, &curr_hsv, is_keyboard_master(), true);
         qp_surface_draw(menu_surface, display, 2, 172, screen_saver_redraw);
+#else // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
+        painter_render_menu_block(display, font_oled, 2, 172, 237, 291, screen_saver_redraw || hue_redraw, &curr_hsv,
+                                  is_keyboard_master(), true);
 
+#endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
         forced_reinit       = false;
         screen_saver_redraw = false;
     }

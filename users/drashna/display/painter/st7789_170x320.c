@@ -38,6 +38,10 @@
 #endif     // ST7789_SPI_MODE
 
 static painter_device_t st7789_display;
+#ifdef QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
+static painter_device_t st7789_170x320_surface_display;
+static uint8_t          display_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(170, 320, 16)];
+#endif // QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
 
 static bool has_run = false, forced_reinit = false;
 
@@ -74,7 +78,21 @@ void init_display_st7789_170x320_rotation(void) {
 void init_display_st7789_170x320(void) {
     st7789_display = qp_st7789_make_spi_device(170, 320, ST7789_CS_PIN, ST7789_DC_PIN, ST7789_RST_PIN,
                                                ST7789_SPI_DIVIDER, ST7789_SPI_MODE);
+
+#ifdef QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
+    st7789_170x320_surface_display = qp_make_rgb565_surface(170, 320, display_buffer);
+#endif // QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
+
     init_display_st7789_170x320_rotation();
+
+#ifdef QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
+    qp_init(st7789_170x320_surface_display, QP_ROTATION_0);
+
+    qp_rect(st7789_170x320_surface_display, 0, 0, 170 - 1, 320 - 1, HSV_BLACK, true);
+    qp_surface_draw(st7789_170x320_surface_display, st7789_display, 0, 0, 0);
+#else
+    qp_rect(st7789_display, 0, 0, 170 - 1, 320 - 1, 0, 0, 0, true);
+#endif
 
     qp_flush(st7789_display);
 }
@@ -87,6 +105,13 @@ __attribute__((weak)) void st7789_170x320_draw_user(void) {
     uint16_t width;
     uint16_t height;
     qp_get_geometry(st7789_display, &width, &height, NULL, NULL, NULL);
+
+#ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+    painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, 135, 240, false);
+    qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 0, 0, 0);
+#else  // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+    painter_render_menu(st7789_135x240_display, font_oled, 0, 0, 135, 240, false);
+#endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 
     painter_render_menu(st7789_display, font_oled, 0, 0, width, height, false);
     qp_flush(st7789_display);
