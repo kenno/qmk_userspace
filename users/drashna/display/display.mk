@@ -16,7 +16,7 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
     endif
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ILI9488)),yes)
         CUSTOM_QUANTUM_PAINTER_ENABLE = yes
-        QUANTUM_PAINTER_DRIVERS += ili948_spi
+        QUANTUM_PAINTER_DRIVERS += ili9488_spi
         OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ILI9488
         SRC += $(USER_PATH)/display/painter/ili9488_display.c
 
