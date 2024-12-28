@@ -30,3 +30,8 @@
 
 #define DILEMMA_DEBUG_1 GP16
 #define DILEMMA_DEBUG_2 GP18
+
+#define I2C_DRIVER       I2CD1
+#define I2C1_SDA_PIN     GP2
+#define I2C1_SCL_PIN     GP3
+#define I2C1_CLOCK_SPEED 400000
