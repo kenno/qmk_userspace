@@ -5,11 +5,13 @@
 #include "drashna_runtime.h"
 #include "drashna_names.h"
 #include "drashna_layers.h"
-#include "qp_surface.h"
 #include "qp_ili9xxx_opcodes.h"
 #include "qp_comms.h"
 #include "display/painter/painter.h"
 #include "display/painter/ili9341_display.h"
+#ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
+#    include "qp_surface.h"
+#endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
 #include "display/menu/menu.h"
 #include "lib/lib8tion/lib8tion.h"
 #ifdef SPLIT_KEYBOARD

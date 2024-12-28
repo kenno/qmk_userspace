@@ -5,10 +5,12 @@
 
 #include "qp.h"
 #include "qp_comms.h"
-#include "qp_surface.h"
 #include "qp_st77xx_opcodes.h"
 #include "display/painter/painter.h"
 #include "display/painter/st7789_135x240.h"
+#ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+#    include "qp_surface.h"
+#endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 
 #ifndef ST7789_MINI_CS_PIN
 #    define ST7789_MINI_CS_PIN DISPLAY_CS_PIN

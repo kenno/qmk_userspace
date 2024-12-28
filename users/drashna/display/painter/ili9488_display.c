@@ -11,6 +11,9 @@
 #include "qp_comms.h"
 #include "display/painter/painter.h"
 #include "display/painter/ili9488_display.h"
+#ifdef QUANTUM_PAINTER_DRIVERS_ILI9488_SURFACE
+#    include "qp_surface.h"
+#endif // QUANTUM_PAINTER_DRIVERS_ILI9488_SURFACE
 #include "display/menu/menu.h"
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
