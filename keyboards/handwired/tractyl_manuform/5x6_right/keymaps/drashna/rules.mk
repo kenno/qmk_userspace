@@ -1,66 +1,64 @@
-nAUTOCORRECT_ENABLE               = no
-AUDIO_ENABLE                     = no
-ENCODER_ENABLE                   = no
-CUSTOM_BOOTMAGIC_ENABLE          = no
-CUSTOM_UNICODE_ENABLE            = no
-HAPTIC_ENABLE                    = no
-OLED_ENABLE                      = no
-RGBLIGHT_ENABLE                  = no
-SWAP_HANDS_ENABLE                = no
-TAP_DANCE_ENABLE                 = no
-WPM_ENABLE                       = no
+AUTOCORRECT_ENABLE      = no
+AUDIO_ENABLE            = no
+ENCODER_ENABLE          = no
+CUSTOM_BOOTMAGIC_ENABLE = no
+CUSTOM_UNICODE_ENABLE   = no
+HAPTIC_ENABLE           = no
+OLED_ENABLE             = no
+RGBLIGHT_ENABLE         = no
+SWAP_HANDS_ENABLE       = no
+TAP_DANCE_ENABLE        = no
+WPM_ENABLE              = no
 
-MOUSE_SHARED_EP                  = no
+MOUSE_SHARED_EP         = no
 
 ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f411)
-    BOOTLOADER                       = tinyuf2
-    AUTOCORRECT_ENABLE               = yes
-    LTO_SUPPORTED                    = no
-    OVERLOAD_FEATURES                = yes
-    HAPTIC_ENABLE                    = no
-    HAPTIC_DRIVER                    = drv2605l
-    RTC_DRIVER                       = ds3231
-    WATCHDOG_ENABLE                  = yes
-    OLED_ENABLE                      = yes
-    RTC_ENABLE                       = yes
+    BOOTLOADER        = tinyuf2
+    OVERLOAD_FEATURES = yes
+
+    HAPTIC_DRIVER     = drv2605l
+    OLED_ENABLE       = yes
+    RTC_DRIVER        = ds3231
 endif
 ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f405)
-    BOOTLOADER                       = tinyuf2
-    AUTOCORRECT_ENABLE               = yes
-    OVERLOAD_FEATURES                = yes
-    RTC_ENABLE                       = yes
-    RTC_DRIVER                       = vendor
-    WATCHDOG_ENABLE                  = yes
-    OLED_ENABLE                      = no
-    RGB_MATRIX_ENABLE                = yes
-    RGBLIGHT_DRIVER                  = custom
-    LAYER_MAP_ENABLE                 = yes
-    HAPTIC_ENABLE                    = yes
+    BOOTLOADER                            = tinyuf2
+    OVERLOAD_FEATURES                     = yes
 
-    BACKLIGHT_ENABLE                 = yes
-    QUANTUM_PAINTER_ENABLE           = yes
-    CUSTOM_QUANTUM_PAINTER_ILI9341   = yes
-    CUSTOM_QUANTUM_PAINTER_ILI9488   = no
-    CUSTOM_QUANTUM_PAINTER_ST7789    = no
-    CUSTOM_QUANTUM_PAINTER_ENABLE    = yes
-    DISPLAY_KEYLOGGER_ENABLE         = yes
-    I2C_DRIVER_REQUIRED              = yes
+    BACKLIGHT_ENABLE                      = yes
+    RGB_MATRIX_ENABLE                     = yes
+    RGBLIGHT_DRIVER                       = custom
+    QUANTUM_PAINTER_ENABLE                = yes
+    CUSTOM_QUANTUM_PAINTER_ENABLE         = yes
+    CUSTOM_QUANTUM_PAINTER_ILI9341        = yes
+    CUSTOM_QUANTUM_PAINTER_ILI9488        = no
+    CUSTOM_QUANTUM_PAINTER_ST7789_170X320 = no
+    CUSTOM_QUANTUM_PAINTER_ST7789_135X240 = no
 endif
+
 ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
-    AUDIO_ENABLE                     = yes
-    CAPS_WORD_ENABLE                 = yes
-    CUSTOM_BOOTMAGIC_ENABLE          = yes
-    CUSTOM_UNICODE_ENABLE            = yes
-    ENCODER_ENABLE                   = yes
-    ENCODER_MAP_ENABLE               = yes
-    RGBLIGHT_ENABLE                  = yes
-    RGBLIGHT_STARTUP_ANIMATION       = no
-    TAP_DANCE_ENABLE                 = yes
-    SWAP_HANDS_ENABLE                = yes
-    WPM_ENABLE                       = yes
-    SENTENCE_CASE_ENABLE             = yes
-    DISPLAY_KEYLOGGER_ENABLE         = yes
-    CLAP_TRAP_ENABLE                 = yes
-    LTO_ENABLE                       = yes
-    OPT                              = fast
+    AUDIO_ENABLE                  = yes
+    AUTOCORRECT_ENABLE            = yes
+    CAPS_WORD_ENABLE              = yes
+    CLAP_TRAP_ENABLE              = yes
+    CUSTOM_BOOTMAGIC_ENABLE       = yes
+    CUSTOM_UNICODE_ENABLE         = yes
+    DISPLAY_KEYLOGGER_ENABLE      = yes
+    ENCODER_ENABLE                = yes
+    ENCODER_MAP_ENABLE            = yes
+    HAPTIC_ENABLE                 = yes
+    LAYER_MAP_ENABLE              = yes
+    I2C_DRIVER_REQUIRED           = yes
+    LTO_ENABLE                    = yes
+    MULTITHREADED_LIGHTING_ENABLE = yes
+    MULTITHREADED_PAINTER_ENABLE  = no
+    OPT                           = fast
+    RGBLIGHT_ENABLE               = yes
+    RGBLIGHT_STARTUP_ANIMATION    = no
+    RTC_ENABLE                    = yes
+    RTC_TOTP_ENABLE               = yes
+    SENTENCE_CASE_ENABLE          = yes
+    SWAP_HANDS_ENABLE             = yes
+    TAP_DANCE_ENABLE              = yes
+    WATCHDOG_ENABLE               = yes
+    WPM_ENABLE                    = yes
 endif
