@@ -49,38 +49,6 @@ __attribute__((weak)) void display_handler_clap_trap(char *text_buffer, size_t b
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.gaming.clap_trap_enable ? "on" : "off");
 }
 
-bool menu_handler_i2c_scanner(menu_input_t input) {
-    switch (input) {
-        case menu_input_left:
-        case menu_input_right:
-            userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
-            eeconfig_update_user_datablock(&userspace_config);
-            return false;
-        default:
-            return true;
-    }
-}
-
-__attribute__((weak)) void display_handler_i2c_scanner(char *text_buffer, size_t buffer_len) {
-    snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.debug.i2c_scanner_enable ? "on" : "off");
-}
-
-bool menu_handler_scan_rate(menu_input_t input) {
-    switch (input) {
-        case menu_input_left:
-        case menu_input_right:
-            userspace_config.debug.matrix_scan_print = !userspace_config.debug.matrix_scan_print;
-            eeconfig_update_user_datablock(&userspace_config);
-            return false;
-        default:
-            return true;
-    }
-}
-
-__attribute__((weak)) void display_handler_scan_rate(char *text_buffer, size_t buffer_len) {
-    snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.debug.matrix_scan_print ? "on" : "off");
-}
-
 menu_entry_t user_settings_option_entries[] = {
     MENU_ENTRY_CHILD("Overwatch Mode", "OW", overwatch_mode),
     MENU_ENTRY_CHILD("Gamepad 1<->2 Swap", "1-2 SWP", gamepad_swap),
