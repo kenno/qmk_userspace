@@ -1,3 +1,4 @@
+RTC_DRIVER ?= vendor
 VALID_RTC_DRIVER_TYPES := vendor custom ds3231 ds1307 pcf8523
 
 ifeq ($(strip $(RTC_ENABLE)), yes)
