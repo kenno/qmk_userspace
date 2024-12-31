@@ -124,6 +124,22 @@ __attribute__((weak)) void display_handler_quantum_painter_debugging(char *text_
 }
 #endif
 
+bool menu_handler_keylogger(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+            userspace_config.debug.console_keylogger = !userspace_config.debug.console_keylogger;
+            eeconfig_update_user_datablock(&userspace_config);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_keylogger(char *text_buffer, size_t buffer_len) {
+    snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.debug.console_keylogger ? "on" : "off");
+}
+
 menu_entry_t debug_entries[] = {
     MENU_ENTRY_CHILD("Debugging", "Enabled", debugging_enable), // force formatting
     MENU_ENTRY_CHILD("Keyboard Debugging", "Keeb", keyboard_debugging),
@@ -137,4 +153,5 @@ menu_entry_t debug_entries[] = {
 #endif
     MENU_ENTRY_CHILD("I2C Scanner", "I2C Scan", i2c_scanner),
     MENU_ENTRY_CHILD("Matrix Scan Rate Print", "Scan Rate", scan_rate),
+    MENU_ENTRY_CHILD("Console Keylogger", "Keylogger", keylogger),
 };

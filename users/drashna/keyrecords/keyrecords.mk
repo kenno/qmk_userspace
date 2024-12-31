@@ -18,7 +18,7 @@ ifeq ($(strip $(TAP_DANCE_ENABLE)), yes)
     CUSTOM_TAP_DANCE_ENABLE ?= yes
 endif
 
-KEYLOGGER_ENABLE ?= no
+KEYLOGGER_ENABLE ?= yes
 ifeq ($(strip $(KEYLOGGER_ENABLE)), yes)
     OPT_DEFS += -DKEYLOGGER_ENABLE
 endif

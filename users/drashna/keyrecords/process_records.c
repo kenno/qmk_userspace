@@ -164,10 +164,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // If console is enabled, it will print the matrix position and status of each key pressed
 #ifdef KEYLOGGER_ENABLE
-    uprintf("KL: %s, kc: 0x%04X, col: %2u, row: %2u, pressed: %1d, time: %5u, int: %1d, count: %u\n",
-            keycode_name(keycode, (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT), keycode, record->event.key.col,
-            record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted,
-            record->tap.count);
+    if (userspace_config.debug.console_keylogger) {
+        xprintf("KL: %s, kc: 0x%04X, col: %2u, row: %2u, pressed: %1d, time: %5u, int: %1d, count: %u\n",
+                keycode_name(keycode, (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT), keycode,
+                record->event.key.col, record->event.key.row, record->event.pressed, record->event.time,
+                record->tap.interrupted, record->tap.count);
+    }
 #endif // KEYLOGGER_ENABLE
 
 #ifdef ACHORDION_ENABLE

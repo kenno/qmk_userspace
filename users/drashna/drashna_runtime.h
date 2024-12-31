@@ -55,6 +55,7 @@ typedef union PACKED {
         struct {
             bool i2c_scanner_enable : 1;
             bool matrix_scan_print  : 1;
+            bool console_keylogger  : 1;
         } debug;
         struct {
             struct {
