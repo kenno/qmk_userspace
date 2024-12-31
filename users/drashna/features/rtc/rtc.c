@@ -232,6 +232,7 @@ void rtc_init(void) {
     if (rtc_initialized) {
         rtc_check_dst_format(&rtc_time);
         last_rtc_read = timer_read() + RTC_READ_INTERVAL;
+        srand(rtc_time.unixtime);
     }
 }
 
