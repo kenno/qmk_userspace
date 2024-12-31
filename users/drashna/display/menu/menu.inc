@@ -38,6 +38,9 @@
 #include "submenus/rtc_options.h"
 #include "submenus/user_settings_options.h"
 #include "submenus/debugging_options.h"
+#ifdef SECRET_MENU_ENABLE
+#    include "secrets_menu.h"
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Root menu
@@ -74,6 +77,9 @@ menu_entry_t root_entries[] = {
     MENU_ENTRY_PARENT("RTC Settings", "RTC", rtc_config_entries),
 #endif // RTC_ENABLE
     MENU_ENTRY_PARENT("User Settings", "User", user_settings_option_entries),
+#ifdef SECRET_MENU_ENABLE
+    MENU_ENTRY_PARENT("Secret Settings", "Secret", secret_entries),
+#endif
     MENU_ENTRY_PARENT("Debug Settings", "Debug", debug_entries),
 };
 
