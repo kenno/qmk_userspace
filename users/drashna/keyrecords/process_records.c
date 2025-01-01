@@ -266,10 +266,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #    else  // SPLIT_KEYBOARD
             if (!record->event.pressed) {
 #    endif // SPLIT_KEYBOARD
-#    if defined(CUSTOM_RGBLIGHT) && !defined(RGBLIGHT_DISABLE_KEYCODES)
+#    if defined(CUSTOM_RGBLIGHT)
                 rgblight_toggle();
 #    endif // CUSTOM_RGBLIGHT
-#    if defined(CUSTOM_RGB_MATRIX) && !defined(RGB_MATRIX_DISABLE_KEYCODES)
+#    if defined(CUSTOM_RGB_MATRIX)
                 rgb_matrix_toggle();
 #    endif // CUSTOM_RGB_MATRIX
             }
@@ -277,12 +277,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case QK_UNDERGLOW_MODE_NEXT:
         case QK_UNDERGLOW_MODE_PREVIOUS:
-        case RGB_MODE_PLAIN ... RGB_MODE_TWINKLE:
-        case QK_RGB_MATRIX_MODE_NEXT:
-        case QK_RGB_MATRIX_MODE_PREVIOUS:
             if (record->event.pressed) {
-                bool is_eeprom_updated;
-#    if defined(CUSTOM_RGBLIGHT) && !defined(RGBLIGHT_DISABLE_KEYCODES)
+                bool is_eeprom_updated = false;
+#    if defined(CUSTOM_RGBLIGHT)
                 // This disables layer indication, as it's assumed that if you're changing this ... you want that
                 // disabled
                 if (userspace_config.rgb.layer_change) {
@@ -303,6 +300,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
+        case QK_RGB_MATRIX_MODE_NEXT:
+        case QK_RGB_MATRIX_MODE_PREVIOUS:
+            if (record->event.pressed) {
+                bool is_eeprom_updated = false;
+#    if defined(CUSTOM_RGB_MATRIX) && defined(RGB_MATRIX_FRAMEBUFFER_EFFECTS)
+                if (userspace_config.rgb.idle_anim) {
+                    userspace_config.rgb.idle_anim = false;
+                    dprintf("RGB Matrix Idle Animation [EEPROM]: %u\n", userspace_config.rgb.idle_anim);
+                    is_eeprom_updated = true;
+                }
+#    endif // CUSTOM_RGB_MATRIX && RGB_MATRIX_FRAMEBUFFER_EFFECTS
+                if (is_eeprom_updated) {
+                    eeconfig_update_user_datablock(&userspace_config);
+                }
+            }
+            break;
+
 #endif // CUSTOM_RGBLIGHT || CUSTOM_RGB_MATRIX
         case KEYLOCK:
             if (record->event.pressed) {
