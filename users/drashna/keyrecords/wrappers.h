@@ -246,22 +246,22 @@ NOTE: These are all the same length.  If you do a search/replace
 
 
 #define _________________RAISE_L1__________________       ________________NUMBER_LEFT________________
-#define _________________RAISE_L2__________________       RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, RM_TOGG
-#define _________________RAISE_L3__________________       RM_PREV, RM_HUED, RM_SATD, RM_VALD, KC_RGB_T
+#define _________________RAISE_L2__________________       _________________FUNC_LEFT_________________
+#define _________________RAISE_L3__________________       _________________FUNC_RIGHT________________
 
 #define _________________RAISE_R1__________________       ________________NUMBER_RIGHT_______________
-#define _________________RAISE_R2__________________       _______, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC
-#define _________________RAISE_R3__________________       _______, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+#define _________________RAISE_R2__________________       KC_NO  , KC_MINS, KC_EQL , KC_LBRC, KC_RBRC
+#define _________________RAISE_R3__________________       KC_NO  , KC_LEFT, KC_DOWN, KC_UP  ,  KC_RGHT
 
 
-#define _________________ADJUST_L2_________________       MU_TOGG, CK_TOGG, AU_ON,   AU_OFF,  CG_NORM
-#ifndef RGBLIGHT_ENABLE
-#define _________________ADJUST_L1_________________       RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, RM_TOGG
-#define _________________ADJUST_L3_________________       RM_PREV, RM_HUED, RM_SATD, RM_VALD, KC_RGB_T
+#ifndef RGB_MATRIX_ENABLE
+#    define _________________ADJUST_L1_________________       RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, RM_TOGG
+#    define _________________ADJUST_L3_________________       RM_PREV, RM_HUED, RM_SATD, RM_VALD, KC_RGB_T
 #else
-#define _________________ADJUST_L1_________________       UG_NEXT, UG_HUEU, UG_SATU, UG_VALU, UG_TOGG
-#define _________________ADJUST_L3_________________       UG_PREV, UG_HUED, UG_SATD, UG_VALD, KC_RGB_T
+#    define _________________ADJUST_L1_________________       UG_NEXT, UG_HUEU, UG_SATU, UG_VALU, UG_TOGG
+#    define _________________ADJUST_L3_________________       UG_PREV, UG_HUED, UG_SATD, UG_VALD, KC_RGB_T
 #endif
+#define _________________ADJUST_L2_________________       MU_TOGG, CK_TOGG, AU_ON,   AU_OFF,  CG_NORM
 
 #define _________________ADJUST_R1_________________       KC_SEC1, KC_SEC2, KC_SEC3, KC_SEC4, KC_SEC5
 #define _________________ADJUST_R2_________________       CG_SWAP, QWERTY,  CLMKDH,  COLEMAK, DVORAK
