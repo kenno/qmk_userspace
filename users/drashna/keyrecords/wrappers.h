@@ -254,7 +254,7 @@ NOTE: These are all the same length.  If you do a search/replace
 #define _________________RAISE_R3__________________       KC_NO  , KC_LEFT, KC_DOWN, KC_UP  ,  KC_RGHT
 
 
-#ifndef RGB_MATRIX_ENABLE
+#ifdef RGB_MATRIX_ENABLE
 #    define _________________ADJUST_L1_________________       RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, RM_TOGG
 #    define _________________ADJUST_L3_________________       RM_PREV, RM_HUED, RM_SATD, RM_VALD, KC_RGB_T
 #else
