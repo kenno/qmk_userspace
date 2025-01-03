@@ -51,3 +51,5 @@ bool          menu_handle_input(menu_input_t input);
 bool          process_record_menu(uint16_t keycode, keyrecord_t *record);
 void          display_menu_set_dirty(bool state);
 uint8_t       get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries);
+void          keyboard_task_display_menu_pre(void);
+void          keyboard_task_display_menu_post(void);

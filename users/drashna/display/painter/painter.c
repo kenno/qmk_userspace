@@ -1090,37 +1090,61 @@ void qp_backlight_disable(void) {
 #endif // BACKLIGHT_ENABLE
 }
 
+void painter_display_power(bool enable) {
+#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+    ili9341_display_power(false);
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+    ili9488_display_power(false);
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    st7789_135x240_display_power(false);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    st7789_170x320_display_power(false);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+}
+
+void painter_init_user(void) {
+    keyboard_task_display_menu_pre();
+#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+    init_display_ili9341();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+    init_display_ili9488();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    init_display_st7789_135x240();
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    init_display_st7789_170x320();
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+    keyboard_task_display_menu_post();
+}
+
+void painter_render_user(void) {
+#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+    ili9341_draw_user();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+    ili9488_draw_user();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
+    st7789_135x240_draw_user();
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
+    st7789_170x320_draw_user();
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+}
+
 #ifdef MULTITHREADED_PAINTER_ENABLE
 static THD_WORKING_AREA(waUIThread, 1024);
 static THD_FUNCTION(UIThread, arg) {
     (void)arg;
     chRegSetThreadName("ui");
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    init_display_ili9341();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    init_display_ili9488();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-    init_display_st7789_135x240();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-    init_display_st7789_170x320();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
-
+    painter_init_user();
     while (painter_thread_running) {
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-        ili9341_draw_user();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-        ili9488_draw_user();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-        st7789_135x240_draw_user();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-        st7789_170x320_draw_user();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+        painter_render_user();
         wait_ms(10);
     }
 }
@@ -1133,49 +1157,10 @@ void housekeeping_task_quantum_painter(void) {
         bool        is_device_suspended(void);
         if (suspended != is_device_suspended()) {
             suspended = is_device_suspended();
-            if (suspended) {
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-                ili9341_display_power(false);
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-                ili9488_display_power(false);
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-                st7789_135x240_display_power(false);
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-                st7789_170x320_display_power(false);
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
-
-            } else {
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-                ili9341_display_power(true);
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-                ili9488_display_power(true);
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-                st7789_135x240_display_power(true);
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-                st7789_170x320_display_power(true);
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
-            }
+            painter_display_power(!suspended);
         }
     }
 #endif
-#ifdef RTC_ENABLE
-    if (rtc_is_connected()) {
-        static uint8_t last_second = 0xFF;
-        if (rtc_read_time_struct().second != last_second) {
-            last_second = rtc_read_time_struct().second;
-            display_menu_set_dirty(true);
-        }
-    }
-#endif // RTC_ENABLE
-    if (menu_state_runtime.dirty) {
-        display_menu_set_dirty(true);
-    }
 #if defined(RGB_MATRIX_ENABLE)
     if (has_rgb_matrix_config_changed()) {
         display_menu_set_dirty(true);
@@ -1190,18 +1175,7 @@ void housekeeping_task_quantum_painter(void) {
     static uint32_t last_tick = 0;
     uint32_t        now       = timer_read32();
     if (TIMER_DIFF_32(now, last_tick) >= (QUANTUM_PAINTER_TASK_THROTTLE)) {
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-        ili9341_draw_user();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-        ili9488_draw_user();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-        st7789_135x240_draw_user();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-        st7789_170x320_draw_user();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+        painter_render_user();
         last_tick = now;
     }
 #endif // MULTITHREADED_PAINTER_ENABLE
@@ -1212,9 +1186,6 @@ void housekeeping_task_quantum_painter(void) {
         qp_backlight_enable();
     }
 #endif
-    if (!menu_state_runtime.has_rendered && !menu_state_runtime.dirty) {
-        menu_state_runtime.has_rendered = true;
-    }
     if (console_has_redrawn) {
         console_log_needs_redraw = false;
     }
@@ -1237,50 +1208,17 @@ void keyboard_post_init_quantum_painter(void) {
 #ifdef MULTITHREADED_PAINTER_ENABLE
     painter_thread = chThdCreateStatic(waUIThread, sizeof(waUIThread), LOWPRIO, UIThread, NULL);
 #else
-#    ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    init_display_ili9341();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    init_display_ili9488();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-    init_display_st7789_135x240();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#    if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-    init_display_st7789_170x320();
-#    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+    painter_init_user();
 #endif     // MULTITHREADED_PAINTER_ENABLE
 }
 
 void suspend_power_down_quantum_painter(void) {
     qp_backlight_disable();
-#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    ili9341_display_power(false);
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    ili9488_display_power(false);
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-    st7789_135x240_display_power(false);
-#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-    st7789_170x320_display_power(false);
-#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+    painter_display_power(false);
 }
 
 void suspend_wakeup_init_quantum_painter(void) {
-#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    ili9341_display_power(true);
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    ili9488_display_power(true);
-#endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-    st7789_135x240_display_power(true);
-#endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
-#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-    st7789_170x320_display_power(true);
-#endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+    painter_display_power(false);
     qp_backlight_enable();
 }
 

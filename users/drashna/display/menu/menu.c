@@ -293,3 +293,23 @@ void display_menu_set_dirty(bool state) {
     menu_state_runtime.dirty        = state;
     menu_state_runtime.has_rendered = !state;
 }
+
+void keyboard_task_display_menu_pre(void) {
+    if (menu_state_runtime.dirty) {
+        display_menu_set_dirty(true);
+    }
+#ifdef RTC_ENABLE
+    if (rtc_is_connected()) {
+        static uint8_t last_second = 0xFF;
+        if (rtc_read_time_struct().second != last_second && get_current_menu() == rtc_config_entries) {
+            last_second = rtc_read_time_struct().second;
+            display_menu_set_dirty(true);
+        }
+    }
+#endif // RTC_ENABLE
+}
+void keyboard_task_display_menu_post(void) {
+    if (!menu_state_runtime.has_rendered && !menu_state_runtime.dirty) {
+        menu_state_runtime.has_rendered = true;
+    }
+}
