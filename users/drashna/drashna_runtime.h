@@ -92,7 +92,6 @@ _Static_assert(sizeof(userspace_config_t) <= EECONFIG_USER_DATA_SIZE, "User EECO
 extern userspace_config_t userspace_config;
 
 typedef struct PACKED {
-    bool    dirty;
     bool    is_in_menu;
     uint8_t selected_child;
     uint8_t menu_stack[8];

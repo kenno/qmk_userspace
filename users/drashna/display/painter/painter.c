@@ -25,6 +25,12 @@
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
 #    include "display/painter/st7789_170x320.h"
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+#if defined(RGB_MATRIX_ENABLE)
+#    include "rgb/rgb_matrix_stuff.h"
+#endif // defined(RGB_MATRIX_ENABLE)
+#if defined(RGBLIGHT_ENABLE)
+#    include "rgb/rgb_stuff.h"
+#endif // defined(RGBLIGHT_ENABLE)
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
 #endif // RTC_ENABLE
@@ -1163,10 +1169,23 @@ void housekeeping_task_quantum_painter(void) {
         static uint8_t last_second = 0xFF;
         if (rtc_read_time_struct().second != last_second) {
             last_second = rtc_read_time_struct().second;
-            display_menu_set_dirty();
+            display_menu_set_dirty(true);
         }
     }
 #endif // RTC_ENABLE
+    if (menu_state_runtime.dirty) {
+        display_menu_set_dirty(true);
+    }
+#if defined(RGB_MATRIX_ENABLE)
+    if (has_rgb_matrix_config_changed()) {
+        display_menu_set_dirty(true);
+    }
+#endif
+#if defined(RGBLIGHT_ENABLE)
+    if (has_rgblight_config_changed()) {
+        display_menu_set_dirty(true);
+    }
+#endif
 #ifndef MULTITHREADED_PAINTER_ENABLE
     static uint32_t last_tick = 0;
     uint32_t        now       = timer_read32();
@@ -1185,12 +1204,7 @@ void housekeeping_task_quantum_painter(void) {
 #    endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
         last_tick = now;
     }
-#endif     // MULTITHREADED_PAINTER_ENABLE
-    extern bool has_flushed_menu;
-    if (!has_flushed_menu) {
-        has_flushed_menu                         = true;
-        userspace_runtime_state.menu_state.dirty = false;
-    }
+#endif // MULTITHREADED_PAINTER_ENABLE
 #if (QUANTUM_PAINTER_DISPLAY_TIMEOUT) > 0
     if (is_keyboard_master() && (last_input_activity_elapsed() > QUANTUM_PAINTER_DISPLAY_TIMEOUT)) {
         qp_backlight_disable();
@@ -1198,6 +1212,9 @@ void housekeeping_task_quantum_painter(void) {
         qp_backlight_enable();
     }
 #endif
+    if (!menu_state_runtime.has_rendered && !menu_state_runtime.dirty) {
+        menu_state_runtime.has_rendered = true;
+    }
     if (console_has_redrawn) {
         console_log_needs_redraw = false;
     }

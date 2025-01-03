@@ -159,13 +159,11 @@ __attribute__((weak)) void ili9488_draw_user(void) {
     bool rgb_redraw = false;
 #    if defined(RGB_MATRIX_ENABLE)
     if (has_rgb_matrix_config_changed()) {
-        display_menu_set_dirty();
         rgb_redraw = true;
     }
 #    endif
 #    if defined(RGBLIGHT_ENABLE)
     if (has_rgblight_config_changed()) {
-        display_menu_set_dirty();
         rgb_redraw = true;
     }
 #    endif

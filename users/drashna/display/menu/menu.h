@@ -25,6 +25,12 @@ typedef enum _menu_input_t {
     menu_input_right,
 } menu_input_t;
 
+typedef struct PACKED {
+    bool dirty        : 1;
+    bool has_rendered : 1;
+} menu_state_runtime_t;
+extern menu_state_runtime_t menu_state_runtime;
+
 typedef struct _menu_entry_t {
     menu_flags_t flags;
     const char  *text;
@@ -43,5 +49,5 @@ menu_entry_t *get_current_menu(void);
 menu_entry_t *get_selected_menu_item(void);
 bool          menu_handle_input(menu_input_t input);
 bool          process_record_menu(uint16_t keycode, keyrecord_t *record);
-void          display_menu_set_dirty(void);
+void          display_menu_set_dirty(bool state);
 uint8_t       get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries);

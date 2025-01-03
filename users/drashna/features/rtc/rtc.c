@@ -27,7 +27,7 @@
 #endif // VENDOR_RTC_DRIVER_ENABLE
 
 #ifdef DISPLAY_DRIVER_ENABLE
-void display_menu_set_dirty(void);
+#    include "display/menu/menu.h"
 #endif // DISPLAY_DRIVER_ENABLE
 
 #define strncpy_nowarn(...) (strncpy(__VA_ARGS__) < 0 ? abort() : (void)0)
@@ -398,7 +398,7 @@ void rtc_set_time(rtc_time_t time) {
     vendor_rtc_set_time(time);
 #endif // VENDOR_RTC_DRIVER_ENABLE
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -411,7 +411,7 @@ void rtc_year_increase(void) {
     time.year++;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -424,7 +424,7 @@ void rtc_year_decrease(void) {
     time.year--;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -443,7 +443,7 @@ void rtc_month_increase(void) {
     time.month++;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -462,7 +462,7 @@ void rtc_month_decrease(void) {
     time.month--;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -481,7 +481,7 @@ void rtc_date_increase(void) {
     time.date++;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -500,7 +500,7 @@ void rtc_date_decrease(void) {
     time.date--;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -526,7 +526,7 @@ void rtc_hour_increase(void) {
     }
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -552,7 +552,7 @@ void rtc_hour_decrease(void) {
     }
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -572,7 +572,7 @@ void rtc_minute_increase(void) {
     time.minute++;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -591,7 +591,7 @@ void rtc_minute_decrease(void) {
     time.minute--;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -610,7 +610,7 @@ void rtc_second_increase(void) {
     time.second++;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -629,7 +629,7 @@ void rtc_second_decrease(void) {
     time.second--;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -645,7 +645,7 @@ void rtc_am_pm_toggle(void) {
     time.am_pm = (rtc_time_am_pm_t)(time.am_pm == RTC_AM ? RTC_PM : RTC_AM);
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -671,7 +671,7 @@ void rtc_format_toggle(void) {
     }
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }
 
@@ -684,6 +684,6 @@ void rtc_dst_toggle(void) {
     time.is_dst     = !time.is_dst;
     rtc_set_time(time);
 #ifdef DISPLAY_DRIVER_ENABLE
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #endif // DISPLAY_DRIVER_ENABLE
 }

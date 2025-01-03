@@ -16,8 +16,8 @@
 #ifndef DISPLAY_MENU_TIMEOUT
 #    define DISPLAY_MENU_TIMEOUT 30000
 #endif // !DISPLAY_MENU_TIMEOUT
-deferred_token menu_deferred_token = INVALID_DEFERRED_TOKEN;
-bool           has_flushed_menu    = true;
+menu_state_runtime_t menu_state_runtime  = {.dirty = true, .has_rendered = false};
+deferred_token       menu_deferred_token = INVALID_DEFERRED_TOKEN;
 
 menu_entry_t *get_current_menu(void) {
     if (userspace_runtime_state.menu_state.menu_stack[0] == 0xFF) {
@@ -94,10 +94,9 @@ bool menu_handle_input(menu_input_t input) {
                     }
                 }
             } else if (selected->flags & menu_flag_is_value) {
-                userspace_runtime_state.menu_state.dirty = true;
-                return selected->child.menu_handler(menu_input_right);
+                menu_state_runtime.dirty = true;
+                return selected->child.menu_handler(menu_input_enter);
             }
-
             return false;
         case menu_input_up:
             userspace_runtime_state.menu_state.selected_child =
@@ -112,7 +111,7 @@ bool menu_handle_input(menu_input_t input) {
         case menu_input_left:
         case menu_input_right:
             if (selected->flags & menu_flag_is_value) {
-                userspace_runtime_state.menu_state.dirty = true;
+                menu_state_runtime.dirty = true;
                 return selected->child.menu_handler(input);
             }
             return false;
@@ -290,7 +289,7 @@ uint8_t get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries) {
     return l_scroll_offset;
 }
 
-void display_menu_set_dirty(void) {
-    has_flushed_menu                         = false;
-    userspace_runtime_state.menu_state.dirty = true;
+void display_menu_set_dirty(bool state) {
+    menu_state_runtime.dirty        = state;
+    menu_state_runtime.has_rendered = !state;
 }

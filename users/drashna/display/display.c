@@ -3,6 +3,7 @@
 
 #include "drashna.h"
 #include "display.h"
+#include "display/menu/menu.h"
 
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
 #    include "display/oled/oled_stuff.h"
@@ -132,11 +133,9 @@ void keyboard_post_init_display_driver(void) {
 #if defined(QUANTUM_PAINTER_ENABLE) || defined(OLED_ENABLE)
     userspace_runtime_state.menu_state = (menu_state_t){
 #    ifdef DISPLAY_MENU_ENABLED_DEFAULT
-        .dirty          = true,
         .is_in_menu     = true,
         .selected_child = 0x01,
 #    else
-        .dirty          = false,
         .is_in_menu     = false,
         .selected_child = 0xFF,
 #    endif // DISPLAY_MENU_ENABLED_DEFAULT
@@ -202,8 +201,7 @@ void display_sendchar_hook(uint8_t c) {
 }
 
 void display_rotate_screen(bool clockwise) {
-    void display_menu_set_dirty(void);
-    display_menu_set_dirty();
+    display_menu_set_dirty(true);
 #if defined(DISPLAY_FULL_ROTATION_ENABLE)
     if (clockwise) {
         userspace_config.display.rotation = (userspace_config.display.rotation + 1) % 4;

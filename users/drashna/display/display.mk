@@ -74,9 +74,6 @@ ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
            $(USER_PATH)/display/painter/graphics.qgf.c \
            $(USER_PATH)/display/painter/qp_render_menu.c
 
-    ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
-        OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
-    endif
     ifeq ($(strip $(MULTITHREADED_PAINTER_ENABLE)), yes)
         OPT_DEFS += -DMULTITHREADED_PAINTER_ENABLE
     endif
@@ -99,10 +96,13 @@ endif
 
 ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)
     DEFERRED_EXEC_ENABLE = yes
+    OPT_DEFS += -DDISPLAY_DRIVER_ENABLE
     SRC += $(USER_PATH)/display/display.c \
         $(USER_PATH)/display/menu/menu.c
 
-    OPT_DEFS += -DDISPLAY_DRIVER_ENABLE
+    ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
+        OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
+    endif
     ifeq ($(strip $(DISPLAY_KEYLOGGER_ENABLE)), yes)
         OPT_DEFS += -DDISPLAY_KEYLOGGER_ENABLE
     endif
