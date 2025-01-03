@@ -1106,7 +1106,6 @@ void painter_display_power(bool enable) {
 }
 
 void painter_init_user(void) {
-    keyboard_task_display_menu_pre();
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     init_display_ili9341();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -1119,10 +1118,10 @@ void painter_init_user(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     init_display_st7789_170x320();
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
-    keyboard_task_display_menu_post();
 }
 
 void painter_render_user(void) {
+    keyboard_task_display_menu_pre();
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     ili9341_draw_user();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -1135,6 +1134,7 @@ void painter_render_user(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     st7789_170x320_draw_user();
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+    keyboard_task_display_menu_post();
 }
 
 #ifdef MULTITHREADED_PAINTER_ENABLE
