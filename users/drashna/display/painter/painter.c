@@ -1092,16 +1092,16 @@ void qp_backlight_disable(void) {
 
 void painter_display_power(bool enable) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    ili9341_display_power(false);
+    ili9341_display_power(enable);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    ili9488_display_power(false);
+    ili9488_display_power(enable);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_135X240)
-    st7789_135x240_display_power(false);
+    st7789_135x240_display_power(enable);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_135X240
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
-    st7789_170x320_display_power(false);
+    st7789_170x320_display_power(enable);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
 }
 
@@ -1218,7 +1218,7 @@ void suspend_power_down_quantum_painter(void) {
 }
 
 void suspend_wakeup_init_quantum_painter(void) {
-    painter_display_power(false);
+    painter_display_power(true);
     qp_backlight_enable();
 }
 
