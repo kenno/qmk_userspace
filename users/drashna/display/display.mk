@@ -3,7 +3,7 @@ CUSTOM_OLED_DRIVER ?= yes
 
 ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ILI9341)),yes)
-        CUSTOM_QUANTUM_PAINTER_ENABLE = yes
+        CUSTOM_QUANTUM_PAINTER_ENABLE ?= yes
         QUANTUM_PAINTER_DRIVERS += ili9341_spi
         OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ILI9341
         SRC += $(USER_PATH)/display/painter/ili9341_display.c
@@ -15,7 +15,7 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
         endif
     endif
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ILI9488)),yes)
-        CUSTOM_QUANTUM_PAINTER_ENABLE = yes
+        CUSTOM_QUANTUM_PAINTER_ENABLE ?= yes
         QUANTUM_PAINTER_DRIVERS += ili9488_spi
         OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ILI9488
         SRC += $(USER_PATH)/display/painter/ili9488_display.c
@@ -53,32 +53,31 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
         QUANTUM_PAINTER_DRIVERS += st7789_spi
         OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ST7789
     endif
-endif
 
-ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
-    OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ENABLE
-    DISPLAY_DRIVER_REQUIRED  = yes
-    POST_CONFIG_H += $(USER_PATH)/display/painter/config.h
-    SRC += $(USER_PATH)/display/painter/fonts.qff.c \
-        $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
-        $(USER_PATH)/display/painter/graphics/qmk_powered_by.qgf.c \
-        $(USER_PATH)/display/painter/graphics/akira_explosion.qgf.c \
-        $(USER_PATH)/display/painter/graphics/asuka-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/anime-girl-jacket-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/neon-genesis-evangelion-initial-machine-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/samurai-cyberpunk-minimal-dark-8k-b3-240x320.qgf.c \
-        $(USER_PATH)/display/painter/graphics/large_nyan_cat.qgf.c \
-        $(USER_PATH)/display/painter/graphics/nyan_cat.qgf.c
+    ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ENABLE)), yes)
+        OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ENABLE
+        DISPLAY_DRIVER_REQUIRED  = yes
+        POST_CONFIG_H += $(USER_PATH)/display/painter/config.h
+        SRC += $(USER_PATH)/display/painter/fonts.qff.c \
+            $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
+            $(USER_PATH)/display/painter/graphics/qmk_powered_by.qgf.c \
+            $(USER_PATH)/display/painter/graphics/akira_explosion.qgf.c \
+            $(USER_PATH)/display/painter/graphics/asuka-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/anime-girl-jacket-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/neon-genesis-evangelion-initial-machine-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/samurai-cyberpunk-minimal-dark-8k-b3-240x320.qgf.c \
+            $(USER_PATH)/display/painter/graphics/large_nyan_cat.qgf.c \
+            $(USER_PATH)/display/painter/graphics/nyan_cat.qgf.c
 
-    SRC += $(USER_PATH)/display/painter/painter.c \
-           $(USER_PATH)/display/painter/graphics.qgf.c \
-           $(USER_PATH)/display/painter/qp_render_menu.c
+        SRC += $(USER_PATH)/display/painter/painter.c \
+                $(USER_PATH)/display/painter/graphics.qgf.c \
+                $(USER_PATH)/display/painter/qp_render_menu.c
 
-    ifeq ($(strip $(MULTITHREADED_PAINTER_ENABLE)), yes)
-        OPT_DEFS += -DMULTITHREADED_PAINTER_ENABLE
+        ifeq ($(strip $(MULTITHREADED_PAINTER_ENABLE)), yes)
+            OPT_DEFS += -DMULTITHREADED_PAINTER_ENABLE
+        endif
     endif
 endif
-
 
 ifeq ($(strip $(OLED_ENABLE)), yes)
     ifeq ($(strip $(CUSTOM_OLED_DRIVER)), yes)
