@@ -170,19 +170,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
     uint16_t      height;
     qp_get_geometry(display, &width, &height, NULL, NULL, NULL);
 
-#if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
-    bool rgb_redraw = false;
-#    if defined(RGB_MATRIX_ENABLE)
-    if (has_rgb_matrix_config_changed()) {
-        rgb_redraw = true;
-    }
-#    endif
-#    if defined(RGBLIGHT_ENABLE)
-    if (has_rgblight_config_changed()) {
-        rgb_redraw = true;
-    }
-#    endif
-#endif
     if (screen_saver_sanity_checks()) {
         if (!screen_saver_redraw) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
@@ -240,7 +227,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             ypos = 20;
             xpos = 83;
 #if defined(RGB_MATRIX_ENABLE)
-            painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw || rgb_redraw, &curr_hsv,
+            painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv,
                                "RGB Matrix Config:", rgb_matrix_get_effect_name, rgb_matrix_get_hsv,
                                rgb_matrix_is_enabled(), RGB_MATRIX_MAXIMUM_BRIGHTNESS);
 #endif // RGB_MATRIX_ENABLE
@@ -573,7 +560,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if defined(RGBLIGHT_ENABLE)
             ypos = 20;
             xpos = 83;
-            painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw || rgb_redraw, &curr_hsv,
+            painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv,
                                "RGB Light Config:", rgblight_get_effect_name, rgblight_get_hsv, rgblight_is_enabled(),
                                RGBLIGHT_LIMIT_VAL);
 #    endif // RGBLIGHT_ENABLE

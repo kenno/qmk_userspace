@@ -69,6 +69,10 @@ painter_image_array_t screen_saver_image[] = {
 };
 const uint8_t screensaver_image_size = __COUNTER__;
 
+#if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
+bool rgb_redraw = false;
+#endif
+
 __attribute__((weak)) bool painter_render_side(void) {
     return is_keyboard_master();
 }
@@ -213,7 +217,7 @@ void painter_render_rgb(painter_device_t device, painter_font_handle_t font, uin
                         hsv_t (*get_rgb_hsv)(void), bool is_enabled, uint8_t max_val) {
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
     char buf[22] = {0};
-    if (force_redraw) {
+    if (force_redraw || rgb_redraw) {
         hsv_t rgb_hsv = get_rgb_hsv();
         qp_drawtext_recolor(device, x, y, font, title, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0,
                             0, 0);
@@ -1134,6 +1138,9 @@ void painter_render_user(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     st7789_170x320_draw_user();
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+#if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
+    rgb_redraw = false;
+#endif
     keyboard_task_display_menu_post();
 }
 
@@ -1164,11 +1171,13 @@ void housekeeping_task_quantum_painter(void) {
 #if defined(RGB_MATRIX_ENABLE)
     if (has_rgb_matrix_config_changed()) {
         display_menu_set_dirty(true);
+        rgb_redraw = true;
     }
 #endif
 #if defined(RGBLIGHT_ENABLE)
     if (has_rgblight_config_changed()) {
         display_menu_set_dirty(true);
+        rgb_redraw = true;
     }
 #endif
 #ifndef MULTITHREADED_PAINTER_ENABLE

@@ -155,20 +155,6 @@ __attribute__((weak)) void ili9488_draw_user(void) {
     qp_get_geometry(display, &width, &height, NULL, NULL, NULL);
     width /= 2;
 
-#if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
-    bool rgb_redraw = false;
-#    if defined(RGB_MATRIX_ENABLE)
-    if (has_rgb_matrix_config_changed()) {
-        rgb_redraw = true;
-    }
-#    endif
-#    if defined(RGBLIGHT_ENABLE)
-    if (has_rgblight_config_changed()) {
-        rgb_redraw = true;
-    }
-#    endif
-#endif
-
     char buf[50] = {0};
     (void)buf;
 
@@ -201,7 +187,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
         ypos = 20;
         xpos = 83;
 #if defined(RGB_MATRIX_ENABLE)
-        painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw || rgb_redraw, &curr_hsv,
+        painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv,
                            "RGB Matrix Config:", rgb_matrix_get_effect_name, rgb_matrix_get_hsv,
                            rgb_matrix_is_enabled(), RGB_MATRIX_MAXIMUM_BRIGHTNESS);
 #endif // RGB_MATRIX_ENABLE
@@ -556,7 +542,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
 
         ypos = 20;
         xpos = 83 + width;
-        painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw || rgb_redraw, &curr_hsv,
+        painter_render_rgb(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv,
                            "RGB Light Config:", rgblight_get_effect_name, rgblight_get_hsv, rgblight_is_enabled(),
                            RGBLIGHT_LIMIT_VAL);
 #endif // RGBLIGHT_ENABLE
