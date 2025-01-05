@@ -249,6 +249,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                 last_keymap_config.raw = keymap_config.raw;
                 keymap_config_redraw   = true;
             }
+            static bool caps_words = false;
+            if (caps_words != is_caps_word_on()) {
+                caps_words           = is_caps_word_on();
+                keymap_config_redraw = true;
+            }
             if (hue_redraw || keymap_config_redraw) {
                 xpos = 80 + 4;
                 qp_drawimage(display, xpos, ypos + 2, last_keymap_config.swap_lctl_lgui ? apple_logo : windows_logo);
@@ -264,11 +269,16 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                             last_keymap_config.autocorrect_enable ? curr_hsv.secondary.s : curr_hsv.primary.s,
                             last_keymap_config.autocorrect_enable ? curr_hsv.primary.v : disabled_val, 0, 0, 0) +
                         5;
-                xpos +=
-                    qp_drawtext_recolor(display, xpos, ypos, font_oled, "1SHT",
-                                        last_keymap_config.oneshot_enable ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                                        last_keymap_config.oneshot_enable ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                                        last_keymap_config.oneshot_enable ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
+                xpos += qp_drawtext_recolor(
+                            display, xpos, ypos, font_oled, "1SHT",
+                            last_keymap_config.oneshot_enable ? curr_hsv.secondary.h : curr_hsv.primary.h,
+                            last_keymap_config.oneshot_enable ? curr_hsv.secondary.s : curr_hsv.primary.s,
+                            last_keymap_config.oneshot_enable ? curr_hsv.primary.v : disabled_val, 0, 0, 0) +
+                        5;
+                xpos += qp_drawtext_recolor(display, xpos, ypos, font_oled, "CAPS",
+                                            is_caps_word_on() ? curr_hsv.secondary.h : curr_hsv.primary.h,
+                                            is_caps_word_on() ? curr_hsv.secondary.s : curr_hsv.primary.s,
+                                            is_caps_word_on() ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,9 +303,9 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                 xpos +=
                     qp_drawtext_recolor(
                         display, xpos, ypos, font_oled, "HOST",
-                        last_user_state.internals.host_driver_disabled ? curr_hsv.secondary.h : curr_hsv.primary.h,
-                        last_user_state.internals.host_driver_disabled ? curr_hsv.secondary.s : curr_hsv.primary.s,
-                        last_user_state.internals.host_driver_disabled ? curr_hsv.primary.v : disabled_val, 0, 0, 0) +
+                        !last_user_state.internals.host_driver_disabled ? curr_hsv.secondary.h : curr_hsv.primary.h,
+                        !last_user_state.internals.host_driver_disabled ? curr_hsv.secondary.s : curr_hsv.primary.s,
+                        !last_user_state.internals.host_driver_disabled ? curr_hsv.primary.v : disabled_val, 0, 0, 0) +
                     5;
                 xpos += qp_drawtext_recolor(
                     display, xpos, ypos, font_oled, "SWAP",
