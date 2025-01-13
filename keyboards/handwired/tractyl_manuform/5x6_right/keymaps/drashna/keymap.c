@@ -88,3 +88,13 @@ void keyboard_post_init_keymap(void) {
     qp_close_image(my_image);
 }
 #endif // QUANTUM_PAINTER_ENABLE &&  !CUSTOM_QUANTUM_PAINTER_ENABLE
+
+#ifdef USE_USB_OTG_HS_PORT
+#    pragma message("Using USB OTG HS Port")
+void early_hardware_init_post(void) {
+    palSetLineMode(
+        B14, PAL_MODE_ALTERNATE(12) | PAL_STM32_OTYPE_PUSHPULL | PAL_STM32_OSPEED_HIGHEST | PAL_STM32_PUPDR_FLOATING);
+    palSetLineMode(
+        B15, PAL_MODE_ALTERNATE(12) | PAL_STM32_OTYPE_PUSHPULL | PAL_STM32_OSPEED_HIGHEST | PAL_STM32_PUPDR_FLOATING);
+}
+#endif
