@@ -288,14 +288,32 @@ void painter_render_lock_state(painter_device_t device, painter_font_handle_t fo
 void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, bool force_redraw,
                         dual_hsv_t* curr_hsv) {
 #ifdef WPM_ENABLE
-    static uint32_t last_wpm_update = 0;
+    static wpm_sync_data_t last_wpm_update = {0};
     static char     buf[4]          = {0};
-    if (force_redraw || last_wpm_update != get_current_wpm()) {
-        last_wpm_update = get_current_wpm();
-        x += qp_drawtext_recolor(device, x, y, font, "WPM:     ", curr_hsv->primary.h, curr_hsv->primary.s,
-                                 curr_hsv->primary.v, 0, 0, 0);
+    uint16_t               temp_x          = x;
+    if (force_redraw || memcmp(&last_wpm_update, &userspace_runtime_state.wpm, sizeof(wpm_sync_data_t)) != 0) {
+        memcpy(&last_wpm_update, &userspace_runtime_state.wpm, sizeof(wpm_sync_data_t));
+        temp_x += qp_drawtext_recolor(device, temp_x, y, font, "WPM: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                      curr_hsv->primary.v, 0, 0, 0) +
+                  5;
         snprintf(buf, sizeof(buf), "%3u", get_current_wpm());
-        qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+        qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                            curr_hsv->secondary.v, 0, 0, 0);
+        temp_x = x;
+        y += font->line_height + 4;
+        temp_x += qp_drawtext_recolor(device, temp_x, y, font, "Peak:", curr_hsv->primary.h, curr_hsv->primary.s,
+                                      curr_hsv->primary.v, 0, 0, 0) +
+                  5;
+        snprintf(buf, sizeof(buf), "%3u", userspace_runtime_state.wpm.wpm_peak);
+        qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+                            curr_hsv->secondary.v, 0, 0, 0);
+        temp_x = x;
+        y += font->line_height + 4;
+        temp_x += qp_drawtext_recolor(device, temp_x, y, font, "Avg: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                                      curr_hsv->primary.v, 0, 0, 0) +
+                  5;
+        snprintf(buf, sizeof(buf), "%3u", userspace_runtime_state.wpm.wpm_avg);
+        qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
     }
 #endif // WPM_ENABLE
@@ -453,6 +471,9 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_line(device, xpos + 1, 7 + 2, xpos + 1, height - 7 - 1, hsv.h, hsv.s, hsv.v);
     qp_line(device, width - 2, 7 + 2, width - 2, height - 7 - 1, hsv.h, hsv.s, hsv.v);
 
+    // horizontal line below scan rate
+    qp_line(device, xpos + 2, 31, xpos + 80, 31, hsv.h, hsv.s, hsv.v);
+
     // horizontal line below rgb
     qp_line(device, xpos + 80, 54, xpos + 237, 54, hsv.h, hsv.s, hsv.v);
 
@@ -462,8 +483,6 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     if (right_side) {
         // vertical lines next to scan rate + wpm + pointing
         qp_line(device, xpos + 80, 16, xpos + 80, 106, hsv.h, hsv.s, hsv.v);
-        // horizontal line below scan rate + wpm
-        qp_line(device, xpos + 2, 43, xpos + 80, 43, hsv.h, hsv.s, hsv.v);
 
         // lines for unicode typing mode and mode
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
@@ -477,8 +496,6 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         qp_line(device, xpos + 121, 122, xpos + 121, 171, hsv.h, hsv.s, hsv.v);
         qp_line(device, xpos + 186, 122, xpos + 186, 171, hsv.h, hsv.s, hsv.v);
     } else {
-        // horizontal line below scan rate
-        qp_line(device, xpos + 2, 31, xpos + 80, 31, hsv.h, hsv.s, hsv.v);
         // vertical line next to nuke block
         qp_line(device, xpos + 80, 16, xpos + 80, 170, hsv.h, hsv.s, hsv.v);
 

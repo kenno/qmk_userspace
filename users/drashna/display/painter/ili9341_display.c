@@ -221,9 +221,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         painter_render_scan_rate(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
         ypos += font_oled->line_height + 4;
         if (painter_render_side()) {
-#ifdef WPM_ENABLE
-            painter_render_wpm(display, font_oled, 5, ypos, hue_redraw, &curr_hsv);
-#endif // WPM_ENABLE
             ypos = 20;
             xpos = 83;
 #if defined(RGB_MATRIX_ENABLE)
@@ -590,6 +587,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if defined(HAPTIC_ENABLE)
             painter_render_haptic(display, font_oled, 83, 58, hue_redraw, &curr_hsv);
 #    endif // HAPTIC_ENABLE
+#    ifdef WPM_ENABLE
+            ypos = 83;
+            xpos = 83;
+            painter_render_wpm(display, font_oled, ypos, ypos, hue_redraw, &curr_hsv);
+#    endif
             ypos                          = height - (16 + font_oled->line_height);
             static uint16_t last_rtc_time = 0xFFFF;
             painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
