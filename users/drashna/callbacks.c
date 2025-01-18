@@ -122,6 +122,10 @@ void                       keyboard_post_init_user(void) {
 #ifdef WATCHDOG_ENABLE
     watchdog_init();
 #endif // WATCHDOG_ENABLE
+#ifdef WPM_ENABLE
+    void keyboard_post_init_wpm(void);
+    keyboard_post_init_wpm();
+#endif // WPM_ENABLE
     keyboard_post_init_keymap();
 }
 
@@ -429,5 +433,9 @@ void                       housekeeping_task_user(void) {
 #ifdef LAYER_MAP_ENABLE
     housekeeping_task_layer_map();
 #endif // LAYER_MAP_ENABLE
+#ifdef WPM_ENABLE
+    void housekeeping_task_wpm(void);
+    housekeeping_task_wpm();
+#endif // WPM_ENABLE
     housekeeping_task_keymap();
 }

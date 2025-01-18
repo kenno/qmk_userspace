@@ -171,7 +171,7 @@ void update_master_state(void) {
     };
     userspace_runtime_state.leds = host_keyboard_led_state();
 #ifdef WPM_ENABLE
-    userspace_runtime_state.wpm_count = get_current_wpm();
+    userspace_runtime_state.wpm.wpm_count = get_current_wpm();
 #endif // WPM_ENABLE
     userspace_runtime_state.keymap_config = keymap_config;
     userspace_runtime_state.debug_config  = debug_config;
@@ -252,8 +252,8 @@ void update_slave_state(void) {
         set_split_host_keyboard_leds(userspace_runtime_state.leds.raw);
     }
 #ifdef WPM_ENABLE
-    if (get_current_wpm() != userspace_runtime_state.wpm_count) {
-        set_current_wpm(userspace_runtime_state.wpm_count);
+    if (get_current_wpm() != userspace_runtime_state.wpm.wpm_count) {
+        set_current_wpm(userspace_runtime_state.wpm.wpm_count);
     }
 #endif // WPM_ENABLE
     if (keymap_config.raw != userspace_runtime_state.keymap_config.raw) {

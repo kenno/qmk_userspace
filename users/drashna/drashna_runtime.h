@@ -132,7 +132,6 @@ typedef struct PACKED {
     sync_mods_t     mods;
     sync_layer_t    layers;
     led_t           leds;
-    uint8_t         wpm_count;
     keymap_config_t keymap_config;
     debug_config_t  debug_config;
     struct {
@@ -140,6 +139,11 @@ typedef struct PACKED {
             bool running : 1;
         } mouse_jiggler;
     } pointing;
+    struct {
+        uint8_t wpm_count : 8;
+        uint8_t wpm_peak  : 8;
+        uint8_t wpm_avg   : 8;
+    } wpm;
 } user_runtime_config_t;
 
 extern user_runtime_config_t userspace_runtime_state;
