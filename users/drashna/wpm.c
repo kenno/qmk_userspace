@@ -36,7 +36,7 @@ void housekeeping_task_wpm(void) {
         if (userspace_runtime_state.wpm.wpm_peak < get_current_wpm()) {
             userspace_runtime_state.wpm.wpm_peak = get_current_wpm();
             timer                                = timer_read32();
-        } else if (timer_elapsed32(timer) > 60000) {
+        } else if (timer_elapsed32(timer) > 10000) {
             userspace_runtime_state.wpm.wpm_peak = get_current_wpm();
         }
         if (timer_elapsed(interval) >= 100) {

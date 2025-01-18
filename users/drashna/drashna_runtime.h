@@ -110,6 +110,12 @@ typedef struct PACKED {
 } sync_layer_t;
 
 typedef struct PACKED {
+    uint8_t wpm_count : 8;
+    uint8_t wpm_peak  : 8;
+    uint8_t wpm_avg   : 8;
+} wpm_sync_data_t;
+
+typedef struct PACKED {
     struct {
         bool  enable        : 1;
         bool  clicky_enable : 1;
@@ -139,11 +145,7 @@ typedef struct PACKED {
             bool running : 1;
         } mouse_jiggler;
     } pointing;
-    struct {
-        uint8_t wpm_count : 8;
-        uint8_t wpm_peak  : 8;
-        uint8_t wpm_avg   : 8;
-    } wpm;
+    wpm_sync_data_t wpm;
 } user_runtime_config_t;
 
 extern user_runtime_config_t userspace_runtime_state;
