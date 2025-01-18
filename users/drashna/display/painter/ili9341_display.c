@@ -317,7 +317,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Pointing Device CPI
 
-            ypos = 43 + 4;
+            ypos = 30 + 4;
 #if defined(POINTING_DEVICE_ENABLE)
 #    if (defined(KEYBOARD_bastardkb_charybdis) || defined(KEYBOARD_handwired_tractyl_manuform))
 #        include QMK_KEYBOARD_H
@@ -398,7 +398,17 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                     charybdis_get_pointer_sniping_enabled() ? curr_hsv.secondary.s : curr_hsv.primary.s,
                     charybdis_get_pointer_sniping_enabled() ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
             }
+            ypos += font_oled->line_height + 4;
 #    endif
+            static bool last_jiggle_enabled = false;
+            if (hue_redraw || last_jiggle_enabled != userspace_config.pointing.mouse_jiggler.enable) {
+                last_jiggle_enabled = userspace_config.pointing.mouse_jiggler.enable;
+                xpos                = 5;
+                xpos += qp_drawtext_recolor(display, xpos, ypos, font_oled, "Jiggler",
+                                            last_jiggle_enabled ? curr_hsv.secondary.h : curr_hsv.primary.h,
+                                            last_jiggle_enabled ? curr_hsv.secondary.s : curr_hsv.primary.s,
+                                            last_jiggle_enabled ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
+            }
 #endif // POINTING_DEVICE_ENABLE
 
 #ifdef CUSTOM_UNICODE_ENABLE

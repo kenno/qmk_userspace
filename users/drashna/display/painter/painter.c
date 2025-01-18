@@ -472,7 +472,7 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_line(device, width - 2, 7 + 2, width - 2, height - 7 - 1, hsv.h, hsv.s, hsv.v);
 
     // horizontal line below scan rate
-    qp_line(device, xpos + 2, 31, xpos + 80, 31, hsv.h, hsv.s, hsv.v);
+    qp_line(device, xpos + 2, 30, xpos + 80, 30, hsv.h, hsv.s, hsv.v);
 
     // horizontal line below rgb
     qp_line(device, xpos + 80, 54, xpos + 237, 54, hsv.h, hsv.s, hsv.v);
