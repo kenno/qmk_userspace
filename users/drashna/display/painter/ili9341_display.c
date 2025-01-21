@@ -411,49 +411,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             }
 #endif // POINTING_DEVICE_ENABLE
 
-#ifdef CUSTOM_UNICODE_ENABLE
-            ypos                             = 80 + 4;
-            static uint8_t last_unicode_mode = UNICODE_MODE_COUNT;
-            if (hue_redraw || last_unicode_mode != get_unicode_input_mode()) {
-                last_unicode_mode   = get_unicode_input_mode();
-                xpos                = 80 + 4;
-                uint8_t xpos_offset = xpos +
-                                      qp_drawtext_recolor(display, xpos, ypos, font_oled, "Unicode", curr_hsv.primary.h,
-                                                          curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0) +
-                                      4;
-                switch (last_unicode_mode) {
-                    case UNICODE_MODE_WINCOMPOSE:
-                    case UNICODE_MODE_WINDOWS:
-                        qp_drawimage(display, xpos_offset, ypos + 2, windows_logo);
-                        break;
-                    case UNICODE_MODE_MACOS:
-                        qp_drawimage(display, xpos_offset, ypos + 2, apple_logo);
-                        break;
-                    case UNICODE_MODE_LINUX:
-                    case UNICODE_MODE_BSD:
-                    case UNICODE_MODE_EMACS:
-                        qp_drawimage(display, xpos_offset, ypos + 2, linux_logo);
-                        break;
-                }
-                ypos += font_oled->line_height + 4;
-                qp_drawtext_recolor(display, xpos + 8, ypos, font_oled, "Mode", curr_hsv.primary.h, curr_hsv.primary.s,
-                                    curr_hsv.primary.v, 0, 0, 0);
-            }
-
-            ypos                                    = 80 + 4;
-            static uint8_t last_unicode_typing_mode = 0;
-            if (hue_redraw || last_unicode_typing_mode != userspace_runtime_state.unicode.typing_mode) {
-                last_unicode_typing_mode = userspace_runtime_state.unicode.typing_mode;
-                xpos                     = 149 + 4;
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Typing Mode:", curr_hsv.primary.h,
-                                    curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
-                ypos += font_oled->line_height + 4;
-                snprintf(buf, sizeof(buf), "%14s", unicode_typing_mode(last_unicode_typing_mode));
-                qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
-                                    curr_hsv.secondary.v, 0, 0, 0);
-            }
-#endif // CUSTOM_UNICODE_ENABLE
-
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Mods
 
@@ -597,10 +554,53 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if defined(HAPTIC_ENABLE)
             painter_render_haptic(display, font_oled, 83, 58, hue_redraw, &curr_hsv);
 #    endif // HAPTIC_ENABLE
+            ypos = 84;
+            xpos = 84;
 #    ifdef WPM_ENABLE
-            ypos = 83;
-            xpos = 83;
-            painter_render_wpm(display, font_oled, ypos, ypos, hue_redraw, &curr_hsv);
+            painter_render_wpm(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
+#    endif
+
+#    ifdef CUSTOM_UNICODE_ENABLE
+            ypos                             = 149;
+            static uint8_t last_unicode_mode = UNICODE_MODE_COUNT;
+            if (hue_redraw || last_unicode_mode != get_unicode_input_mode()) {
+                last_unicode_mode   = get_unicode_input_mode();
+                xpos                = 80 + 4;
+                uint8_t xpos_offset = xpos +
+                                      qp_drawtext_recolor(display, xpos, ypos, font_oled, "Unicode", curr_hsv.primary.h,
+                                                          curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0) +
+                                      4;
+                switch (last_unicode_mode) {
+                    case UNICODE_MODE_WINCOMPOSE:
+                    case UNICODE_MODE_WINDOWS:
+                        qp_drawimage(display, xpos_offset, ypos + 2, windows_logo);
+                        break;
+                    case UNICODE_MODE_MACOS:
+                        qp_drawimage(display, xpos_offset, ypos + 2, apple_logo);
+                        break;
+                    case UNICODE_MODE_LINUX:
+                    case UNICODE_MODE_BSD:
+                    case UNICODE_MODE_EMACS:
+                        qp_drawimage(display, xpos_offset, ypos + 2, linux_logo);
+                        break;
+                }
+                ypos += font_oled->line_height + 4;
+                qp_drawtext_recolor(display, xpos + 8, ypos, font_oled, "Mode", curr_hsv.primary.h, curr_hsv.primary.s,
+                                    curr_hsv.primary.v, 0, 0, 0);
+            }
+
+            ypos                                    = 149;
+            xpos                                    = 149 + 4;
+            static uint8_t last_unicode_typing_mode = 0;
+            if (hue_redraw || last_unicode_typing_mode != userspace_runtime_state.unicode.typing_mode) {
+                last_unicode_typing_mode = userspace_runtime_state.unicode.typing_mode;
+                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Typing Mode:", curr_hsv.primary.h,
+                                    curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
+                ypos += font_oled->line_height + 4;
+                snprintf(buf, sizeof(buf), "%14s", unicode_typing_mode(last_unicode_typing_mode));
+                qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
+                                    curr_hsv.secondary.v, 0, 0, 0);
+            }
 #    endif
             ypos                          = height - (16 + font_oled->line_height);
             static uint16_t last_rtc_time = 0xFFFF;

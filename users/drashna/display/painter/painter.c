@@ -74,7 +74,7 @@ bool rgb_redraw = false;
 #endif
 
 __attribute__((weak)) bool painter_render_side(void) {
-    return is_keyboard_master();
+    return !is_keyboard_master();
 }
 
 /**
@@ -503,9 +503,12 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
 
         // horizontal line below wpm
-        qp_line(device, xpos + 80, 117, xpos + 137, 117, hsv.h, hsv.s, hsv.v);
+        qp_line(device, xpos + 80, 118, xpos + 138, 118, hsv.h, hsv.s, hsv.v);
         // vertical line next to wpm
-        qp_line(device, xpos + 138, 80, xpos + 138, 117, hsv.h, hsv.s, hsv.v);
+        qp_line(device, xpos + 138, 80, xpos + 138, 119, hsv.h, hsv.s, hsv.v);
+
+        qp_line(device, xpos + 80, 145, xpos + 237, 145, hsv.h, hsv.s, hsv.v);
+        qp_line(device, xpos + 149, 145, xpos + 149, 171, hsv.h, hsv.s, hsv.v);
 
         // qp_rect(device, xpos + 81, 81, xpos + 237, 170, hsv.h, hsv.s, hsv.v, true);
     }
