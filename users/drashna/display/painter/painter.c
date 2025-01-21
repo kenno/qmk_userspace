@@ -74,7 +74,7 @@ bool rgb_redraw = false;
 #endif
 
 __attribute__((weak)) bool painter_render_side(void) {
-    return !is_keyboard_master();
+    return is_keyboard_master();
 }
 
 /**
