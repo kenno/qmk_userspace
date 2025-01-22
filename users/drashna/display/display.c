@@ -56,6 +56,7 @@ __attribute__((weak)) const char PROGMEM code_to_name[256] = {
  * @param record keyrecord_t data structure
  */
 __attribute__((unused)) static void add_keylog(uint16_t keycode, keyrecord_t* record, char* str, uint8_t length) {
+    userspace_runtime_state.last_keycode = keycode;
     keycode = extract_basic_keycode(keycode, record, true);
 
     if ((keycode == KC_BSPC) && mod_config(get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL) {

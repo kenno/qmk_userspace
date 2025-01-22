@@ -486,7 +486,8 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
 
         // lines for unicode typing mode and mode
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
-        qp_line(device, xpos + 149, 80, xpos + 149, 106, hsv.h, hsv.s, hsv.v);
+
+        qp_line(device, xpos + 180, 80, xpos + 180, 106, hsv.h, hsv.s, hsv.v);
 
         // lines for mods and OS detection
         qp_line(device, xpos + 2, 107, xpos + 237, 107, hsv.h, hsv.s, hsv.v);

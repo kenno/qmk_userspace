@@ -146,6 +146,7 @@ typedef struct PACKED {
         } mouse_jiggler;
     } pointing;
     wpm_sync_data_t wpm;
+    uint16_t        last_keycode : 16;
 } user_runtime_config_t;
 
 extern user_runtime_config_t userspace_runtime_state;
