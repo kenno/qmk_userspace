@@ -507,6 +507,8 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         qp_line(device, xpos + 80, 118, xpos + 138, 118, hsv.h, hsv.s, hsv.v);
         // vertical line next to wpm
         qp_line(device, xpos + 138, 80, xpos + 138, 119, hsv.h, hsv.s, hsv.v);
+        // line below last key
+        qp_line(device, xpos + 138, 107, xpos + 237, 107, hsv.h, hsv.s, hsv.v);
 
         qp_line(device, xpos + 80, 145, xpos + 237, 145, hsv.h, hsv.s, hsv.v);
         qp_line(device, xpos + 149, 145, xpos + 149, 171, hsv.h, hsv.s, hsv.v);
