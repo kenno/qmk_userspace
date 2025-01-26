@@ -24,7 +24,7 @@ void display_rotate_screen(bool clockwise);
 #                define DISPLAY_KEYLOGGER_LENGTH 5
 #            endif // OLED_DISPLAY_128X128 || OLED_DISPLAY_128X64
 #        else      // OLED_ENABLE
-#            define DISPLAY_KEYLOGGER_LENGTH 20
+#            define DISPLAY_KEYLOGGER_LENGTH 25
 #        endif // DISPLAY_KEYLOGGER_ENABLE
 #    endif     // DISPLAY_KEYLOGGER_LENGTH
 extern char display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH + 1];

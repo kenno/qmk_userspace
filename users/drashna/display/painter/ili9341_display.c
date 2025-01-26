@@ -314,6 +314,14 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                     last_user_state.internals.swap_hands ? curr_hsv.secondary.s : curr_hsv.primary.s,
                     last_user_state.internals.swap_hands ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
             }
+
+#ifdef DISPLAY_KEYLOGGER_ENABLE
+            ypos = 84;
+            xpos = 84;
+
+            painter_render_keylogger(display, font_oled, xpos, ypos, 160, hue_redraw, &curr_hsv);
+#endif // DISPLAY_KEYLOGGER_ENABLE
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Pointing Device CPI
 
@@ -507,7 +515,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE // keep at very end
             ypos = height - (font_mono->line_height + 2);
 
-            painter_render_keylogger(display, font_mono, 27, ypos, width - 27, hue_redraw, &curr_hsv);
+            // painter_render_keylogger(display, font_mono, 27, ypos, width - 27, hue_redraw, &curr_hsv);
 #endif // DISPLAY_KEYLOGGER_ENABLE
 
             // RTC

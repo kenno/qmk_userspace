@@ -487,7 +487,7 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         // lines for unicode typing mode and mode
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
 
-        qp_line(device, xpos + 180, 80, xpos + 180, 106, hsv.h, hsv.s, hsv.v);
+        // qp_line(device, xpos + 180, 80, xpos + 180, 106, hsv.h, hsv.s, hsv.v);
 
         // lines for mods and OS detection
         qp_line(device, xpos + 2, 107, xpos + 237, 107, hsv.h, hsv.s, hsv.v);
@@ -671,13 +671,13 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
     char buf[50] = {0};
 
     if (keylogger_has_changed || force_redraw) {
-        snprintf(buf, sizeof(buf), "Keylogger: %s", display_keylogger_string);
+        snprintf(buf, sizeof(buf), "%s", display_keylogger_string);
+        qp_drawtext_recolor(device, x, y, font, "Keylogger: ", curr_hsv->primary.h, curr_hsv->primary.s,
+                            curr_hsv->primary.v, 0, 0, 0);
+        y += font->line_height + 4;
+        qp_drawtext_recolor(device, x, y, font, display_keylogger_string, curr_hsv->primary.h, curr_hsv->primary.s,
+                            curr_hsv->primary.v, 0, 255, 0);
 
-        x += qp_drawtext_recolor(device, x, y, font, truncate_text(buf, width - x, font, false, false), 0, 255, 0,
-                                 curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
-
-        qp_rect(device, x, y, width, y + font->line_height, curr_hsv->primary.h, curr_hsv->primary.s,
-                curr_hsv->primary.v, true);
         keylogger_has_changed = false;
     }
 #endif
