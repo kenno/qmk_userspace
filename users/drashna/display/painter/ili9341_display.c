@@ -9,6 +9,8 @@
 #include "qp_comms.h"
 #include "display/painter/painter.h"
 #include "display/painter/ili9341_display.h"
+#include "hardware_id.h"
+#include "version.h"
 #ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
 #    include "qp_surface.h"
 #endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
@@ -509,38 +511,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 
             ypos += font_oled->line_height + 1;
 
-            // Keylogger
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef DISPLAY_KEYLOGGER_ENABLE // keep at very end
-            ypos = height - (font_mono->line_height + 2);
-
-            // painter_render_keylogger(display, font_mono, 27, ypos, width - 27, hue_redraw, &curr_hsv);
-#endif // DISPLAY_KEYLOGGER_ENABLE
-
-            // RTC
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            ypos -= (font_oled->line_height + 4);
-#ifdef RTC_ENABLE
-            static uint16_t last_rtc_time = 0xFFFF;
-            painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
-#else
-            if (hue_redraw) {
-                snprintf(buf, sizeof(buf), "Built on: %s", QMK_BUILDDATE);
-
-                uint8_t title_width = qp_textwidth(font_oled, buf);
-                if (title_width > (width - 6)) {
-                    title_width = width - 6;
-                }
-                uint8_t title_xpos = (width - title_width) / 2;
-
-                xpos += qp_drawtext_recolor(display, title_xpos, ypos, font_oled, buf, curr_hsv.primary.h,
-                                            curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
-            }
-
-#endif // RTC_ENABLE
-
 #ifdef SPLIT_KEYBOARD
         } else {
 #    if defined(RGBLIGHT_ENABLE)
@@ -622,9 +592,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                                     curr_hsv.secondary.v, 0, 0, 0);
             }
 #    endif
-            ypos                          = height - (16 + font_oled->line_height);
-            static uint16_t last_rtc_time = 0xFFFF;
-            painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
 #endif // SPLIT_KEYBOARD
         }
 #ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
@@ -634,8 +601,44 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #else // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
         painter_render_menu_block(display, font_oled, 2, 172, 237, 291, screen_saver_redraw || hue_redraw, &curr_hsv,
                                   is_keyboard_master(), true);
-
 #endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
+
+        // Footer
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ypos = height - (font_mono->line_height + 2);
+        xpos = 27;
+        if (hue_redraw) {
+            hardware_id_t id = get_hardware_id();
+            snprintf(buf, sizeof(buf), "SN: %02X%02X%02X%02X%02X%02X BD: %10.10s", id.data[0], id.data[1], id.data[2],
+                     id.data[3], id.data[4], id.data[5], QMK_BUILDDATE);
+            xpos += qp_drawtext_recolor(display, xpos, ypos, font_mono, buf, 0, 0, 0, curr_hsv.primary.h,
+                                        curr_hsv.primary.s, curr_hsv.primary.v);
+        }
+
+        // RTC
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        xpos = 5;
+#ifdef RTC_ENABLE
+        ypos                          = height - (16 + font_oled->line_height);
+        static uint16_t last_rtc_time = 0xFFFF;
+        painter_render_rtc_time(display, font_oled, xpos, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);
+#else
+        if (hue_redraw) {
+            snprintf(buf, sizeof(buf), "Built on: %s", QMK_BUILDDATE);
+
+            uint8_t title_width = qp_textwidth(font_oled, buf);
+            if (title_width > (width - 6)) {
+                title_width = width - 6;
+            }
+            uint8_t title_xpos = (width - title_width) / 2;
+
+            xpos += qp_drawtext_recolor(display, title_xpos, ypos, font_oled, buf, curr_hsv.primary.h,
+                                        curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
+        }
+#endif
+
         forced_reinit       = false;
         screen_saver_redraw = false;
     }
