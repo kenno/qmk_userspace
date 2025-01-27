@@ -1,6 +1,7 @@
 // Copyright 2024 Harrison Chan (@xelus22)
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <stdlib.h>
 #include "clap_trap.h"
 #include "keycodes.h"
 #include "action_util.h"
