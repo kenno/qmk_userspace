@@ -319,9 +319,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 #endif // CUSTOM_RGBLIGHT || CUSTOM_RGB_MATRIX
         case KEYLOCK:
+#ifdef KEYBOARD_LOCK_ENABLE
             if (record->event.pressed) {
                 toggle_keyboard_lock();
             }
+#endif // KEYBOARD_LOCK_ENABLE
             break;
 #if defined(OS_DETECTION_ENABLE) && defined(OS_DETECTION_DEBUG_ENABLE)
         case STORE_SETUPS:
