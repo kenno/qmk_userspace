@@ -20,6 +20,7 @@ uint8_t jsf8_min_max(uint8_t min, uint8_t max) {
     return jsf8_max(max - min) + min;
 }
 */
+#ifdef RGB_MATRIX_KEYREACTIVE_ENABLED
 
 RGB_MATRIX_EFFECT(CANDY_TAP)
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
@@ -46,6 +47,7 @@ static bool CANDY_SPLASH(effect_params_t* params) {
     return effect_runner_reactive_splash(0, params, &CANDY_WIDE_math);
 }
 #endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+#endif
 
 RGB_MATRIX_EFFECT(CANDY_RAIN)
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS

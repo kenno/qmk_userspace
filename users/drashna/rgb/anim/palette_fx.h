@@ -57,7 +57,7 @@ RGB_MATRIX_EFFECT(PALETTEFX_REACTIVE)
           (defined(RGB_MATRIX_KEYREACTIVE_ENABLED) && defined(PALETTEFX_REACTIVE_ENABLE)))
 #        pragma message \
             "palettefx: No palettefx effects are enabled. Enable all effects by adding in config.h `#define PALETTEFX_ENABLE_ALL_EFFECTS`, or enable individual effects with `#define PALETTE_<name>_ENABLE`."
-#    endif
+#    else
 
 ///////////////////////////////////////////////////////////////////////////////
 // PaletteFx function definitions
@@ -98,7 +98,7 @@ inline static uint16_t palettefx_scaled_time(uint32_t timer, uint8_t scale);
 // PaletteFx effects
 ///////////////////////////////////////////////////////////////////////////////
 
-#    if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_GRADIENT_ENABLE)
+#        if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_GRADIENT_ENABLE)
 // "Gradient" static effect. This is essentially a palette-colored version of
 // RGB_MATRIX_GRADIENT_UP_DOWN. A vertically-sloping gradient is made, with the
 // highest color on the top keys of keyboard and the lowest color at the bottom.
@@ -129,9 +129,9 @@ static bool PALETTEFX_GRADIENT(effect_params_t* params) {
 
     return rgb_matrix_check_finished_leds(led_max);
 }
-#    endif
+#        endif
 
-#    if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_FLOW_ENABLE)
+#        if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_FLOW_ENABLE)
 // "Flow" animated effect. Draws moving wave patterns mimicking the appearance
 // of flowing liquid. For interesting variety of patterns, space coordinates are
 // slowly rotated and a function of several sine waves is evaluated.
@@ -165,9 +165,9 @@ static bool PALETTEFX_FLOW(effect_params_t* params) {
 
     return rgb_matrix_check_finished_leds(led_max);
 }
-#    endif
+#        endif
 
-#    if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_RIPPLE_ENABLE)
+#        if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_RIPPLE_ENABLE)
 // "Ripple" animated effect. Draws circular rings emanating from random points,
 // simulating water drops falling in a quiet pool.
 static bool PALETTEFX_RIPPLE(effect_params_t* params) {
@@ -270,9 +270,9 @@ static bool PALETTEFX_RIPPLE(effect_params_t* params) {
 
     return rgb_matrix_check_finished_leds(led_max);
 }
-#    endif
+#        endif
 
-#    if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_SPARKLE_ENABLE)
+#        if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_SPARKLE_ENABLE)
 // "Sparkle" effect. Each LED is animated by a sine wave with pseudorandom
 // phase, so that the matrix "sparkles." All the LED sines are modulated by a
 // global amplitude factor, which varies by a slower sine wave, so that the
@@ -298,9 +298,9 @@ static bool PALETTEFX_SPARKLE(effect_params_t* params) {
 
     return rgb_matrix_check_finished_leds(led_max);
 }
-#    endif
+#        endif
 
-#    if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_SPARKLE_ENABLE)
+#        if defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_SPARKLE_ENABLE)
 // "Vortex" animated effect. LEDs are animated according to a polar function
 // with the appearance of a spinning vortex centered on k_rgb_matrix_center.
 static bool PALETTEFX_VORTEX(effect_params_t* params) {
@@ -320,10 +320,10 @@ static bool PALETTEFX_VORTEX(effect_params_t* params) {
 
     return rgb_matrix_check_finished_leds(led_max);
 }
-#    endif
+#        endif
 
-#    if defined(RGB_MATRIX_KEYREACTIVE_ENABLED) && \
-        (defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_REACTIVE_ENABLE))
+#        if defined(RGB_MATRIX_KEYREACTIVE_ENABLED) && \
+            (defined(PALETTEFX_ENABLE_ALL_EFFECTS) || defined(PALETTEFX_REACTIVE_ENABLE))
 // Reactive animated effect. This effect is "reactive," it responds to key
 // presses. For each key press, LEDs near the key change momentarily.
 static bool PALETTEFX_REACTIVE(effect_params_t* params) {
@@ -382,7 +382,7 @@ static bool PALETTEFX_REACTIVE(effect_params_t* params) {
     }
     return rgb_matrix_check_finished_leds(led_max);
 }
-#    endif
+#        endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // PaletteFx implementation
@@ -398,7 +398,7 @@ static bool PALETTEFX_REACTIVE(effect_params_t* params) {
  *  - Saturation: middle 4 bits.
  *  - Value: highest 4 bits.
  */
-#    define HSV16(h, s, v) ((((v) >> 4) << 12) | (((s) >> 4) << 8) | ((h) & 0xff))
+#        define HSV16(h, s, v) ((((v) >> 4) << 12) | (((s) >> 4) << 8) | ((h) & 0xff))
 
 /** Unpacks 16-bit HSV color to hsv_t. */
 static hsv_t unpack_hsv16(uint16_t hsv16) {
@@ -411,7 +411,7 @@ static hsv_t unpack_hsv16(uint16_t hsv16) {
 
 /** PaletteFx palette color data. */
 static const uint16_t palettefx_palettes[][16] PROGMEM = {
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_AFTERBURN_ENABLE)
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_AFTERBURN_ENABLE)
     // "Afterburn" palette.
     {
         HSV16(139, 255, 85),
@@ -431,8 +431,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(26, 255, 255),
         HSV16(30, 255, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_AMBER_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_AMBER_ENABLE)
     // "Amber" palette.
     {
         HSV16(5, 187, 170),
@@ -452,8 +452,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(21, 221, 255),
         HSV16(16, 204, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_BADWOLF_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_BADWOLF_ENABLE)
     // "Bad Wolf" palette. Inspired by the Bad Wolf theme by Steve Losh, which is
     // distributed under MIT/X11 license.
     // https://github.com/sjl/badwolf/tree/61d75affa51d40213d671edc9c8ff83992d7fd6f
@@ -475,8 +475,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(14, 34, 0),
         HSV16(14, 34, 0),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_CARNIVAL_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_CARNIVAL_ENABLE)
     // "Carnival" palette.
     {
         HSV16(132, 255, 85),
@@ -496,8 +496,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(252, 204, 238),
         HSV16(241, 255, 221),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_CLASSIC_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_CLASSIC_ENABLE)
     // "Classic" palette.
     {
         HSV16(150, 255, 85),
@@ -517,8 +517,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(25, 136, 255),
         HSV16(26, 85, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_DRACULA_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_DRACULA_ENABLE)
     // "Dracula" palette. Inspired by the Dracula theme by Zeno Rocha, which is
     // distributed under MIT license.
     // https://github.com/dracula/dracula-theme/tree/ac4dc82dab2a3c35e5cac0cd80c97fbf4c2ca986
@@ -540,8 +540,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(63, 238, 238),
         HSV16(85, 238, 238),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_GROOVY_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_GROOVY_ENABLE)
     // "Groovy" palette. Inspired by the Gruvbox theme by Pavel Pertsev, which is
     // distributed under MIT/X11 license.
     // https://github.com/morhetz/gruvbox/tree/f1ecde848f0cdba877acb0c740320568252cc482
@@ -563,8 +563,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(54, 255, 238),
         HSV16(54, 255, 238),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_NOTPINK_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_NOTPINK_ENABLE)
     // "Not Pink" palette.
     {
         HSV16(9, 255, 153),
@@ -584,8 +584,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(247, 187, 255),
         HSV16(249, 221, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_PHOSPHOR_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_PHOSPHOR_ENABLE)
     // "Phosphor" palette.
     {
         HSV16(116, 102, 34),
@@ -605,8 +605,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(42, 153, 255),
         HSV16(40, 102, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_POLARIZED_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_POLARIZED_ENABLE)
     // "Polarized" palette. Inspired by the Solarized theme by Ethan Schoonover,
     // which is distributed under MIT license.
     // https://github.com/altercation/solarized/tree/62f656a02f93c5190a8753159e34b385588d5ff3
@@ -628,8 +628,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(137, 153, 204),
         HSV16(137, 136, 221),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_ROSEGOLD_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_ROSEGOLD_ENABLE)
     // "Rose Gold" palette.
     {
         HSV16(246, 255, 204),
@@ -649,8 +649,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(241, 238, 255),
         HSV16(235, 255, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_SPORT_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_SPORT_ENABLE)
     // "Sport" palette.
     {
         HSV16(156, 102, 51),
@@ -670,8 +670,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(36, 170, 255),
         HSV16(36, 255, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_SYNTHWAVE_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_SYNTHWAVE_ENABLE)
     // "Synthwave" palette.
     {
         HSV16(170, 221, 119),
@@ -691,8 +691,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(68, 68, 255),
         HSV16(132, 255, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_THERMAL_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_THERMAL_ENABLE)
     // "Thermal" palette.
     {
         HSV16(7, 0, 17),
@@ -712,8 +712,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(13, 238, 255),
         HSV16(5, 238, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_VIRIDIS_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_VIRIDIS_ENABLE)
     // "Viridis" palette. Inspired by the Viridis colormap by Stefan van der Walt
     // and Nathaniel Smith, which is distributed under CC0 license.
     // https://github.com/BIDS/colormap/blob/bc549477db0c12b54a5928087552ad2cf274980f/colormaps.py
@@ -735,8 +735,8 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(46, 255, 238),
         HSV16(39, 255, 255),
     },
-#    endif
-#    if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_WATERMELON_ENABLE)
+#        endif
+#        if defined(PALETTEFX_ENABLE_ALL_PALETTES) || defined(PALETTEFX_WATERMELON_ENABLE)
     // "Watermelon" palette.
     {
         HSV16(67, 255, 102),
@@ -756,13 +756,13 @@ static const uint16_t palettefx_palettes[][16] PROGMEM = {
         HSV16(254, 255, 238),
         HSV16(255, 255, 221),
     },
-#    endif
-#    if __has_include("palettefx_user.inc") // Include user palettes if present.
-#        include "palettefx_user.inc"
-#    endif
+#        endif
+#        if __has_include("palettefx_user.inc") // Include user palettes if present.
+#            include "palettefx_user.inc"
+#        endif
 };
 /** Number of palettes. User palettes, if any, are included in the count. */
-#    define NUM_PALETTEFX_PALETTES (sizeof(palettefx_palettes) / sizeof(*palettefx_palettes))
+#        define NUM_PALETTEFX_PALETTES (sizeof(palettefx_palettes) / sizeof(*palettefx_palettes))
 
 // Validate at compile time that `1 <= NUM_PALETTEFX_PALETTES <= 32`. The upper
 // limit is due to using RGB Matrix's hue config to select palettes.
@@ -840,5 +840,5 @@ static uint16_t palettefx_scaled_time(uint32_t timer, uint8_t scale) {
 
     return scale16by8(timer, scale) + wrap_correction;
 }
-
+#    endif
 #endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
