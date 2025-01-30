@@ -7,7 +7,13 @@ ifneq ($(filter $(KEYBOARD), ergodox_ez/base ergodox_ez/glow ergodox_ez/shine),)
     RGBLIGHT_ENABLE            = yes
     RGB_MATRIX_ENABLE          = yes
     INDICATOR_LIGHTS           = no
-    RGBLIGHT_STARTUP_ANIMATION = yes
+    RGBLIGHT_STARTUP_ANIMATION = no
+    NO_SECRETS                 = yes
+    #OS_DETECTION_ENABLE        = no
+    DEBOUNCE_TYPE              = sym_defer_g
+    DEFERRED_EXEC_ENABLE       = no
+    KEYBOARD_LOCK_ENABLE       = no
+    KEYLOGGER_ENABLE           = no
 endif
 
 UNICODE_ENABLE        = no
