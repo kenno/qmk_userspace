@@ -1108,7 +1108,7 @@ void render_character_set(painter_device_t display, uint16_t* x_offset, uint16_t
 // Define the probability factor for initial alive cells
 #define INITIAL_ALIVE_PROBABILITY 0.5 // 20% chance of being alive
 
-static const hsv_t color_array[8] = {
+static const hsv_t color_array[] = {
     {.h = 0, .s = 0, .v = 160},    {.h = 23, .s = 89, .v = 255},  {.h = 43, .s = 71, .v = 255},
     {.h = 0, .s = 82, .v = 255},   {.h = 77, .s = 64, .v = 255},  {.h = 176, .s = 77, .v = 255},
     {.h = 131, .s = 99, .v = 255}, {.h = 154, .s = 94, .v = 255},
@@ -1125,7 +1125,7 @@ void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hs
                 grid[y][x] = (rand() < INITIAL_ALIVE_PROBABILITY * RAND_MAX); // Use probability factor
             }
         }
-        color_value = rand() % 8;
+        color_value = rand() % ARRAY_SIZE(color_array);
     }
     static uint8_t i = 0;
     if (i++ % 10 != 0) {
@@ -1203,7 +1203,7 @@ void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hs
                 changed_grid[y + dy][x + dx] = true;       // Mark the cell as changed
             }
         }
-        color_value = rand() % 8;
+        color_value = rand() % ARRAY_SIZE(color_array);
         last_tick   = last_input_activity_time();
     }
 }
