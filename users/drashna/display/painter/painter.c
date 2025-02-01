@@ -1191,7 +1191,9 @@ void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hs
     }
 
     static uint32_t last_tick = 0;
-    if (last_tick != last_input_activity_time()) {
+    uint32_t        now = (last_matrix_activity_time() > last_encoder_activity_time()) ? last_matrix_activity_time()
+                                                                                       : last_encoder_activity_time();
+    if (last_tick != now) {
         uint8_t cluster_size = 3; // Size of the cluster (3x3)
         uint8_t x            = rand() % (GRID_WIDTH - cluster_size);
         uint8_t y            = rand() % (GRID_HEIGHT - cluster_size);
@@ -1204,7 +1206,7 @@ void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hs
             }
         }
         color_value = rand() % ARRAY_SIZE(color_array);
-        last_tick   = last_input_activity_time();
+        last_tick   = now;
     }
 }
 
