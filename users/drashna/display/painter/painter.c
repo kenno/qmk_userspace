@@ -289,7 +289,7 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
                         dual_hsv_t* curr_hsv) {
 #ifdef WPM_ENABLE
     static wpm_sync_data_t last_wpm_update = {0};
-    static char     buf[4]          = {0};
+    static char            buf[4]          = {0};
     uint16_t               temp_x          = x;
     if (force_redraw || memcmp(&last_wpm_update, &userspace_runtime_state.wpm, sizeof(wpm_sync_data_t)) != 0) {
         memcpy(&last_wpm_update, &userspace_runtime_state.wpm, sizeof(wpm_sync_data_t));
@@ -635,6 +635,11 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 }
                 break;
             case 4:
+                void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hsv_t* curr_hsv,
+                                 bool force_redraw);
+                render_life(device, x, y, curr_hsv, force_redraw || block_redraw);
+                break;
+            case 5:
                 //  Layer Map render
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (is_left) {
@@ -643,7 +648,6 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                     painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv,
                                         true);
                 }
-
                 break;
             default:
                 break;
@@ -1096,6 +1100,114 @@ void render_character_set(painter_device_t display, uint16_t* x_offset, uint16_t
     }
 }
 
+#define GRID_WIDTH   47
+#define GRID_HEIGHT  24
+#define CELL_SIZE    4 // Cell size excluding outline
+#define OUTLINE_SIZE 1
+
+// Define the probability factor for initial alive cells
+#define INITIAL_ALIVE_PROBABILITY 0.5 // 20% chance of being alive
+
+static const hsv_t color_array[8] = {
+    {.h = 0, .s = 0, .v = 160},    {.h = 23, .s = 89, .v = 255},  {.h = 43, .s = 71, .v = 255},
+    {.h = 0, .s = 82, .v = 255},   {.h = 77, .s = 64, .v = 255},  {.h = 176, .s = 77, .v = 255},
+    {.h = 131, .s = 99, .v = 255}, {.h = 154, .s = 94, .v = 255},
+};
+
+void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hsv_t* curr_hsv, bool force_redraw) {
+    static bool grid[GRID_HEIGHT][GRID_WIDTH], new_grid[GRID_HEIGHT][GRID_WIDTH], changed_grid[GRID_HEIGHT][GRID_WIDTH];
+    static uint8_t color_value = 0;
+
+    if (force_redraw) {
+        // Initialize the grid with random values
+        for (uint8_t y = 0; y < GRID_HEIGHT; y++) {
+            for (uint8_t x = 0; x < GRID_WIDTH; x++) {
+                grid[y][x] = (rand() < INITIAL_ALIVE_PROBABILITY * RAND_MAX); // Use probability factor
+            }
+        }
+        color_value = rand() % 8;
+    }
+    static uint8_t i = 0;
+    if (i++ % 10 != 0) {
+        return;
+    }
+    for (uint8_t y = 0; y < GRID_HEIGHT; y++) {
+        for (uint8_t x = 0; x < GRID_WIDTH; x++) {
+            if (changed_grid[y][x]) { // Only update changed cells
+                uint16_t left   = xpos + x * (CELL_SIZE + OUTLINE_SIZE);
+                uint16_t top    = ypos + y * (CELL_SIZE + OUTLINE_SIZE);
+                uint16_t right  = xpos + left + CELL_SIZE + OUTLINE_SIZE;
+                uint16_t bottom = ypos + top + CELL_SIZE + OUTLINE_SIZE;
+
+                // Draw the outline
+                qp_rect(display, left, top, right, bottom, curr_hsv->primary.h, curr_hsv->primary.s,
+                        curr_hsv->primary.v / 4, false);
+                qp_rect(display, left + 1, top + 1, right - 1, bottom - 1, 0, 0, 0, true);
+
+                // Draw the filled cell inside the outline if it's alive
+                if (grid[y][x]) {
+                    qp_rect(display, left + OUTLINE_SIZE, top + OUTLINE_SIZE, right - OUTLINE_SIZE,
+                            bottom - OUTLINE_SIZE, color_array[color_value].h, color_array[color_value].s,
+                            color_array[color_value].v, true);
+                }
+            }
+        }
+    }
+    for (uint8_t y = 0; y < GRID_HEIGHT; y++) {
+        for (uint8_t x = 0; x < GRID_WIDTH; x++) {
+            uint8_t alive_neighbors = 0;
+
+            // Count alive neighbors
+            for (int8_t dy = -1; dy <= 1; dy++) {
+                for (int8_t dx = -1; dx <= 1; dx++) {
+                    if (dy == 0 && dx == 0) continue; // Skip the current cell
+                    int8_t ny = y + dy;
+                    int8_t nx = x + dx;
+                    if (ny >= 0 && ny < GRID_HEIGHT && nx >= 0 && nx < GRID_WIDTH) {
+                        alive_neighbors += grid[ny][nx];
+                    }
+                }
+            }
+
+            // Apply the rules of the Game of Life
+            if (grid[y][x]) {
+                // Any live cell with two or three live neighbours survives.
+                new_grid[y][x] = (alive_neighbors == 2 || alive_neighbors == 3);
+            } else {
+                // Any dead cell with exactly three live neighbours becomes a live cell.
+                new_grid[y][x] = (alive_neighbors == 3);
+            }
+
+            // Track changed cells
+            changed_grid[y][x] = (grid[y][x] != new_grid[y][x]);
+        }
+    }
+
+    // Copy new grid state to current grid
+    for (uint8_t y = 0; y < GRID_HEIGHT; y++) {
+        for (uint8_t x = 0; x < GRID_WIDTH; x++) {
+            grid[y][x] = new_grid[y][x];
+        }
+    }
+
+    static uint32_t last_tick = 0;
+    if (last_tick != last_input_activity_time()) {
+        uint8_t cluster_size = 3; // Size of the cluster (3x3)
+        uint8_t x            = rand() % (GRID_WIDTH - cluster_size);
+        uint8_t y            = rand() % (GRID_HEIGHT - cluster_size);
+
+        for (uint8_t dy = 0; dy < cluster_size; dy++) {
+            for (uint8_t dx = 0; dx < cluster_size; dx++) {
+                bool is_alive                = rand() % 2; // Randomly choose between 0 and 1
+                grid[y + dy][x + dx]         = is_alive;   // Set the cell to be alive
+                changed_grid[y + dy][x + dx] = true;       // Mark the cell as changed
+            }
+        }
+        color_value = rand() % 8;
+        last_tick   = last_input_activity_time();
+    }
+}
+
 #ifdef BACKLIGHT_ENABLE
 static uint8_t last_backlight = 255;
 #endif
@@ -1246,7 +1358,7 @@ void keyboard_post_init_quantum_painter(void) {
     painter_thread = chThdCreateStatic(waUIThread, sizeof(waUIThread), LOWPRIO, UIThread, NULL);
 #else
     painter_init_user();
-#endif     // MULTITHREADED_PAINTER_ENABLE
+#endif // MULTITHREADED_PAINTER_ENABLE
 }
 
 void suspend_power_down_quantum_painter(void) {

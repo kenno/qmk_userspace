@@ -271,16 +271,16 @@ bool menu_handler_display_mode_master(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             userspace_config.display.painter.display_mode_master =
-                (userspace_config.display.painter.display_mode_master - 1) % 5;
-            if (userspace_config.display.painter.display_mode_master > 4) {
-                userspace_config.display.painter.display_mode_master = 4;
+                (userspace_config.display.painter.display_mode_master - 1) % 6;
+            if (userspace_config.display.painter.display_mode_master > 5) {
+                userspace_config.display.painter.display_mode_master = 5;
             }
             eeconfig_update_user_datablock(&userspace_config);
             return false;
         case menu_input_right:
             userspace_config.display.painter.display_mode_master =
-                (userspace_config.display.painter.display_mode_master + 1) % 5;
-            if (userspace_config.display.painter.display_mode_master > 4) {
+                (userspace_config.display.painter.display_mode_master + 1) % 6;
+            if (userspace_config.display.painter.display_mode_master > 5) {
                 userspace_config.display.painter.display_mode_master = 0;
             }
             eeconfig_update_user_datablock(&userspace_config);
@@ -305,6 +305,9 @@ __attribute__((weak)) void display_handler_display_mode_master(char *text_buffer
             strncpy(text_buffer, "Nyan Cat", buffer_len - 1);
             return;
         case 4:
+            strncpy(text_buffer, "Game of Life", buffer_len - 1);
+            return;
+        case 5:
             strncpy(text_buffer, "Layer Map", buffer_len - 1);
             return;
     }
@@ -316,16 +319,16 @@ bool menu_handler_display_mode_slave(menu_input_t input) {
     switch (input) {
         case menu_input_left:
             userspace_config.display.painter.display_mode_slave =
-                (userspace_config.display.painter.display_mode_slave - 1) % 4;
-            if (userspace_config.display.painter.display_mode_slave > 3) {
-                userspace_config.display.painter.display_mode_slave = 3;
+                (userspace_config.display.painter.display_mode_slave - 1) % 5;
+            if (userspace_config.display.painter.display_mode_slave > 4) {
+                userspace_config.display.painter.display_mode_slave = 4;
             }
             eeconfig_update_user_datablock(&userspace_config);
             return false;
         case menu_input_right:
             userspace_config.display.painter.display_mode_slave =
-                (userspace_config.display.painter.display_mode_slave + 1) % 4;
-            if (userspace_config.display.painter.display_mode_slave > 3) {
+                (userspace_config.display.painter.display_mode_slave + 1) % 5;
+            if (userspace_config.display.painter.display_mode_slave > 4) {
                 userspace_config.display.painter.display_mode_slave = 0;
             }
             eeconfig_update_user_datablock(&userspace_config);
@@ -348,6 +351,9 @@ __attribute__((weak)) void display_handler_display_mode_slave(char *text_buffer,
             return;
         case 3:
             strncpy(text_buffer, "Nyan Cat", buffer_len - 1);
+            return;
+        case 4:
+            strncpy(text_buffer, "Game of Life", buffer_len - 1);
             return;
     }
 
