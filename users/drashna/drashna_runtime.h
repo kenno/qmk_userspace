@@ -98,6 +98,11 @@ typedef struct PACKED {
 } menu_state_t;
 
 typedef struct PACKED {
+    bool dirty        : 1;
+    bool has_rendered : 1;
+} menu_state_runtime_t;
+
+typedef struct PACKED {
     uint8_t mods;
     uint8_t weak_mods;
     uint8_t oneshot_mods;
@@ -134,7 +139,10 @@ typedef struct PACKED {
         uint8_t mode        : 3;
         uint8_t typing_mode : 4;
     } unicode;
-    menu_state_t    menu_state;
+    struct {
+        menu_state_t         menu_state;
+        menu_state_runtime_t menu_state_runtime;
+    } display;
     sync_mods_t     mods;
     sync_layer_t    layers;
     led_t           leds;

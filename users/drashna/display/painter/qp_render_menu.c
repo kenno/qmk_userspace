@@ -4,22 +4,24 @@
 #include "display/menu/menu.h"
 #include "display/painter/painter.h"
 
+extern menu_state_runtime_t menu_state_runtime;
+
 bool painter_render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
                          uint16_t width, uint16_t height, bool is_thicc) {
     static menu_state_t last_state;
     uint8_t             scroll_offset = 0;
 
-    if (memcmp(&last_state, &userspace_runtime_state.menu_state, sizeof(menu_state_t)) == 0 &&
+    if (memcmp(&last_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t)) == 0 &&
         menu_state_runtime.has_rendered) {
-        return userspace_runtime_state.menu_state.is_in_menu;
+        return userspace_runtime_state.display.menu_state.is_in_menu;
     }
 
     menu_state_runtime.dirty = false;
-    memcpy(&last_state, &userspace_runtime_state.menu_state, sizeof(menu_state_t));
+    memcpy(&last_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t));
 
     uint16_t render_width = width - start_x;
 
-    if (userspace_runtime_state.menu_state.is_in_menu) {
+    if (userspace_runtime_state.display.menu_state.is_in_menu) {
         qp_rect(display, start_x, start_y, render_width - 1, height - 1, 0, 0, 0, true);
 
         menu_entry_t *menu     = get_current_menu();

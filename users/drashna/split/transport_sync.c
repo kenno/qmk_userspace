@@ -175,6 +175,17 @@ void update_master_state(void) {
 #endif // WPM_ENABLE
     userspace_runtime_state.keymap_config = keymap_config;
     userspace_runtime_state.debug_config  = debug_config;
+
+#ifdef DISPLAY_DRIVER_ENABLE
+    static bool last_dirty = false;
+
+    if (userspace_runtime_state.display.menu_state_runtime.dirty) {
+        if (last_dirty) {
+            userspace_runtime_state.display.menu_state_runtime.dirty = false;
+        }
+        last_dirty = userspace_runtime_state.display.menu_state_runtime.dirty;
+    }
+#endif
 }
 
 /**
@@ -263,6 +274,11 @@ void update_slave_state(void) {
         debug_config = userspace_runtime_state.debug_config;
     }
 #if defined(DISPLAY_DRIVER_ENABLE)
+    if (userspace_runtime_state.display.menu_state_runtime.dirty) {
+        void display_menu_set_dirty(bool dirty);
+        display_menu_set_dirty(true);
+    }
+
     static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
     if (userspace_config.display.inverted != last_inverted || userspace_config.display.rotation != last_rotation) {
         last_inverted = userspace_config.display.inverted;

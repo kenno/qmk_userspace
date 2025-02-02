@@ -25,12 +25,6 @@ typedef enum _menu_input_t {
     menu_input_right,
 } menu_input_t;
 
-typedef struct PACKED {
-    bool dirty        : 1;
-    bool has_rendered : 1;
-} menu_state_runtime_t;
-extern menu_state_runtime_t menu_state_runtime;
-
 typedef struct _menu_entry_t {
     menu_flags_t flags;
     const char  *text;

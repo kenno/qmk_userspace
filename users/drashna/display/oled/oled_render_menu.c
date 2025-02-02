@@ -7,13 +7,15 @@
 
 #define snprintf_nowarn(...) (snprintf(__VA_ARGS__) < 0 ? abort() : (void)0)
 
+extern menu_state_runtime_t menu_state_runtime;
+
 bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_left) {
     uint8_t     scroll_offset   = 0;
     char        text_buffer[21] = {0};
     static bool last_state      = false;
 
-    if (userspace_runtime_state.menu_state.is_in_menu != last_state) {
-        last_state                               = userspace_runtime_state.menu_state.is_in_menu;
+    if (userspace_runtime_state.display.menu_state.is_in_menu != last_state) {
+        last_state                               = userspace_runtime_state.display.menu_state.is_in_menu;
         menu_state_runtime.dirty                 = true;
     }
 
@@ -29,7 +31,7 @@ bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_l
         return false;
     }
 
-    if (!userspace_runtime_state.menu_state.is_in_menu) {
+    if (!userspace_runtime_state.display.menu_state.is_in_menu) {
         return false;
     }
 

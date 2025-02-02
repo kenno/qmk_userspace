@@ -20,23 +20,23 @@ menu_state_runtime_t menu_state_runtime  = {.dirty = true, .has_rendered = false
 deferred_token       menu_deferred_token = INVALID_DEFERRED_TOKEN;
 
 menu_entry_t *get_current_menu(void) {
-    if (userspace_runtime_state.menu_state.menu_stack[0] == 0xFF) {
+    if (userspace_runtime_state.display.menu_state.menu_stack[0] == 0xFF) {
         return &root;
     }
 
     menu_entry_t *entry = &root;
-    for (int i = 0; i < sizeof(userspace_runtime_state.menu_state.menu_stack); ++i) {
-        if (userspace_runtime_state.menu_state.menu_stack[i] == 0xFF) {
+    for (int i = 0; i < sizeof(userspace_runtime_state.display.menu_state.menu_stack); ++i) {
+        if (userspace_runtime_state.display.menu_state.menu_stack[i] == 0xFF) {
             return entry;
         }
-        entry = &entry->parent.children[userspace_runtime_state.menu_state.menu_stack[i]];
+        entry = &entry->parent.children[userspace_runtime_state.display.menu_state.menu_stack[i]];
     }
 
     return entry;
 }
 
 menu_entry_t *get_selected_menu_item(void) {
-    return &(get_current_menu()->parent.children[userspace_runtime_state.menu_state.selected_child]);
+    return &(get_current_menu()->parent.children[userspace_runtime_state.display.menu_state.selected_child]);
 }
 
 uint32_t display_menu_timeout_handler(uint32_t trigger_time, void *cb_arg) {
@@ -53,31 +53,31 @@ bool menu_handle_input(menu_input_t input) {
     }
     switch (input) {
         case menu_input_exit:
-            userspace_runtime_state.menu_state.is_in_menu = false;
-            memset(userspace_runtime_state.menu_state.menu_stack, 0xFF,
-                   sizeof(userspace_runtime_state.menu_state.menu_stack));
-            userspace_runtime_state.menu_state.selected_child = 0xFF;
+            userspace_runtime_state.display.menu_state.is_in_menu = false;
+            memset(userspace_runtime_state.display.menu_state.menu_stack, 0xFF,
+                   sizeof(userspace_runtime_state.display.menu_state.menu_stack));
+            userspace_runtime_state.display.menu_state.selected_child = 0xFF;
             if (cancel_deferred_exec(menu_deferred_token)) {
                 menu_deferred_token = INVALID_DEFERRED_TOKEN;
             }
             return false;
         case menu_input_back:
             // Iterate backwards through the stack and remove the last entry
-            for (uint8_t i = 0; i < sizeof(userspace_runtime_state.menu_state.menu_stack); ++i) {
-                if (userspace_runtime_state.menu_state
-                        .menu_stack[sizeof(userspace_runtime_state.menu_state.menu_stack) - 1 - i] != 0xFF) {
-                    userspace_runtime_state.menu_state.selected_child =
-                        userspace_runtime_state.menu_state
-                            .menu_stack[sizeof(userspace_runtime_state.menu_state.menu_stack) - 1 - i];
-                    userspace_runtime_state.menu_state
-                        .menu_stack[sizeof(userspace_runtime_state.menu_state.menu_stack) - 1 - i] = 0xFF;
+            for (uint8_t i = 0; i < sizeof(userspace_runtime_state.display.menu_state.menu_stack); ++i) {
+                if (userspace_runtime_state.display.menu_state
+                        .menu_stack[sizeof(userspace_runtime_state.display.menu_state.menu_stack) - 1 - i] != 0xFF) {
+                    userspace_runtime_state.display.menu_state.selected_child =
+                        userspace_runtime_state.display.menu_state
+                            .menu_stack[sizeof(userspace_runtime_state.display.menu_state.menu_stack) - 1 - i];
+                    userspace_runtime_state.display.menu_state
+                        .menu_stack[sizeof(userspace_runtime_state.display.menu_state.menu_stack) - 1 - i] = 0xFF;
                     break;
                 }
 
                 // If we've dropped out of the last entry in the stack, exit the menu
-                if (i == sizeof(userspace_runtime_state.menu_state.menu_stack) - 1) {
-                    userspace_runtime_state.menu_state.is_in_menu     = false;
-                    userspace_runtime_state.menu_state.selected_child = 0xFF;
+                if (i == sizeof(userspace_runtime_state.display.menu_state.menu_stack) - 1) {
+                    userspace_runtime_state.display.menu_state.is_in_menu     = false;
+                    userspace_runtime_state.display.menu_state.selected_child = 0xFF;
                 }
             }
             return false;
@@ -85,33 +85,34 @@ bool menu_handle_input(menu_input_t input) {
             // Only attempt to enter the next menu if we're a parent object
             if (selected->flags & menu_flag_is_parent) {
                 // Iterate forwards through the stack and add the selected entry
-                for (uint8_t i = 0; i < sizeof(userspace_runtime_state.menu_state.menu_stack); ++i) {
-                    if (userspace_runtime_state.menu_state.menu_stack[i] == 0xFF) {
-                        userspace_runtime_state.menu_state.menu_stack[i] =
-                            userspace_runtime_state.menu_state.selected_child;
-                        userspace_runtime_state.menu_state.selected_child = 0;
+                for (uint8_t i = 0; i < sizeof(userspace_runtime_state.display.menu_state.menu_stack); ++i) {
+                    if (userspace_runtime_state.display.menu_state.menu_stack[i] == 0xFF) {
+                        userspace_runtime_state.display.menu_state.menu_stack[i] =
+                            userspace_runtime_state.display.menu_state.selected_child;
+                        userspace_runtime_state.display.menu_state.selected_child = 0;
                         break;
                     }
                 }
             } else if (selected->flags & menu_flag_is_value) {
-                menu_state_runtime.dirty = true;
+                // menu_state_runtime.dirty = true;
+                display_menu_set_dirty(true);
                 return selected->child.menu_handler(menu_input_enter);
             }
             return false;
         case menu_input_up:
-            userspace_runtime_state.menu_state.selected_child =
-                (userspace_runtime_state.menu_state.selected_child + menu->parent.child_count - 1) %
+            userspace_runtime_state.display.menu_state.selected_child =
+                (userspace_runtime_state.display.menu_state.selected_child + menu->parent.child_count - 1) %
                 menu->parent.child_count;
             return false;
         case menu_input_down:
-            userspace_runtime_state.menu_state.selected_child =
-                (userspace_runtime_state.menu_state.selected_child + menu->parent.child_count + 1) %
+            userspace_runtime_state.display.menu_state.selected_child =
+                (userspace_runtime_state.display.menu_state.selected_child + menu->parent.child_count + 1) %
                 menu->parent.child_count;
             return false;
         case menu_input_left:
         case menu_input_right:
             if (selected->flags & menu_flag_is_value) {
-                menu_state_runtime.dirty = true;
+                display_menu_set_dirty(true);
                 return selected->child.menu_handler(input);
             }
             return false;
@@ -202,9 +203,9 @@ __attribute__((weak)) bool process_record_menu_user(uint16_t keycode, bool keep_
 }
 
 bool process_record_menu(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == DISPLAY_MENU && record->event.pressed && !userspace_runtime_state.menu_state.is_in_menu) {
-        userspace_runtime_state.menu_state.is_in_menu     = true;
-        userspace_runtime_state.menu_state.selected_child = 0;
+    if (keycode == DISPLAY_MENU && record->event.pressed && !userspace_runtime_state.display.menu_state.is_in_menu) {
+        userspace_runtime_state.display.menu_state.is_in_menu     = true;
+        userspace_runtime_state.display.menu_state.selected_child = 0;
         menu_deferred_token = defer_exec(DISPLAY_MENU_TIMEOUT, display_menu_timeout_handler, NULL);
         return false;
     }
@@ -249,7 +250,7 @@ bool process_record_menu(uint16_t keycode, keyrecord_t *record) {
             break;
 #endif // POINTING_DEVICE_ENABLE
     }
-    if (userspace_runtime_state.menu_state.is_in_menu) {
+    if (userspace_runtime_state.display.menu_state.is_in_menu) {
         if (record->event.pressed) {
             return process_record_menu_user(keycode, keep_processing);
         }
@@ -266,21 +267,21 @@ uint8_t get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries) {
     if (menu->parent.child_count > visible_entries) {
         // If the selected child is is at the end of the visible list but we still have entries to scroll from,
         // don't actually select the last one and increase the scroll offset
-        if (userspace_runtime_state.menu_state.selected_child >= l_scroll_offset + visible_entries - 1 &&
-            userspace_runtime_state.menu_state.selected_child < menu->parent.child_count - 1) {
-            l_scroll_offset = userspace_runtime_state.menu_state.selected_child - visible_entries + 2;
-        } else if (userspace_runtime_state.menu_state.selected_child < l_scroll_offset + 1) {
+        if (userspace_runtime_state.display.menu_state.selected_child >= l_scroll_offset + visible_entries - 1 &&
+            userspace_runtime_state.display.menu_state.selected_child < menu->parent.child_count - 1) {
+            l_scroll_offset = userspace_runtime_state.display.menu_state.selected_child - visible_entries + 2;
+        } else if (userspace_runtime_state.display.menu_state.selected_child < l_scroll_offset + 1) {
             // If the selected child is at the start of the visible list but we still have entries to scroll to,
             // don't actually select the first one and decrease the scroll offset
-            if (userspace_runtime_state.menu_state.selected_child != 0) {
-                l_scroll_offset = userspace_runtime_state.menu_state.selected_child - 1;
+            if (userspace_runtime_state.display.menu_state.selected_child != 0) {
+                l_scroll_offset = userspace_runtime_state.display.menu_state.selected_child - 1;
             } else {
                 // if first entry is selected, reset scroll offset
                 l_scroll_offset = 0;
             }
             // If the selected child is at the end of the visible list and we don't have any more entries to scroll
             // to, then don't increase, but ensure ofset is at the end (for wrapping)
-        } else if (userspace_runtime_state.menu_state.selected_child == menu->parent.child_count - 1) {
+        } else if (userspace_runtime_state.display.menu_state.selected_child == menu->parent.child_count - 1) {
             l_scroll_offset = menu->parent.child_count - visible_entries;
         }
     } else {
@@ -292,6 +293,7 @@ uint8_t get_menu_scroll_offset(menu_entry_t *menu, uint8_t visible_entries) {
 void display_menu_set_dirty(bool state) {
     menu_state_runtime.dirty        = state;
     menu_state_runtime.has_rendered = !state;
+    userspace_runtime_state.display.menu_state_runtime = menu_state_runtime;
 }
 
 void keyboard_task_display_menu_pre(void) {
