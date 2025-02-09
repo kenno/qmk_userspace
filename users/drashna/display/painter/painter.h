@@ -69,6 +69,7 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
 bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader);
 bool painter_render_menu(painter_device_t display, painter_font_handle_t font, uint16_t start_x, uint16_t start_y,
                          uint16_t width, uint16_t height, bool is_thicc);
+void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hsv_t* curr_hsv, bool force_redraw);
 
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);

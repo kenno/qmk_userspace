@@ -635,8 +635,6 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 }
                 break;
             case 4:
-                void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hsv_t* curr_hsv,
-                                 bool force_redraw);
                 render_life(device, x, y, curr_hsv, force_redraw || block_redraw);
                 break;
             case 5:
