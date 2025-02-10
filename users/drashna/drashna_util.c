@@ -181,6 +181,7 @@ uint32_t eeconfig_update_user_datablock_handler(const void *data, uint8_t offset
  * @param offset offset to start read from
  * @param size size of data to be read
  */
-void eeconfig_read_user_datablock_handler(void *data, uint8_t offset, uint8_t size) {
+uint32_t eeconfig_read_user_datablock_handler(void *data, uint8_t offset, uint8_t size) {
     eeconfig_read_user_datablock(data);
+    return 0
 }
