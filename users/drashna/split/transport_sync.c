@@ -259,6 +259,7 @@ void update_slave_state(void) {
     }
     if (default_layer_state != userspace_runtime_state.layers.default_layer_state) {
         default_layer_state = userspace_runtime_state.layers.default_layer_state;
+        eeconfig_update_default_layer(default_layer_state);
     }
 
     void set_split_host_keyboard_leds(uint8_t led_state);
