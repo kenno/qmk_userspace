@@ -129,7 +129,7 @@ bool menu_handler_i2c_scanner(menu_input_t input) {
         case menu_input_left:
         case menu_input_right:
             userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
-            eeconfig_update_user_datablock(&userspace_config);
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;
@@ -145,7 +145,7 @@ bool menu_handler_scan_rate(menu_input_t input) {
         case menu_input_left:
         case menu_input_right:
             userspace_config.debug.matrix_scan_print = !userspace_config.debug.matrix_scan_print;
-            eeconfig_update_user_datablock(&userspace_config);
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;
@@ -161,7 +161,7 @@ bool menu_handler_keylogger(menu_input_t input) {
         case menu_input_left:
         case menu_input_right:
             userspace_config.debug.console_keylogger = !userspace_config.debug.console_keylogger;
-            eeconfig_update_user_datablock(&userspace_config);
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;

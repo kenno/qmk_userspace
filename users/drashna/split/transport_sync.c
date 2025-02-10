@@ -68,7 +68,10 @@ void userspace_runtime_state_sync(uint8_t initiator2target_buffer_size, const vo
 void user_config_sync(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
                       uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
     if (initiator2target_buffer_size == sizeof(userspace_config)) {
-        memcpy(&userspace_config, initiator2target_buffer, initiator2target_buffer_size);
+        if (memcmp(&userspace_config, initiator2target_buffer, initiator2target_buffer_size) != 0) {
+            memcpy(&userspace_config, initiator2target_buffer, initiator2target_buffer_size);
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+        }
     }
 }
 

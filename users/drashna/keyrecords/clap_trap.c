@@ -7,6 +7,7 @@
 #include "action_util.h"
 #include "drashna_layers.h"
 #include "drashna_runtime.h"
+#include "drashna_util.h"
 #include "keyrecords/process_records.h"
 #include "wait.h"
 
@@ -53,7 +54,7 @@ bool clap_trap_is_enabled(void) {
  */
 void clap_trap_enable(void) {
     userspace_config.gaming.clap_trap_enable = true;
-    eeconfig_update_user_datablock(&userspace_config);
+    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 }
 
 /**
@@ -62,7 +63,7 @@ void clap_trap_enable(void) {
  */
 void clap_trap_disable(void) {
     userspace_config.gaming.clap_trap_enable = false;
-    eeconfig_update_user_datablock(&userspace_config);
+    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 }
 
 /**
@@ -71,7 +72,7 @@ void clap_trap_disable(void) {
  */
 void clap_trap_toggle(void) {
     userspace_config.gaming.clap_trap_enable = !userspace_config.gaming.clap_trap_enable;
-    eeconfig_update_user_datablock(&userspace_config);
+    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 }
 
 /**

@@ -5,6 +5,7 @@
 #include "drashna_runtime.h"
 #include "drashna_names.h"
 #include "drashna_layers.h"
+#include "drashna_util.h"
 #include <printf.h>
 #include "display/menu/menu.h"
 #include "keyrecords/process_records.h"

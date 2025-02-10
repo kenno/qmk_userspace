@@ -160,3 +160,27 @@ uint16_t extract_basic_keycode(uint16_t keycode, keyrecord_t *record, bool check
 
     return keycode;
 }
+
+/**
+ * @brief shim to work with different versions of the function until PR is merged and lands in master
+ *
+ * @param data data to be written
+ * @param offset offest to write to
+ * @param size size of data to be written
+ * @return uint32_t
+ */
+uint32_t eeconfig_update_user_datablock_handler(const void *data, uint8_t offset, uint8_t size) {
+    eeconfig_update_user_datablock(data);
+    return 0;
+}
+
+/**
+ * @brief shim to work with different versions of the function until PR is merged and lands in master
+ *
+ * @param data data to be read into
+ * @param offset offset to start read from
+ * @param size size of data to be read
+ */
+void eeconfig_read_user_datablock_handler(void *data, uint8_t offset, uint8_t size) {
+    eeconfig_read_user_datablock(data);
+}

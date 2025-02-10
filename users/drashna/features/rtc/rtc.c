@@ -9,6 +9,7 @@
 #include "timer.h"
 #include "progmem.h"
 #include "drashna_runtime.h"
+#include "drashna_util.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -383,7 +384,7 @@ void rtc_set_time(rtc_time_t time) {
     userspace_config.rtc.timezone   = time.timezone;
     userspace_config.rtc.is_dst     = time.is_dst;
     userspace_config.rtc.format_24h = time.format;
-    eeconfig_update_user_datablock(&userspace_config);
+    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 
 #ifdef DS3231_RTC_DRIVER_ENABLE
     ds3231_set_time(time);
