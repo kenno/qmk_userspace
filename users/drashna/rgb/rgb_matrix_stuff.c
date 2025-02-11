@@ -4,6 +4,7 @@
 #include "rgb_matrix_stuff.h"
 #include "drashna_runtime.h"
 #include "drashna_layers.h"
+#include "drashna_util.h"
 #include "keyrecords/process_records.h"
 #include "rgb_matrix.h"
 #include "debug.h"
