@@ -200,12 +200,15 @@ void update_master_state(void) {
  */
 void update_slave_state(void) {
 #ifdef AUDIO_ENABLE
+    bool has_audio_changed = false;
     if (userspace_runtime_state.audio.enable != is_audio_on()) {
         audio_config.enable = userspace_runtime_state.audio.enable;
+        has_audio_changed   = true;
     }
 #    ifdef AUDIO_CLICKY
     if (userspace_runtime_state.audio.clicky_enable != is_clicky_on()) {
         audio_config.clicky_enable = userspace_runtime_state.audio.clicky_enable;
+        has_audio_changed          = true;
     }
     extern float clicky_freq;
     extern float clicky_rand;
@@ -217,10 +220,17 @@ void update_slave_state(void) {
         userspace_runtime_state.audio.music_enable ? music_on() : music_off();
     }
 #    endif // MUSIC_ENABLE
-#endif     // AUDIO_ENABLE
+    if (has_audio_changed) {
+        if (eeconfig_read_audio() != audio_config.raw) {
+            eeconfig_update_audio(audio_config.raw);
+        }
+    }
+#endif // AUDIO_ENABLE
 
 #ifdef UNICODE_COMMON_ENABLE
-    unicode_config.input_mode = userspace_runtime_state.unicode.mode;
+    if (get_unicode_input_mode() != userspace_runtime_state.unicode.mode) {
+        set_unicode_input_mode(userspace_runtime_state.unicode.mode);
+    }
 #endif // UNICODE_COMMON_ENABLE
 #if defined(POINTING_DEVICE_ENABLE) && defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
     if (get_auto_mouse_toggle() != userspace_runtime_state.internals.tap_toggling) {
@@ -231,10 +241,8 @@ void update_slave_state(void) {
     swap_hands = userspace_runtime_state.internals.swap_hands;
 #endif // SWAP_HANDS_ENABLE
 #ifdef CAPS_WORD_ENABLE
-    if (userspace_runtime_state.internals.is_caps_word) {
-        caps_word_on();
-    } else {
-        caps_word_off();
+    if (is_caps_word_on() != userspace_runtime_state.internals.is_caps_word) {
+        caps_word_toggle();
     }
 #endif // CAPS_WORD_ENABLE
     set_keyboard_lock(userspace_runtime_state.internals.host_driver_disabled);
@@ -259,7 +267,9 @@ void update_slave_state(void) {
     }
     if (default_layer_state != userspace_runtime_state.layers.default_layer_state) {
         default_layer_state = userspace_runtime_state.layers.default_layer_state;
-        eeconfig_update_default_layer(default_layer_state);
+        if (eeconfig_read_default_layer() != default_layer_state) {
+            eeconfig_update_default_layer(default_layer_state & 0xFF);
+        }
     }
 
     void set_split_host_keyboard_leds(uint8_t led_state);
@@ -273,9 +283,15 @@ void update_slave_state(void) {
 #endif // WPM_ENABLE
     if (keymap_config.raw != userspace_runtime_state.keymap_config.raw) {
         keymap_config = userspace_runtime_state.keymap_config;
+        if (eeconfig_read_keymap() != keymap_config.raw) {
+            eeconfig_update_keymap(keymap_config.raw);
+        }
     }
     if (debug_config.raw != userspace_runtime_state.debug_config.raw) {
         debug_config = userspace_runtime_state.debug_config;
+        if (eeconfig_read_debug() != debug_config.raw) {
+            eeconfig_update_debug(debug_config.raw);
+        }
     }
 #if defined(DISPLAY_DRIVER_ENABLE)
     if (userspace_runtime_state.display.menu_state_runtime.dirty) {
