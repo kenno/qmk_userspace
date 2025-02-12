@@ -541,7 +541,13 @@ void housekeeping_task_transport_sync(void) {
         if (is_first_run) {
             last_backlight_config.raw = eeconfig_read_backlight();
         }
-        if (last_backlight_config.raw != backlight_config.raw) {
+#    if defined(QUANTUM_PAINTER_ENABLE)
+        if (last_backlight_config.level != backlight_config.level ||
+            last_backlight_config.breathing != backlight_config.breathing)
+#    else
+        if (last_backlight_config.raw != backlight_config.raw)
+#    endif
+        {
             last_backlight_config = backlight_config;
             eeconfig_update_backlight(backlight_config.raw);
             xprintf("Backlight config updated\n");
