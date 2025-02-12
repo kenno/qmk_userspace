@@ -490,6 +490,50 @@ void housekeeping_task_transport_sync(void) {
 
     // Data sync from master to slave
     user_transport_sync();
+
+    if (!is_keyboard_master()) {
+        // Data sync from slave to master
+#ifdef RGB_MATRIX_ENABLE
+        static rgb_config_t last_rgb_matrix_config = {0};
+        if (last_rgb_matrix_config.raw != rgb_matrix_config.raw) {
+            last_rgb_matrix_config = rgb_matrix_config;
+            eeconfig_update_rgb_matrix();
+            rgb_matrix_reload_from_eeprom();
+            xprintf("RGB Matrix config updated\n");
+        }
+#endif // RGB_MATRIX_ENABLE
+#ifdef RGBLIGHT_ENABLE
+        static rgblight_config_t last_rgblight_config = {0};
+        extern rgblight_config_t rgblight_config;
+
+        if (last_rgblight_config.raw != rgblight_config.raw) {
+            last_rgblight_config = rgblight_config;
+            eeconfig_update_rgblight(rgblight_config.raw);
+            rgblight_reload_from_eeprom();
+            xprintf("RGB Light config updated\n");
+        }
+#endif // RGBLIGHT_ENABLE
+#if defined(HAPTIC_ENABLE) && defined(SPLIT_HAPTIC_ENABLE)
+        static haptic_config_t last_haptic_config = {0};
+        extern haptic_config_t haptic_config;
+
+        if (last_haptic_config.raw != haptic_config.raw) {
+            last_haptic_config = haptic_config;
+            eeconfig_update_haptic(haptic_config.raw);
+            xprintf("Haptic config updated\n");
+        }
+#endif
+#ifdef BACKLIGHT_ENABLE
+        static backlight_config_t last_backlight_config = {0};
+        extern backlight_config_t backlight_config;
+
+        if (last_backlight_config.raw != backlight_config.raw) {
+            last_backlight_config = backlight_config;
+            eeconfig_update_backlight(backlight_config.raw);
+            xprintf("Backlight config updated\n");
+        }
+#endif // BACKLIGHT_ENABLE
+    }
 }
 
 #if 0
