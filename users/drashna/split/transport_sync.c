@@ -493,6 +493,7 @@ void housekeeping_task_transport_sync(void) {
     user_transport_sync();
 
     if (!is_keyboard_master()) {
+#if 0
         // Data sync from slave to master
         static bool is_first_run = true;
         (void)is_first_run;
@@ -555,6 +556,7 @@ void housekeeping_task_transport_sync(void) {
         }
 #endif // BACKLIGHT_ENABLE
         is_first_run = false;
+#endif
     }
 }
 
