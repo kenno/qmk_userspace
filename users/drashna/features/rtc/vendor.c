@@ -11,6 +11,10 @@
 #include "timer.h"
 #include <stdio.h>
 
+// RP2040 RTC is busted?
+// time comes back as 8077251600 (0x1E1711410)
+// aka 2225/12/16 09:00:00
+
 void convert_halrtc_to_local_rtc_struct(RTCDateTime *halrtc, rtc_time_t *local) {
     local->year            = halrtc->year + 1980U;
     local->month           = halrtc->month;
