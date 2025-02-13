@@ -229,7 +229,8 @@ void update_slave_state(void) {
 
 #ifdef UNICODE_COMMON_ENABLE
     if (get_unicode_input_mode() != userspace_runtime_state.unicode.mode) {
-        set_unicode_input_mode(userspace_runtime_state.unicode.mode);
+        unicode_config.input_mode = userspace_runtime_state.unicode.mode;
+        eeprom_update_byte(EECONFIG_UNICODEMODE, unicode_config.input_mode);
     }
 #endif // UNICODE_COMMON_ENABLE
 #if defined(POINTING_DEVICE_ENABLE) && defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
