@@ -12,23 +12,26 @@
 #    include <math.h>
 #    include <stddef.h>
 
+#    if defined(MCU_STM32)
 // STM32-specific watchdog config calculations
 // timeout = tick * PR * (RL + 1)
 // tick = 1000000 / (lsi) clock
-#    if !defined(WATCHDOG_CLOCK)
-#        if defined(MCU_STM32)
+#        if !defined(WATCHDOG_CLOCK)
 #            define WATCHDOG_CLOCK STM32_LSICLK
-#        elif defined(MCU_RP)
-#            define WATCHDOG_CLOCK RP_XOSCCLK
-#        endif
-#    endif // !defined(WATCHDOG_CLOCK)
+#        endif // !defined(WATCHDOG_CLOCK)
 
-#    define _IWDG_LSI(us)    ((us) * WATCHDOG_CLOCK / 1000000)
-#    define _IWDG_PR_US(us)  (uint8_t)(log(_IWDG_LSI(us)) / log(2) - 11) // 3
-#    define _IWDG_PR_S(s)    _IWDG_PR_US(s * 1000000.0)
-#    define _IWDG_SCALAR(us) (2 << ((uint8_t)_IWDG_PR_US(us) + 1))
-#    define _IWDG_RL_US(us)  (uint64_t)(_IWDG_LSI(us)) / _IWDG_SCALAR(us)
-#    define _IWDG_RL_S(s)    _IWDG_RL_US(s * 1000000.0)
+#        define _IWDG_LSI(us)    ((us) * WATCHDOG_CLOCK / 1000000)
+#        define _IWDG_PR_US(us)  (uint8_t)(log(_IWDG_LSI(us)) / log(2) - 11) // 3
+#        define _IWDG_PR_S(s)    _IWDG_PR_US(s * 1000000.0)
+#        define _IWDG_SCALAR(us) (2 << ((uint8_t)_IWDG_PR_US(us) + 1))
+#        define _IWDG_RL_US(us)  (uint64_t)(_IWDG_LSI(us)) / _IWDG_SCALAR(us)
+#        define _IWDG_RL_S(s)    _IWDG_RL_US(s * 1000000.0)
+#    elif defined(MCU_RP)
+// investigate the actual timing this uses
+#        define _IWDG_RL_S(s) (uint32_t)(s * 1000)
+#    else
+#        error "Current MCU not supported yet"
+#    endif
 
 #    if !defined(WATCHDOG_TIMEOUT)
 #        define WATCHDOG_TIMEOUT 5.0f
