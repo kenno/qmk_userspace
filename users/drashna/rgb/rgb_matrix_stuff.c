@@ -22,33 +22,48 @@ rgb_t           rgb_matrix_hsv_to_rgb(hsv_t hsv);
 void rgb_matrix_layer_helper(uint8_t hue, uint8_t sat, uint8_t val, uint8_t mode, uint8_t speed, uint8_t led_type,
                              uint8_t led_min, uint8_t led_max) {
     hsv_t hsv = {hue, sat, val};
+    rgb_t    rgb  = {0};
+    uint16_t time = scale16by8(g_rgb_timer, speed / 8);
     if (hsv.v > rgb_matrix_get_val()) {
         hsv.v = rgb_matrix_get_val();
     }
 
     switch (mode) {
         case 1: // breathing
-            {
-                uint16_t time = scale16by8(g_rgb_timer, speed / 8);
-                hsv.v         = scale8(abs8(sin8(time) - 128) * 2, hsv.v);
-                rgb_t rgb     = rgb_matrix_hsv_to_rgb(hsv);
-                for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-                    if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
-                        RGB_MATRIX_INDICATOR_SET_COLOR(i, rgb.r, rgb.g, rgb.b);
-                    }
+            for (uint8_t i = led_min; i < led_max; i++) {
+                if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
+                    hsv.v     = scale8(abs8(sin8(time) - 128) * 2, hsv.v);
+                    rgb_t rgb = rgb_matrix_hsv_to_rgb(hsv);
+                    rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
                 }
-                break;
             }
+            break;
+        case 2: // Rainbow Mood
+            for (uint8_t i = led_min; i < led_max; i++) {
+                hsv.h = time;
+                if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
+                    rgb = rgb_matrix_hsv_to_rgb(hsv);
+                    rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+                }
+            }
+            break;
+        case 3: // Rainbow Swirl
+            for (uint8_t i = led_min; i < led_max; i++) {
+                if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
+                    hsv.h = g_led_config.point[i].x - time;
+                    rgb   = rgb_matrix_hsv_to_rgb(hsv);
+                    rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+                }
+            }
+            break;
         default: // Solid Color
-            {
-                rgb_t rgb = rgb_matrix_hsv_to_rgb(hsv);
-                for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-                    if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
-                        RGB_MATRIX_INDICATOR_SET_COLOR(i, rgb.r, rgb.g, rgb.b);
-                    }
+            for (uint8_t i = led_min; i < led_max; i++) {
+                if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
+                    rgb_t rgb = rgb_matrix_hsv_to_rgb(hsv);
+                    rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
                 }
-                break;
             }
+            break;
     }
 }
 
