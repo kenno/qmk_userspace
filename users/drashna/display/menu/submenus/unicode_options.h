@@ -45,6 +45,7 @@ __attribute__((weak)) void display_handler_unicode(char *text_buffer, size_t buf
     strncpy(text_buffer, "Unknown", buffer_len);
 }
 
+#    ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
 bool menu_handler_unicode_typing(menu_input_t input) {
     switch (input) {
         case menu_input_left:
@@ -53,6 +54,7 @@ bool menu_handler_unicode_typing(menu_input_t input) {
             if (userspace_runtime_state.unicode.typing_mode >= UNCODES_MODE_END) {
                 userspace_runtime_state.unicode.typing_mode = UNCODES_MODE_END - 1;
             }
+            set_unicode_tying_mode(userspace_runtime_state.unicode.typing_mode);
             return false;
         case menu_input_right:
             userspace_runtime_state.unicode.typing_mode =
@@ -60,17 +62,21 @@ bool menu_handler_unicode_typing(menu_input_t input) {
             if (userspace_runtime_state.unicode.typing_mode >= UNCODES_MODE_END) {
                 userspace_runtime_state.unicode.typing_mode = 0;
             }
+            set_unicode_tying_mode(userspace_runtime_state.unicode.typing_mode);
             return false;
         default:
             return true;
     }
 }
 __attribute__((weak)) void display_handler_unicode_typing(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, unicode_typing_mode(userspace_runtime_state.unicode.typing_mode), buffer_len);
+    strncpy(text_buffer, unicode_typing_mode(get_unicode_typing_mode()), buffer_len);
 }
+#    endif
 
 menu_entry_t unicode_entries[] = {
     MENU_ENTRY_CHILD("Unicode mode", "Mode", unicode),
+#    ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
     MENU_ENTRY_CHILD("Unicode Typing Mode", "Typing", unicode_typing),
+#    endif
 };
 #endif // UNICODE_COMMON_ENABLE

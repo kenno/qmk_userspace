@@ -52,7 +52,11 @@ menu_entry_t root_entries[] = {
     MENU_ENTRY_PARENT("Display Options", "Display", display_option_entries),
 #endif // QUANTUM_PAINTER_ENABLE
 #ifdef UNICODE_COMMON_ENABLE
+#    ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
+    MENU_ENTRY_MULTI("Unicode Settings", "Unicode", unicode_entries, unicode),
+#    else
     MENU_ENTRY_MULTI("Unicode Settings", "Unicode", unicode_entries, unicode_typing),
+#    endif
 #endif // UNICODE_COMMON_ENABLE
 #ifdef RGB_MATRIX_ENABLE
     MENU_ENTRY_MULTI("RGB Matrix Settings", "RGB Matrix", rgb_matrix_entries, rm_enabled),
