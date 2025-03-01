@@ -6,12 +6,9 @@ CONFIG_H += $(USER_PATH)/keyrecords/config.h
 UNICODE_ENABLE        := no
 UNICODEMAP_ENABLE     := no
 UCIS_ENABLE           := no
-ifeq ($(strip $(CUSTOM_UNICODE_ENABLE)), yes)
-    UNICODE_COMMON        := yes
+ifeq ($(strip $(UNICODE_COMMON)), yes)
     OPT_DEFS += -DCUSTOM_UNICODE_ENABLE
     SRC += $(USER_PATH)/keyrecords/unicode.c
-else
-    UNICODE_COMMON        := no
 endif
 
 ifeq ($(strip $(TAP_DANCE_ENABLE)), yes)

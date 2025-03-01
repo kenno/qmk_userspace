@@ -33,15 +33,6 @@ enum userspace_custom_keycodes {
     UC_IRNY,
     UC_CLUE,
     KEYLOCK, // Locks keyboard by unmounting driver
-    KC_NOMODE,
-    KC_WIDE,
-    KC_SCRIPT,
-    KC_BLOCKS,
-    KC_REGIONAL,
-    KC_AUSSIE,
-    KC_ZALGO,
-    KC_SUPER,
-    KC_COMIC,
 
     OLED_LOCK,
     OLED_BRIGHTNESS_INC,
