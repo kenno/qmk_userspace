@@ -1,5 +1,6 @@
 {
     "modules": [
+        "drashna/sentence_case",
         "drashna/unicode_typing"
     ]
 }

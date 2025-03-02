@@ -21,12 +21,7 @@ ifeq ($(strip $(KEYLOGGER_ENABLE)), yes)
 endif
 
 KEYRECORD_FEATURES = \
-    ACHORDION \
-    CLAP_TRAP \
-    CUSTOM_SHIFT_KEYS \
     CUSTOM_TAP_DANCE \
-    SELECT_WORD \
-    SENTENCE_CASE
 
 define HANDLE_MY_FEATURE
     # $$(info "Processing: $1_ENABLE $$(USER_PATH)/keyrecords/$2.c")
