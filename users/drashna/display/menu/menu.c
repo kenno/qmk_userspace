@@ -10,6 +10,7 @@
 #include "display/menu/menu.h"
 #include "keyrecords/process_records.h"
 #include "deferred_exec.h"
+#include "quantum_keycodes.h"
 
 #include "menu.inc"
 
