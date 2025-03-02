@@ -37,7 +37,7 @@
 #    include "keyrecords/clap_trap.h"
 #endif // CLAP_TRAP_ENABLE
 
-#ifdef AUDIO_ENABLE
+#if defined(AUDIO_ENABLE) && defined(OS_DETECTION_ENABLE)
 #    include "audio.h"
 #    ifndef CG_NORM_SONG
 #        define CG_NORM_SONG SONG(AG_NORM_SOUND)
