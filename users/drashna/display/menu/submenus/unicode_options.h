@@ -2,6 +2,7 @@
 // Unicode
 
 #ifdef UNICODE_COMMON_ENABLE
+#    include "unicode.h"
 #    include "keyrecords/unicode.h"
 #    ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
 #        include "modules/drashna/unicode_typing/unicode_typing.h"
