@@ -21,10 +21,6 @@
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
 #    include "keyrecords/custom_dynamic_macros.h"
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
-#ifdef I2C_DRIVER_REQUIRED
-void housekeeping_task_i2c_scanner(void);
-void keyboard_post_init_i2c(void);
-#endif // I2C_DRIVER_REQUIRED
 #ifdef RTC_ENABLE
 #    include "rtc.h"
 #endif // RTC_ENABLE
@@ -34,9 +30,6 @@ void keyboard_post_init_i2c(void);
 #ifdef CUSTOM_UNICODE_ENABLE
 void keyboard_post_init_unicode(void);
 #endif // CUSTOM_UNICODE_ENABLE
-#ifdef WATCHDOG_ENABLE
-#    include "watchdog.h"
-#endif // WATCHDOG_ENABLE
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
 #    include "split/transport_sync.h"
@@ -95,13 +88,13 @@ void                       keyboard_post_init_user(void) {
 #if defined(SPLIT_KEYBOARD) && defined(SPLIT_TRANSACTION_IDS_USER)
     keyboard_post_init_transport_sync();
 #endif // SPLIT_KEYBOARD && SPLIT_TRANSACTION_IDS_USER
-#ifdef I2C_DRIVER_REQUIRED
-    keyboard_post_init_i2c();
-#endif // I2C_DRIVER_REQUIRED
 #ifdef CUSTOM_UNICODE_ENABLE
     keyboard_post_init_unicode();
 #endif // CUSTOM_UNICODE_ENABLE
-
+#ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
+#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
+    i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
+#endif // COMMUNITY_MODULE_I2C_SCANNER_ENABLE
 #ifdef DEBUG_MATRIX_SCAN_RATE_ENABLE
     userspace_config.debug.matrix_scan_print = true;
 #endif // DEBUG_MATRIX_SCAN_RATE_ENABLE
@@ -119,9 +112,6 @@ void                       keyboard_post_init_user(void) {
 #ifdef RTC_ENABLE
     rtc_init();
 #endif // RTC_ENABLE
-#ifdef WATCHDOG_ENABLE
-    watchdog_init();
-#endif // WATCHDOG_ENABLE
 #ifdef WPM_ENABLE
     void keyboard_post_init_wpm(void);
     keyboard_post_init_wpm();
@@ -138,9 +128,6 @@ __attribute__((weak)) bool shutdown_keymap(bool jump_to_bootloader) {
 }
 
 bool shutdown_user(bool jump_to_bootloader) {
-#ifdef WATCHDOG_ENABLE
-    watchdog_shutdown();
-#endif // WATCHDOG_ENABLE
     if (!shutdown_keymap(jump_to_bootloader)) {
         return false;
     }
@@ -167,9 +154,6 @@ __attribute__((weak)) void suspend_power_down_keymap(void) {}
 
 void suspend_power_down_user(void) {
     set_is_device_suspended(true);
-#ifdef WATCHDOG_ENABLE
-    suspend_power_down_watchdog();
-#endif // WATCHDOG_ENABLE
     if (layer_state_is(_GAMEPAD)) {
         layer_off(_GAMEPAD);
     }
@@ -196,9 +180,6 @@ void suspend_power_down_user(void) {
  */
 __attribute__((weak)) void suspend_wakeup_init_keymap(void) {}
 void                       suspend_wakeup_init_user(void) {
-#ifdef WATCHDOG_ENABLE
-    suspend_wakeup_init_watchdog();
-#endif // WATCHDOG_ENABLE
     // hack for re-enabling oleds/lights/etc when woken from usb
     void last_matrix_activity_trigger(void);
     last_matrix_activity_trigger();
@@ -391,9 +372,6 @@ void                       housekeeping_task_user(void) {
 #endif // AUDIO_ENABLE
     }
 
-#ifdef WATCHDOG_ENABLE
-    watchdog_task();
-#endif // WATCHDOG_ENABLE
 #if defined(CUSTOM_TAP_DANCE_ENABLE) // Run Diablo 3 macro checking code.
     run_diablo_macro_check();
 #endif // CUSTOM_TAP_DANCE_ENABLE
@@ -403,9 +381,6 @@ void                       housekeeping_task_user(void) {
 #if defined(CUSTOM_RGBLIGHT)
     housekeeping_task_rgb_light();
 #endif // CUSTOM_RGBLIGHT
-#ifdef I2C_DRIVER_REQUIRED
-    housekeeping_task_i2c_scanner();
-#endif // I2C_DRIVER_REQUIRED
 #ifdef CUSTOM_OLED_DRIVER
     housekeeping_task_oled();
 #endif // CUSTOM_OLED_DRIVER
@@ -418,15 +393,6 @@ void                       housekeeping_task_user(void) {
 #ifdef RTC_ENABLE
     rtc_task();
 #endif // RTC_ENABLE
-#ifdef SENTENCE_CASE_ENABLE
-    sentence_case_task();
-#endif // SENTENCE_CASE_ENABLE
-#ifdef SELECT_WORD_ENABLE
-    select_word_task();
-#endif // SELECT_WORD_ENABLE
-#ifdef ACHORDION_ENABLE
-    achordion_task();
-#endif // ACHORDION_ENABLE
 #ifdef ORBITAL_MOUSE_ENABLE
     orbital_mouse_task();
 #endif // ORBITAL_MOUSE_ENABLE

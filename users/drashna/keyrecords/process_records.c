@@ -344,12 +344,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             break;
         case US_I2C_SCAN_ENABLE:
-#if HAL_USE_I2C == TRUE
+#ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
+#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
             if (record->event.pressed) {
                 userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
+                i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
                 eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             }
-#endif // HAL_USE_I2C == TRUE
+#endif
             break;
         case US_GAMING_SCAN_TOGGLE:
 #ifdef AUDIO_ENABLE

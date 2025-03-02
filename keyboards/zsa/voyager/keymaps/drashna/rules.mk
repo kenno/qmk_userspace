@@ -5,8 +5,6 @@ SENTENCE_CASE_ENABLE  = yes
 TAP_DANCE_ENABLE      = yes
 BOOTMAGIC_ENABLE      = yes
 CUSTOM_UNICODE_ENABLE = yes
-WATCHDOG_ENABLE       = yes
-
 EEPROM_DRIVER         = i2c
 OLED_ENABLE           = yes
 WPM_ENABLE            = yes

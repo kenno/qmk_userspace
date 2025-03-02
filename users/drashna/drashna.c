@@ -10,61 +10,13 @@
 
 userspace_config_t userspace_config;
 
-#ifdef I2C_DRIVER_REQUIRED
-#    include "i2c_master.h"
-#    include "debug.h"
-
-#    ifndef I2C_SCANNER_TIMEOUT
-#        define I2C_SCANNER_TIMEOUT 50
-#    endif // I2C_SCANNER_TIMEOUT
-
-void do_scan(void) {
-    if (!userspace_config.debug.i2c_scanner_enable) {
-        return;
-    }
-    uint8_t nDevices = 0;
-
-    xprintf("Scanning for I2C Devices...\n");
-
-    for (uint8_t address = 1; address < 127; address++) {
-        // The i2c_scanner uses the return value of
-        // i2c_ping_address to see if a device did acknowledge to the address.
-        i2c_status_t error = i2c_ping_address(address << 1, I2C_SCANNER_TIMEOUT);
-        if (error == I2C_STATUS_SUCCESS) {
-            xprintf("  I2C device found at address 0x%02X\n", address);
-            nDevices++;
-        } else {
-            // xprintf("  Unknown error (%u) at address 0x%02X\n", error, address);
-        }
-    }
-
-    if (nDevices == 0) {
-        xprintf("No I2C devices found\n");
-    }
-}
-
-uint16_t scan_timer = 0;
-
-void housekeeping_task_i2c_scanner(void) {
-    if (timer_elapsed(scan_timer) > 5000) {
-        do_scan();
-        scan_timer = timer_read();
-    }
-}
-
-void keyboard_post_init_i2c(void) {
-    i2c_init();
-    scan_timer = timer_read();
-}
-#endif // HAL_USE_I2C == TRUE
-
 #if defined(AUTOCORRECT_ENABLE)
 #    if defined(AUDIO_ENABLE)
 #        ifdef USER_SONG_LIST
 float autocorrect_song[][2] = SONG(MARIO_GAMEOVER);
 #        else // USER_SONG_LIST
 float autocorrect_song[][2] = SONG(PLOVER_GOODBYE_SOUND);
-#        endif // USER_SONG_LIST
+#        endif // USER_SONG_LISTq
 #    endif
 // 2 strings, 2q chars each + null terminator. max autocorrect length is 19 chars but 128px/6 supports 21 chars
 char autocorrected_str[2][21]     = {"    automatically\0", "      corrected\0"};

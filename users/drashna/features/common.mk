@@ -20,7 +20,3 @@ $(foreach F,$(USERSPACE_FEATURES),\
         $(eval $(call HANDLE_MY_FEATURE,$(F),$(shell echo $(F) | tr '[:upper:]' '[:lower:]'))) \
     ) \
 )
-
-ifeq ($(strip $(WATCHDOG_ENABLE)), yes)
-    OPT_DEFS += -DHAL_USE_WDG=TRUE
-endif

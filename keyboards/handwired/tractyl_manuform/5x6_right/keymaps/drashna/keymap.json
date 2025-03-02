@@ -1,6 +1,8 @@
 {
     "modules": [
+        "drashna/i2c_scanner",
         "drashna/sentence_case",
-        "drashna/unicode_typing"
+        "drashna/unicode_typing",
+        "drashna/watchdog"
     ]
 }

@@ -1,5 +1,6 @@
 {
     "modules": [
-        "drashna/unicode_typing"
+        "drashna/unicode_typing",
+        "drashna/watchdog"
     ]
 }

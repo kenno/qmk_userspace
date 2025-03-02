@@ -4,9 +4,6 @@ CAPS_WORD_ENABLE      = yes
 SENTENCE_CASE_ENABLE  = yes
 TAP_DANCE_ENABLE      = yes
 BOOTMAGIC_ENABLE      = yes      # Enable Bootmagic Lite
-CUSTOM_UNICODE_ENABLE = yes
-WATCHDOG_ENABLE       = yes
-CLAP_TRAP_ENABLE      = yes
 
 BOOTLOADER = tinyuf2
 

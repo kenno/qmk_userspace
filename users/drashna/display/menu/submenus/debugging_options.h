@@ -124,12 +124,17 @@ __attribute__((weak)) void display_handler_quantum_painter_debugging(char *text_
 }
 #endif
 
+#ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
+#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
+
 bool menu_handler_i2c_scanner(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
             userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
+            i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+
             return false;
         default:
             return true;
@@ -139,6 +144,7 @@ bool menu_handler_i2c_scanner(menu_input_t input) {
 __attribute__((weak)) void display_handler_i2c_scanner(char *text_buffer, size_t buffer_len) {
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.debug.i2c_scanner_enable ? "on" : "off");
 }
+#endif
 
 bool menu_handler_scan_rate(menu_input_t input) {
     switch (input) {
@@ -183,7 +189,9 @@ menu_entry_t debug_entries[] = {
     MENU_ENTRY_CHILD("Split Serial Debugging", "Split", split_serial_debugging),
     MENU_ENTRY_CHILD("Quantum Painter Debugging", "QP????", quantum_painter_debugging),
 #endif
+#ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
     MENU_ENTRY_CHILD("I2C Scanner", "I2C Scan", i2c_scanner),
+#endif
     MENU_ENTRY_CHILD("Matrix Scan Rate Print", "Scan Rate", scan_rate),
     MENU_ENTRY_CHILD("Console Keylogger", "Keylogger", keylogger),
 };

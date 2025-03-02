@@ -48,7 +48,6 @@ ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
     ENCODER_MAP_ENABLE            = yes
     HAPTIC_ENABLE                 = yes
     LAYER_MAP_ENABLE              = yes
-    I2C_DRIVER_REQUIRED           = yes
     LTO_ENABLE                    = yes
     MULTITHREADED_LIGHTING_ENABLE = yes
     MULTITHREADED_PAINTER_ENABLE  = no
@@ -60,7 +59,6 @@ ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
     SENTENCE_CASE_ENABLE          = yes
     SWAP_HANDS_ENABLE             = yes
     TAP_DANCE_ENABLE              = yes
-    WATCHDOG_ENABLE               = yes
     WPM_ENABLE                    = yes
 endif
 
