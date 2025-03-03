@@ -27,15 +27,12 @@
 #if defined(RGB_MATRIX_ENABLE)
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // defined(RGB_MATRIX_ENABLE)
-#ifdef SENTENCE_CASE_ENABLE
-#    include "keyrecords/sentence_case.h"
-#endif // SENTENCE_CASE_ENABLE
 #ifdef UNICODE_COMMON_ENABLE
 #    include "keyrecords/unicode.h"
 #endif // UNICODE_COMMON_ENABLE
-#ifdef CLAP_TRAP_ENABLE
-#    include "keyrecords/clap_trap.h"
-#endif // CLAP_TRAP_ENABLE
+#ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
+#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
+#endif
 
 #if defined(AUDIO_ENABLE) && defined(OS_DETECTION_ENABLE)
 #    include "audio.h"
@@ -345,7 +342,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case US_I2C_SCAN_ENABLE:
 #ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
-#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
             if (record->event.pressed) {
                 userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
                 i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
