@@ -18,7 +18,7 @@
 #endif // KEYBOARD_handwired_tractyl_manuform_5x6_right_f405
 
 // clang-format off
-#ifdef LAYER_MAP_ENABLE
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
 keypos_t layer_remap[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {
     { {   0,   0 }, {   1,   0 }, {   2,   0 }, {   3,   0 }, {   4,   0 }, {   5,   0 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, {   0,   6 }, {   1,   6 }, {   2,   6 }, {   3,   6 }, {   4,   6 }, {   5,   6 } },
     { {   0,   1 }, {   1,   1 }, {   2,   1 }, {   3,   1 }, {   4,   1 }, {   5,   1 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, { 255, 255 }, {   0,   7 }, {   1,   7 }, {   2,   7 }, {   3,   7 }, {   4,   7 }, {   5,   7 } },

@@ -34,7 +34,6 @@ ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
     AUTOCORRECT_ENABLE       = no
     CAPS_WORD_ENABLE         = yes
     AUDIO_ENABLE             = no
-    LAYER_MAP_ENABLE         = yes
     DISPLAY_KEYLOGGER_ENABLE = yes
 else
     LTO_ENABLE               = yes

@@ -27,9 +27,9 @@
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
 #endif
-#ifdef LAYER_MAP_ENABLE
-#    include "features/layer_map.h"
-#endif
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#    include "modules/drashna/layer_map/layer_map.h"
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #ifdef KEYBOARD_LOCK_ENABLE
 #    include "features/keyboard_lock.h"
 #endif // KEYBOARD_LOCK_ENABLE

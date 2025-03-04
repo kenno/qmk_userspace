@@ -6,9 +6,6 @@
 #include "sendchar.h"
 #include "print.h"
 
-#ifdef LAYER_MAP_ENABLE
-#    include "layer_map.h"
-#endif // LAYER_MAP_ENABLE
 #ifdef DISPLAY_DRIVER_ENABLE
 #    include "display/display.h"
 #endif // DISPLAY_DRIVER_ENABLE
@@ -215,10 +212,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     dprintf("layer state: %s\n", layer_buffer);
 #endif // NO_PRINT
 
-#ifdef LAYER_MAP_ENABLE
-    set_layer_map();
-#endif // LAYER_MAP_ENABLE
-
 #ifdef SWAP_HANDS_ENABLE
     if (is_gaming_layer_active(state) && is_swap_hands_on()) {
         swap_hands_off();
@@ -242,9 +235,6 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
     state = default_layer_state_set_rgb_light(state);
 #endif // CUSTOM_RGBLIGHT
 
-#ifdef LAYER_MAP_ENABLE
-    set_layer_map();
-#endif // LAYER_MAP_ENABLE
     return state;
 }
 
@@ -396,9 +386,6 @@ void                       housekeeping_task_user(void) {
 #ifdef ORBITAL_MOUSE_ENABLE
     orbital_mouse_task();
 #endif // ORBITAL_MOUSE_ENABLE
-#ifdef LAYER_MAP_ENABLE
-    housekeeping_task_layer_map();
-#endif // LAYER_MAP_ENABLE
 #ifdef WPM_ENABLE
     void housekeeping_task_wpm(void);
     housekeeping_task_wpm();

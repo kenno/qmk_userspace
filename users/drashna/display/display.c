@@ -17,15 +17,14 @@
 #        include "display/painter/ili9488_display.h"
 #    endif // CUSTOM_QUANTUM_PAINTER_ILI9488
 #endif     // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#    include "modules/drashna/layer_map/layer_map.h"
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 
 #ifdef DISPLAY_KEYLOGGER_ENABLE
 bool keylogger_has_changed                                  = true;
 char display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
 #endif // DISPLAY_KEYLOGGER_ENABLE
-
-#ifdef LAYER_MAP_ENABLE
-__attribute__((unused)) bool layer_map_has_updated = true;
-#endif // LAYER_MAP_ENABLE
 
 // clang-format off
 __attribute__((weak)) const char PROGMEM code_to_name[256] = {
@@ -109,9 +108,10 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE
     keylogger_has_changed = true;
 #endif // DISPLAY_KEYLOGGER_ENABLE
-#ifdef LAYER_MAP_ENABLE
-    layer_map_has_updated = true;
-#endif // LAYER_MAP_ENABLE
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+    set_layer_map_has_updated(true);
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+
     return keep_processing;
 }
 

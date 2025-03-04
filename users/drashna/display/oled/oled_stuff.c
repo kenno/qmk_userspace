@@ -17,9 +17,9 @@
 #        include "ds3231.h"
 #    endif
 #endif
-#ifdef LAYER_MAP_ENABLE
-#    include "layer_map.h"
-#endif
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#    include "modules/drashna/layer_map/layer_map.h"
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #    include "modules/drashna/keyboard_lock/keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
@@ -967,7 +967,7 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
     } else {
         // oled_advance_page(true);
         if (!oled_render_menu(0, 7, 8, side)) {
-#    if defined(LAYER_MAP_ENABLE)
+#    ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
             oled_set_cursor(1, 7);
 
             for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {

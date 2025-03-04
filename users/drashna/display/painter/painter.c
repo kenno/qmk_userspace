@@ -34,9 +34,9 @@
 #ifdef RTC_ENABLE
 #    include "features/rtc/rtc.h"
 #endif // RTC_ENABLE
-#ifdef LAYER_MAP_ENABLE
-#    include "features/layer_map.h"
-#endif
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#    include "modules/drashna/layer_map/layer_map.h"
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #ifdef MULTITHREADED_PAINTER_ENABLE
 thread_t*     painter_thread         = NULL;
 volatile bool painter_thread_running = true;
@@ -919,8 +919,8 @@ void painter_render_qmk_info(painter_device_t device, painter_font_handle_t font
  */
 void painter_render_layer_map(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
-#ifdef LAYER_MAP_ENABLE
-    if (force_redraw || layer_map_has_updated) {
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+    if (force_redraw || get_layer_map_has_updated()) {
         y += font->line_height + 4;
         uint16_t xpos = x, ypos = y;
         for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
@@ -948,9 +948,9 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
             }
             ypos += font->line_height + 4;
         }
-        layer_map_has_updated = false;
+        set_layer_map_has_updated(false);
     }
-#endif // LAYER_MAP_ENABLE
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 }
 
 /**
