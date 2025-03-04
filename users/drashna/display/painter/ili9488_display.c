@@ -30,9 +30,9 @@
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #    include "modules/drashna/layer_map/layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
-#ifdef KEYBOARD_LOCK_ENABLE
-#    include "features/keyboard_lock.h"
-#endif // KEYBOARD_LOCK_ENABLE
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
 static painter_device_t display;
 

@@ -12,7 +12,6 @@ ifneq ($(filter $(KEYBOARD), ergodox_ez/base ergodox_ez/glow ergodox_ez/shine),)
     #OS_DETECTION_ENABLE        = no
     DEBOUNCE_TYPE              = sym_defer_g
     DEFERRED_EXEC_ENABLE       = no
-    KEYBOARD_LOCK_ENABLE       = no
     KEYLOGGER_ENABLE           = no
 endif
 

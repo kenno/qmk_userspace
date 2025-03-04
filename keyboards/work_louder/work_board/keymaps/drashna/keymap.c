@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drashna.h"
-#ifdef KEYBOARD_LOCK_ENABLE
-#    include "features/keyboard_lock.h"
-#endif // KEYBOARD_LOCK_ENABLE
 
 #define PLNK_1 SP_LWER
 #define PLNK_2 BK_LWER
@@ -105,7 +102,7 @@ bool rgb_matrix_indicators_advanced_keymap(uint8_t led_min, uint8_t led_max) {
 #define THUMB_LED                                   6
 #define RGB_MATRIX_INDICATOR_SET_COLOR_wrapper(...) RGB_MATRIX_INDICATOR_SET_COLOR(__VA_ARGS__)
 
-#ifdef KEYBOARD_LOCK_ENABLE
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     if (get_keyboard_lock()) {
         RGB_MATRIX_INDICATOR_SET_COLOR_wrapper(THUMB_LED, RGB_OFF);
     } else

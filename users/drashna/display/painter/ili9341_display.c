@@ -30,9 +30,6 @@
 #else // RTC_ENABLE
 #    include "version.h"
 #endif // RTC_ENABLE
-#ifdef KEYBOARD_LOCK_ENABLE
-#    include "features/keyboard_lock.h"
-#endif // KEYBOARD_LOCK_ENABLE
 
 static painter_device_t       display;
 painter_image_handle_t        screen_saver;

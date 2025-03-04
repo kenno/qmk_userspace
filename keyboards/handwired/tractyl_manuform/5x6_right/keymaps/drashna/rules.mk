@@ -55,7 +55,6 @@ ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
     RGBLIGHT_STARTUP_ANIMATION    = no
     RTC_ENABLE                    = yes
     RTC_TOTP_ENABLE               = yes
-    SENTENCE_CASE_ENABLE          = yes
     SWAP_HANDS_ENABLE             = yes
     TAP_DANCE_ENABLE              = yes
     WPM_ENABLE                    = yes

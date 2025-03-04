@@ -195,21 +195,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
           && process_record_dynamic_macro(keycode, record)
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
-#ifdef CUSTOM_SHIFT_KEYS_ENABLE
-          && process_custom_shift_keys(keycode, record)
-#endif // CUSTOM_SHIFT_KEYS_ENABLE
-#ifdef SELECT_WORD_ENABLE
-          && process_select_word(keycode, record, US_SELECT_WORD)
-#endif // SELECT_WORD_ENABLE
-#ifdef SENTENCE_CASE_ENABLE
-          && process_sentence_case(keycode, record)
-#endif // SENTENCE_CASE_ENABLE
 #ifdef ORBITAL_MOUSE_ENABLE
           && process_orbital_mouse(keycode, record)
 #endif // ORBITAL_MOUSE_ENABLE
-#ifdef CLAP_TRAP_ENABLE
-          && process_clap_trap(keycode, record)
-#endif // CLAP_TRAP_ENABLE
           && true)) {
         return false;
     }

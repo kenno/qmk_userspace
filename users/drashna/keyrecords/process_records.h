@@ -4,15 +4,6 @@
 #pragma once
 
 #include "action.h"
-#ifdef ACHORDION_ENABLE
-#    include "keyrecords/achordion.h"
-#endif // ACHORDION_ENABLE
-#ifdef CUSTOM_SHIFT_KEYS_ENABLE
-#    include "keyrecords/custom_shift_keys.h"
-#endif // CUSTOM_SHIFT_KEYS_ENABLE
-#ifdef SELECT_WORD_ENABLE
-#    include "keyrecords/select_word.h"
-#endif // SELECT_WORD_ENABLE
 
 enum userspace_custom_keycodes {
     VRSN = QK_USER,  // Prints QMK Firmware and board info
