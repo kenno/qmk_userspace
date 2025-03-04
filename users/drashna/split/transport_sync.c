@@ -7,9 +7,9 @@
 #include "transactions.h"
 #include <string.h>
 #include "split_util.h"
-#ifdef KEYBOARD_LOCK_ENABLE
-#    include "features/keyboard_lock.h"
-#endif // KEYBOARD_LOCK_ENABLE
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
 #ifdef UNICODE_COMMON_ENABLE
 #    include "process_unicode_common.h"
@@ -147,7 +147,9 @@ void keyboard_post_init_transport_sync(void) {
  * updates are properly reflected and propagated as needed.
  */
 void update_master_state(void) {
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     userspace_runtime_state.internals.host_driver_disabled = get_keyboard_lock();
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #if defined(POINTING_DEVICE_ENABLE) && defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
     userspace_runtime_state.internals.tap_toggling = get_auto_mouse_toggle();
 #endif // POINTING_DEVICE_ENABLE && POINTING_DEVICE_AUTO_MOUSE_ENABLE
@@ -246,7 +248,9 @@ void update_slave_state(void) {
         caps_word_toggle();
     }
 #endif // CAPS_WORD_ENABLE
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     set_keyboard_lock(userspace_runtime_state.internals.host_driver_disabled);
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
     if (get_mods() != userspace_runtime_state.mods.mods) {
         set_mods(userspace_runtime_state.mods.mods);

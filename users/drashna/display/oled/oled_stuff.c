@@ -20,9 +20,9 @@
 #ifdef LAYER_MAP_ENABLE
 #    include "layer_map.h"
 #endif
-#ifdef KEYBOARD_LOCK_ENABLE
-#    include "features/keyboard_lock.h"
-#endif // KEYBOARD_LOCK_ENABLE
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
@@ -406,8 +406,10 @@ void render_user_status(uint8_t col, uint8_t line) {
 
     static const char PROGMEM rgb_layer_status[2][3] = {{0xEE, 0xEF, 0}, {0xF0, 0xF1, 0}};
     oled_write_P(rgb_layer_status[userspace_config.rgb.layer_change], false);
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     static const char PROGMEM cat_mode[3] = {0xF9, 0xFA, 0};
     oled_write_P(cat_mode, get_keyboard_lock());
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #if defined(UNICODE_COMMON_ENABLE)
     static const char PROGMEM uc_mod_status[5][3] = {
         {0xEC, 0xED, 0}, {0x20, 0x20, 0}, {0x20, 0x20, 0}, {0x20, 0x20, 0}, {0xEA, 0xEB, 0}};

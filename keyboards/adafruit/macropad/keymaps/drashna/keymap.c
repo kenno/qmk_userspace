@@ -4,7 +4,9 @@
 #include "drashna.h"
 #include "display/oled/oled_stuff.h"
 #include "rtc/rtc.h"
-#include "features/keyboard_lock.h"
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -74,8 +76,10 @@ bool oled_task_keymap(void) {
 #    endif
 #endif
 
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     static const char PROGMEM cat_mode[3] = {0xF9, 0xFA, 0};
     oled_write_P(cat_mode, get_keyboard_lock());
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
 #ifdef RGB_MATIRX_ENABLE
     static const char PROGMEM rgb_layer_status[2][3] = {{0xEE, 0xEF, 0}, {0xF0, 0xF1, 0}};

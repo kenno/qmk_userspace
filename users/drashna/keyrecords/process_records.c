@@ -12,9 +12,6 @@
 #ifdef DISPLAY_DRIVER_ENABLE
 #    include "display/display.h"
 #endif // DISPLAY_DRIVER_ENABLE
-#ifdef KEYBOARD_LOCK_ENABLE
-#    include "features/keyboard_lock.h"
-#endif // KEYBOARD_LOCK_ENABLE
 #if defined(CUSTOM_POINTING_DEVICE)
 #    include "pointing/pointing.h"
 #endif // CUSTOM_POINTING_DEVICE
@@ -315,13 +312,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
 
 #endif // CUSTOM_RGBLIGHT || CUSTOM_RGB_MATRIX
-        case KEYLOCK:
-#ifdef KEYBOARD_LOCK_ENABLE
-            if (record->event.pressed) {
-                toggle_keyboard_lock();
-            }
-#endif // KEYBOARD_LOCK_ENABLE
-            break;
 #if defined(OS_DETECTION_ENABLE) && defined(OS_DETECTION_DEBUG_ENABLE)
         case STORE_SETUPS:
             if (record->event.pressed) {

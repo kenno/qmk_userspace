@@ -32,7 +32,6 @@ enum userspace_custom_keycodes {
     UC_DISA,         // ಠ_ಠ
     UC_IRNY,
     UC_CLUE,
-    KEYLOCK, // Locks keyboard by unmounting driver
 
     OLED_LOCK,
     OLED_BRIGHTNESS_INC,

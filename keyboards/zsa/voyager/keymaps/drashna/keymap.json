@@ -1,5 +1,6 @@
 {
     "modules": [
+        "drashna/keyboard_lock",
         "drashna/unicode_typing",
         "drashna/watchdog"
     ]

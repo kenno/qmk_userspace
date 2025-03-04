@@ -1,13 +1,9 @@
 include $(USER_PATH)/features/rtc/rtc.mk
 VPATH += $(USER_PATH)/features/
 
-KEYBOARD_LOCK_ENABLE ?= yes
-
 USERSPACE_FEATURES = \
-    KEYBOARD_LOCK \
     LAYER_MAP \
-    ORBITAL_MOUSE \
-    WATCHDOG
+    ORBITAL_MOUSE
 
 define HANDLE_MY_FEATURE
     # $$(info "Processing: $1_ENABLE $$(USER_PATH)/features/$2.c")
