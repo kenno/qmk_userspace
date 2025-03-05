@@ -38,9 +38,6 @@ void keyboard_post_init_unicode(void);
 #if defined(CUSTOM_RGB_MATRIX)
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // CUSTOM_RGB_MATRIX
-#ifdef ORBITAL_MOUSE_ENABLE
-#    include "orbital_mouse.h"
-#endif // ORBITAL_MOUSE_ENABLE
 #ifdef CUSTOM_TAP_DANCE_ENABLE
 #    include "keyrecords/custom_tap_dance.h"
 #endif // CUSTOM_TAP_DANCE_ENABLE
@@ -380,9 +377,6 @@ void                       housekeeping_task_user(void) {
 #ifdef RTC_ENABLE
     rtc_task();
 #endif // RTC_ENABLE
-#ifdef ORBITAL_MOUSE_ENABLE
-    orbital_mouse_task();
-#endif // ORBITAL_MOUSE_ENABLE
 #ifdef WPM_ENABLE
     void housekeeping_task_wpm(void);
     housekeeping_task_wpm();

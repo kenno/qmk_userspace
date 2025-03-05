@@ -15,9 +15,6 @@
 #if defined(CUSTOM_POINTING_DEVICE)
 #    include "pointing/pointing.h"
 #endif // CUSTOM_POINTING_DEVICE
-#ifdef ORBITAL_MOUSE_ENABLE
-#    include "orbital_mouse.h"
-#endif // ORBITAL_MOUSE_ENABLE
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
@@ -195,9 +192,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
           && process_record_dynamic_macro(keycode, record)
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
-#ifdef ORBITAL_MOUSE_ENABLE
-          && process_orbital_mouse(keycode, record)
-#endif // ORBITAL_MOUSE_ENABLE
           && true)) {
         return false;
     }

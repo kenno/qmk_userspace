@@ -1,17 +1,2 @@
 include $(USER_PATH)/features/rtc/rtc.mk
 VPATH += $(USER_PATH)/features/
-
-USERSPACE_FEATURES = \
-    ORBITAL_MOUSE
-
-define HANDLE_MY_FEATURE
-    # $$(info "Processing: $1_ENABLE $$(USER_PATH)/features/$2.c")
-    SRC += $$(wildcard $$(USER_PATH)/features/$2.c)
-    OPT_DEFS += -D$1_ENABLE
-endef
-
-$(foreach F,$(USERSPACE_FEATURES),\
-    $(if $(filter yes, $(strip $($(F)_ENABLE))),\
-        $(eval $(call HANDLE_MY_FEATURE,$(F),$(shell echo $(F) | tr '[:upper:]' '[:lower:]'))) \
-    ) \
-)
