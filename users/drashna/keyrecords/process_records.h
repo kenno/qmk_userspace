@@ -46,8 +46,6 @@ enum userspace_custom_keycodes {
 
     LAYER_LOCK,
 
-    DISPLAY_MENU,
-
     CLAP_TRAP_ON,
     CLAP_TRAP_OFF,
     CLAP_TRAP_TOGGLE,

@@ -29,7 +29,9 @@
 #if defined(RGB_MATRIX_ENABLE)
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // defined(RGB_MATRIX_ENABLE)
-
+#if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+#    include "modules/drashna/display_menu/oled_render_menu.h"
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #ifndef OLED_BRIGHTNESS_STEP
 #    define OLED_BRIGHTNESS_STEP 32
 #endif
@@ -951,7 +953,6 @@ void oled_render_time_small(uint8_t col, uint8_t line, uint8_t padding) {
     }
 #endif
 }
-bool oled_render_menu(uint8_t col, uint8_t line, uint8_t num_of_lines, bool is_left);
 
 #ifdef OLED_DISPLAY_128X128
 __attribute__((weak)) void oled_render_large_display(bool side) {
@@ -959,14 +960,20 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
         render_rgb_hsv(1, 6);
         render_rgb_mode(1, 7);
 
-        if (!oled_render_menu(0, 8, 7, side)) {
+#    if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+        if (!oled_render_menu(0, 8, 7, userspace_config.display.menu_render_side))
+#    endif
+        {
             render_arasaka_logo(0, 8);
             render_wpm_graph(23, 107, 25, 96);
             oled_render_mario(1, 11);
         }
     } else {
         // oled_advance_page(true);
-        if (!oled_render_menu(0, 7, 8, side)) {
+#    if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+        if (!oled_render_menu(0, 7, 8, userspace_config.display.menu_render_side))
+#    endif
+        {
 #    ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
             oled_set_cursor(1, 7);
 
@@ -994,7 +1001,6 @@ __attribute__((weak)) void oled_render_large_display(bool side) {
                     oled_write_char(code, peek_matrix_layer_map(i, j));
                 }
             }
-
 #    else
             render_autocorrected_info(1, 7);
             render_os(1, 11);

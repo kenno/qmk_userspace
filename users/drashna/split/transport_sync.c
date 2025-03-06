@@ -10,6 +10,9 @@
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #    include "modules/drashna/keyboard_lock/keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+#    include "modules/drashna/display_menu/display_menu.h"
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 
 #ifdef UNICODE_COMMON_ENABLE
 #    include "process_unicode_common.h"
@@ -299,10 +302,12 @@ void update_slave_state(void) {
         }
     }
 #if defined(DISPLAY_DRIVER_ENABLE)
+#    if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
     if (userspace_runtime_state.display.menu_state_runtime.dirty) {
         void display_menu_set_dirty(bool dirty);
         display_menu_set_dirty(true);
     }
+#    endif
 
     static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
     if (userspace_config.display.inverted != last_inverted || userspace_config.display.rotation != last_rotation) {

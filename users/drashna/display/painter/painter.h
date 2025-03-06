@@ -19,7 +19,7 @@ extern const uint8_t         screensaver_image_size;
 
 extern painter_font_handle_t font_thintel, font_mono, font_oled;
 
-void housekeeping_task_quantum_painter(void);
+void housekeeping_task_display_menu_user(void);
 void keyboard_post_init_quantum_painter(void);
 void suspend_power_down_quantum_painter(void);
 void suspend_wakeup_init_quantum_painter(void);

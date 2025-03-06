@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "display/painter/painter.h"
-#include "display/menu/menu.h"
 #include <stdio.h>
 #include "drashna_names.h"
 #include "drashna_runtime.h"
@@ -37,10 +36,16 @@
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #    include "modules/drashna/layer_map/layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+#    include "modules/drashna/display_menu/qp_render_menu.h"
+#else
+void display_menu_set_dirty(bool state) {}
+#endif
 #ifdef MULTITHREADED_PAINTER_ENABLE
 thread_t*     painter_thread         = NULL;
 volatile bool painter_thread_running = true;
 #endif
+
 painter_font_handle_t font_thintel, font_mono, font_oled;
 
 painter_image_handle_t lock_caps_on, lock_caps_off;
@@ -152,7 +157,7 @@ void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font
 /**
  * @brief Render the console log to the display
  *
- * @param device device to render to
+ * @param device device to render ton
  * @param font font to render with
  * @param x x position to start rendering
  * @param y y position to start rendering
@@ -1265,7 +1270,6 @@ void painter_init_user(void) {
 }
 
 void painter_render_user(void) {
-    keyboard_task_display_menu_pre();
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     ili9341_draw_user();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -1281,7 +1285,6 @@ void painter_render_user(void) {
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
     rgb_redraw = false;
 #endif
-    keyboard_task_display_menu_post();
 }
 
 #ifdef MULTITHREADED_PAINTER_ENABLE
@@ -1297,7 +1300,7 @@ static THD_FUNCTION(UIThread, arg) {
 }
 #endif // MULTITHREADED_PAINTER_ENABLE
 
-void housekeeping_task_quantum_painter(void) {
+void housekeeping_task_display_menu_user(void) {
 #ifdef SPLIT_KEYBOARD
     if (!is_keyboard_master()) {
         static bool suspended = false;

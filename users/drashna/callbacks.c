@@ -355,7 +355,10 @@ void                       housekeeping_task_user(void) {
 #    endif
 #endif // AUDIO_ENABLE
     }
-
+#ifdef DISPLAY_DRIVER_ENABLE
+    void housekeeping_task_display(void);
+    housekeeping_task_display();
+#endif
 #if defined(CUSTOM_TAP_DANCE_ENABLE) // Run Diablo 3 macro checking code.
     run_diablo_macro_check();
 #endif // CUSTOM_TAP_DANCE_ENABLE
@@ -365,15 +368,9 @@ void                       housekeeping_task_user(void) {
 #if defined(CUSTOM_RGBLIGHT)
     housekeeping_task_rgb_light();
 #endif // CUSTOM_RGBLIGHT
-#ifdef CUSTOM_OLED_DRIVER
-    housekeeping_task_oled();
-#endif // CUSTOM_OLED_DRIVER
 #if defined(SPLIT_KEYBOARD) && defined(SPLIT_TRANSACTION_IDS_USER)
     housekeeping_task_transport_sync();
 #endif // SPLIT_KEYBOARD && SPLIT_TRANSACTION_IDS_USER
-#ifdef CUSTOM_QUANTUM_PAINTER_ENABLE
-    housekeeping_task_quantum_painter();
-#endif // CUSTOM_QUANTUM_PAINTER_ENABLE
 #ifdef RTC_ENABLE
     rtc_task();
 #endif // RTC_ENABLE

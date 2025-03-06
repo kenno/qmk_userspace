@@ -70,8 +70,7 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
             $(USER_PATH)/display/painter/graphics/nyan_cat.qgf.c
 
         SRC += $(USER_PATH)/display/painter/painter.c \
-                $(USER_PATH)/display/painter/graphics.qgf.c \
-                $(USER_PATH)/display/painter/qp_render_menu.c
+                $(USER_PATH)/display/painter/graphics.qgf.c
 
         ifeq ($(strip $(MULTITHREADED_PAINTER_ENABLE)), yes)
             OPT_DEFS += -DMULTITHREADED_PAINTER_ENABLE
@@ -90,14 +89,12 @@ ifeq ($(strip $(OLED_ENABLE)), yes)
     ifeq ($(strip $(OLED_DISPLAY_TEST)), yes)
         OPT_DEFS += -DOLED_DISPLAY_TEST
     endif
-    SRC += $(USER_PATH)/display/oled/oled_render_menu.c
 endif
 
 ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)
     DEFERRED_EXEC_ENABLE = yes
     OPT_DEFS += -DDISPLAY_DRIVER_ENABLE
-    SRC += $(USER_PATH)/display/display.c \
-        $(USER_PATH)/display/menu/menu.c
+    SRC += $(USER_PATH)/display/display.c
 
     ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
         OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT

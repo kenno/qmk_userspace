@@ -1,5 +1,6 @@
 {
     "modules": [
+        "drashna/display_menu",
         "drashna/i2c_scanner",
         "drashna/layer_map",
         "drashna/keyboard_lock",

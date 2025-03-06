@@ -3,7 +3,6 @@
 
 #include "drashna.h"
 #include "display.h"
-#include "display/menu/menu.h"
 
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
 #    include "display/oled/oled_stuff.h"
@@ -76,7 +75,16 @@ __attribute__((unused)) static void add_keylog(uint16_t keycode, keyrecord_t* re
     }
 }
 
-bool process_record_menu(uint16_t keycode, keyrecord_t* record);
+void housekeeping_task_display(void) {
+#ifdef CUSTOM_OLED_DRIVER
+    housekeeping_task_oled();
+#endif // CUSTOM_OLED_DRIVER
+#if !defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
+    void housekeeping_task_display_menu_user(void);
+    housekeeping_task_display_menu_user();
+#endif // CUSTOM_QUANTUM_PAINTER_ENABLE
+}
+
 /**
  * @brief Keycode handler for oled display.
  *
@@ -99,11 +107,6 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
             keep_processing = false;
         }
 #endif // OLED_ENABLE
-#if defined(QUANTUM_PAINTER_ENABLE) || defined(OLED_ENABLE)
-        if (!process_record_menu(keycode, record)) {
-            keep_processing = false;
-        }
-#endif // QUANTUM_PAINTER_ENABLE
     }
 #ifdef DISPLAY_KEYLOGGER_ENABLE
     keylogger_has_changed = true;
@@ -202,7 +205,9 @@ void display_sendchar_hook(uint8_t c) {
 }
 
 void display_rotate_screen(bool clockwise) {
+#if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
     display_menu_set_dirty(true);
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #if defined(DISPLAY_FULL_ROTATION_ENABLE)
     if (clockwise) {
         userspace_config.display.rotation = (userspace_config.display.rotation + 1) % 4;
