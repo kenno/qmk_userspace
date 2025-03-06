@@ -14,7 +14,6 @@
 #ifdef QUANTUM_PAINTER_DRIVERS_ILI9488_SURFACE
 #    include "qp_surface.h"
 #endif // QUANTUM_PAINTER_DRIVERS_ILI9488_SURFACE
-#include "display/menu/menu.h"
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
 #endif // SPLIT_KEYBOARD

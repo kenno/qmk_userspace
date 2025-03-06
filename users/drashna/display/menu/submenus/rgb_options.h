@@ -1,5 +1,7 @@
 
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
+void rgb_layer_indication_toggle(void);
+
 bool menu_handler_rgb_layer(menu_input_t input) {
     switch (input) {
         case menu_input_left:

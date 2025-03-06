@@ -27,6 +27,11 @@
         .parent.child_count    = ARRAY_SIZE(child_item),                   \
     }
 
+#include "drashna_util.h"
+#include "drashna_runtime.h"
+#include "drashna_names.h"
+#include "drashna_layers.h"
+
 #include "submenus/display_options.h"
 #include "submenus/unicode_options.h"
 #include "submenus/rgb_options.h"

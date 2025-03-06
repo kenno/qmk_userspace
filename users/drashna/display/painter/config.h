@@ -22,4 +22,4 @@
 #    define QUANTUM_PAINTER_PIXDATA_BUFFER_SIZE 1024
 #endif // QUANTUM_PAINTER_PIXDATA_BUFFER_SIZE
 
-#define DISPLAY_MENU_ENTRY_H "menu/menu.inc"
+#define DISPLAY_MENU_ENTRY_H "display/menu/menu.inc"

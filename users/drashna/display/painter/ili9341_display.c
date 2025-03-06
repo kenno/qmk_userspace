@@ -14,7 +14,6 @@
 #ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
 #    include "qp_surface.h"
 #endif // QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
-#include "display/menu/menu.h"
 #include "lib/lib8tion/lib8tion.h"
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
