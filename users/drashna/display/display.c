@@ -76,6 +76,22 @@ __attribute__((unused)) static void add_keylog(uint16_t keycode, keyrecord_t* re
 }
 
 void housekeeping_task_display(void) {
+#if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE) && defined(SPLIT_KEYBOARD)
+    if (is_keyboard_master()) {
+        extern menu_state_t         menu_state;
+        extern menu_state_runtime_t menu_state_runtime;
+
+        if (memcmp(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t)) != 0) {
+            memcpy(&userspace_runtime_state.display.menu_state, &menu_state, sizeof(menu_state_t));
+        }
+        if (memcmp(&menu_state_runtime, &userspace_runtime_state.display.menu_state_runtime,
+                   sizeof(menu_state_runtime_t)) != 0) {
+            memcpy(&userspace_runtime_state.display.menu_state_runtime, &menu_state_runtime,
+                   sizeof(menu_state_runtime_t));
+        }
+    }
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE && SPLIT_KEYBOARD
+
 #ifdef CUSTOM_OLED_DRIVER
     housekeeping_task_oled();
 #endif // CUSTOM_OLED_DRIVER
