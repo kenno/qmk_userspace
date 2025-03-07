@@ -1,5 +1,6 @@
 {
     "modules": [
+        "drashna/display_menu",
         "drashna/layer_map",
         "drashna/keyboard_lock",
         "drashna/sentence_case",
