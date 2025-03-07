@@ -95,6 +95,7 @@ ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)
     DEFERRED_EXEC_ENABLE = yes
     OPT_DEFS += -DDISPLAY_DRIVER_ENABLE
     SRC += $(USER_PATH)/display/display.c
+    POST_CONFIG_H += $(USER_PATH)/display/config.h
 
     ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
         OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
