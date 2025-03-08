@@ -618,7 +618,7 @@ const char *os_variant_to_string(os_variant_t os_detected) {
 #endif // OS_DETECTION_ENABLE
 
 #ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
-#    include "modules/drashna/unicode_typing/unicode_typing.h"
+#    include "unicode_typing.h"
 
 /**
  * Returns a string representing the Unicode typing mode.

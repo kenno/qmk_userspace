@@ -125,7 +125,7 @@ __attribute__((weak)) void display_handler_quantum_painter_debugging(char *text_
 #endif
 
 #ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
-#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
+#    include "i2c_scanner.h"
 
 bool menu_handler_i2c_scanner(menu_input_t input) {
     switch (input) {

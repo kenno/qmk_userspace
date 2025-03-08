@@ -25,7 +25,7 @@
 #    include "keyrecords/unicode.h"
 #endif // UNICODE_COMMON_ENABLE
 #ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
-#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
+#    include "i2c_scanner.h"
 #endif
 
 #if defined(AUDIO_ENABLE) && defined(OS_DETECTION_ENABLE)

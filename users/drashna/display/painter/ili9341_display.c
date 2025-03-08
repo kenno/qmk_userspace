@@ -24,11 +24,11 @@
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
-#ifdef RTC_ENABLE
-#    include "features/rtc/rtc.h"
-#else // RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
+#else // COMMUNITY_MODULE_RTC_ENABLE
 #    include "version.h"
-#endif // RTC_ENABLE
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 
 static painter_device_t       display;
 painter_image_handle_t        screen_saver;
@@ -616,7 +616,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         xpos = 5;
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
         ypos                          = height - (16 + font_oled->line_height);
         static uint16_t last_rtc_time = 0xFFFF;
         painter_render_rtc_time(display, font_oled, xpos, ypos, width, hue_redraw, &last_rtc_time, &curr_hsv.primary);

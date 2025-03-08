@@ -17,7 +17,7 @@
 #    endif // CUSTOM_QUANTUM_PAINTER_ILI9488
 #endif     // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
-#    include "modules/drashna/layer_map/layer_map.h"
+#    include "layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 
 #ifdef DISPLAY_KEYLOGGER_ENABLE

@@ -11,10 +11,10 @@
 #include "lib/lib8tion/lib8tion.h"
 #include "progmem.h"
 
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
 #    include "rtc.h"
 #    ifdef DS3231_RTC_DRIVER_ENABLE
-#        include "ds3231.h"
+#        include "drivers/ds3231.h"
 #    endif
 #endif
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
@@ -909,7 +909,7 @@ void render_os(uint8_t col, uint8_t line) {
 }
 
 void oled_render_time(uint8_t col, uint8_t line) {
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
     oled_set_cursor(col, line);
     if (rtc_is_connected()) {
 #    ifdef DS3231_RTC_DRIVER_ENABLE
@@ -930,7 +930,7 @@ void oled_render_time(uint8_t col, uint8_t line) {
 }
 
 void oled_render_time_small(uint8_t col, uint8_t line, uint8_t padding) {
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
     oled_set_cursor(col, line);
     if (rtc_is_connected()) {
 #    ifdef DS3231_RTC_DRIVER_ENABLE

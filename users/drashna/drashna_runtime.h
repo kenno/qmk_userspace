@@ -92,7 +92,7 @@ _Static_assert(sizeof(userspace_config_t) <= EECONFIG_USER_DATA_SIZE, "User EECO
 extern userspace_config_t userspace_config;
 
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
-#    include "modules/drashna/display_menu/display_menu.h"
+#    include "display_menu.h"
 #else
 typedef struct PACKED {
     bool    is_in_menu;

@@ -5,7 +5,7 @@
 #    include "unicode.h"
 #    include "keyrecords/unicode.h"
 #    ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
-#        include "modules/drashna/unicode_typing/unicode_typing.h"
+#        include "unicode_typing.h"
 #    endif
 
 bool menu_handler_unicode(menu_input_t input) {

@@ -82,9 +82,9 @@ menu_entry_t root_entries[] = {
     MENU_ENTRY_MULTI("Haptic Settings", "Haptics", haptic_entries, haptic_enabled),
 #endif // HAPTIC_ENABLE
     MENU_ENTRY_PARENT("Keymap Settings", "Keymap", keymap_config_entries),
-#if defined(RTC_ENABLE)
+#if defined(COMMUNITY_MODULE_RTC_ENABLE)
     MENU_ENTRY_PARENT("RTC Settings", "RTC", rtc_config_entries),
-#endif // RTC_ENABLE
+#endif // COMMUNITY_MODULE_RTC_ENABLE
     MENU_ENTRY_PARENT("User Settings", "User", user_settings_option_entries),
 #ifdef SECRET_MENU_ENABLE
     MENU_ENTRY_PARENT("Secret Settings", "Secret", secret_entries),

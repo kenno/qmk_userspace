@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RTC Config
 
-#ifdef RTC_ENABLE
-#    include "features/rtc/rtc.h"
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
 
 __attribute__((weak)) void display_handler_rtc_year(char *text_buffer, size_t buffer_len) {
     if (rtc_is_connected()) {
@@ -195,4 +195,4 @@ menu_entry_t rtc_config_entries[] = {
     MENU_ENTRY_CHILD("12/24 Hour Format", "Format", rtc_hour_format),
     MENU_ENTRY_CHILD("DST", "DST", rtc_dst),
 };
-#endif // RTC_ENABLE
+#endif // COMMUNITY_MODULE_RTC_ENABLE

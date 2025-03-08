@@ -77,7 +77,7 @@ void set_unicode_input_mode_soft(uint8_t input_mode) {
 
 #ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
 #    include "drashna_runtime.h"
-#    include "modules/drashna/unicode_typing/unicode_typing.h"
+#    include "unicode_typing.h"
 void post_process_record_unicode_typing_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         userspace_runtime_state.unicode.typing_mode = get_unicode_typing_mode();

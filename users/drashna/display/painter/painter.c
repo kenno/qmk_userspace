@@ -30,14 +30,14 @@
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
-#ifdef RTC_ENABLE
-#    include "features/rtc/rtc.h"
-#endif // RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
-#    include "modules/drashna/layer_map/layer_map.h"
+#    include "layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
-#    include "modules/drashna/display_menu/qp_render_menu.h"
+#    include "qp_render_menu.h"
 #else
 void display_menu_set_dirty(bool state) {}
 #endif
@@ -126,7 +126,7 @@ void painter_init_assets(void) {
  */
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                              uint16_t display_width, bool force_redraw, uint16_t* rtc_timer, hsv_t* hsv) {
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
 
     bool rtc_redraw = false;
     if (timer_elapsed(*rtc_timer) > 125 && rtc_is_connected()) {
@@ -151,7 +151,7 @@ void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font
         qp_drawtext_recolor(device, title_xpos, y, font, truncate_text(buf, total_width, font, false, false), hsv->h,
                             hsv->s, hsv->v, 0, 0, 0);
     }
-#endif // RTC_ENABLE
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 }
 
 /**

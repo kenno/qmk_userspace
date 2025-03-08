@@ -18,9 +18,6 @@
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
 #    include "keyrecords/custom_dynamic_macros.h"
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
-#ifdef RTC_ENABLE
-#    include "rtc.h"
-#endif // RTC_ENABLE
 #ifndef RTC_TIMEZONE
 #    define RTC_TIMEZONE -8
 #endif // RTC_TIMEZONE
@@ -83,7 +80,7 @@ void                       keyboard_post_init_user(void) {
     keyboard_post_init_unicode();
 #endif // CUSTOM_UNICODE_ENABLE
 #ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
-#    include "modules/drashna/i2c_scanner/i2c_scanner.h"
+#    include "i2c_scanner.h"
     i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
 #endif // COMMUNITY_MODULE_I2C_SCANNER_ENABLE
 #ifdef DEBUG_MATRIX_SCAN_RATE_ENABLE
@@ -100,9 +97,6 @@ void                       keyboard_post_init_user(void) {
 #ifdef CUSTOM_DYNAMIC_MACROS_ENABLE
     dynamic_macro_init();
 #endif // CUSTOM_DYNAMIC_MACROS_ENABLE
-#ifdef RTC_ENABLE
-    rtc_init();
-#endif // RTC_ENABLE
 #ifdef WPM_ENABLE
     void keyboard_post_init_wpm(void);
     keyboard_post_init_wpm();
@@ -371,9 +365,6 @@ void                       housekeeping_task_user(void) {
 #if defined(SPLIT_KEYBOARD) && defined(SPLIT_TRANSACTION_IDS_USER)
     housekeeping_task_transport_sync();
 #endif // SPLIT_KEYBOARD && SPLIT_TRANSACTION_IDS_USER
-#ifdef RTC_ENABLE
-    rtc_task();
-#endif // RTC_ENABLE
 #ifdef WPM_ENABLE
     void housekeeping_task_wpm(void);
     housekeeping_task_wpm();
@@ -382,6 +373,7 @@ void                       housekeeping_task_user(void) {
 }
 
 #ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
 void rtc_check_dst_format(rtc_time_t *time) {
 #    ifdef DS1307_RTC_DRIVER_ENABLE
     time->is_dst = userspace_config.rtc.is_dst;

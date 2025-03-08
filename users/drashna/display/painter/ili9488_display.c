@@ -23,9 +23,9 @@
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
-#ifdef RTC_ENABLE
-#    include "features/rtc/rtc.h"
-#endif
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #    include "modules/drashna/layer_map/layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
@@ -507,7 +507,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         ypos -= (font_oled->line_height + 3);
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
         static uint16_t rtc_timer = 0;
 
         painter_render_rtc_time(display, font_oled, 5, ypos, width, hue_redraw, &rtc_timer, &curr_hsv.primary);
@@ -525,7 +525,7 @@ __attribute__((weak)) void ili9488_draw_user(void) {
                                         curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
         }
 
-#endif // RTC_ENABLE
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef QUANTUM_PAINTER_DRIVERS_ILI9488_SURFACE
         painter_render_menu_block(menu_surface[0], font_oled, 0, 0, SURFACE_MENU_WIDTH, SURFACE_MENU_HEIGHT, hue_redraw,
                                   &curr_hsv, true, true);

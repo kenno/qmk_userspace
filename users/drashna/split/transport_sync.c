@@ -8,10 +8,10 @@
 #include <string.h>
 #include "split_util.h"
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
-#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#    include "keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
-#    include "modules/drashna/display_menu/display_menu.h"
+#    include "display_menu.h"
 #endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 
 #ifdef UNICODE_COMMON_ENABLE
