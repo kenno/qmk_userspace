@@ -380,3 +380,32 @@ void                       housekeeping_task_user(void) {
 #endif // WPM_ENABLE
     housekeeping_task_keymap();
 }
+
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+void rtc_check_dst_format(rtc_time_t *time) {
+#    ifdef DS1307_RTC_DRIVER_ENABLE
+    time->is_dst = userspace_config.rtc.is_dst;
+#    endif // DS1307_RTC_DRIVER_ENABLE
+#    ifdef DS3231_RTC_DRIVER_ENABLE
+    time->is_dst = userspace_config.rtc.is_dst;
+#    endif // DS3231_RTC_DRIVER_ENABLE
+#    ifdef PCF8523_RTC_DRIVER_ENABLE
+    time->is_dst = userspace_config.rtc.is_dst;
+#    endif // PCF8523_RTC_DRIVER_ENABLE
+#    ifdef VENDOR_RTC_DRIVER_ENABLE
+    time->format = userspace_config.rtc.format_24h;
+#    endif // VENDOR_RTC_DRIVER_ENABLE
+    time->timezone = userspace_config.rtc.timezone;
+}
+
+bool rtc_set_time_user(rtc_time_t *time) {
+#    ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    display_menu_set_dirty(true);
+#    endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    userspace_config.rtc.is_dst     = time->is_dst;
+    userspace_config.rtc.timezone   = time->timezone;
+    userspace_config.rtc.format_24h = time->format;
+    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    return true;
+}
+#endif
