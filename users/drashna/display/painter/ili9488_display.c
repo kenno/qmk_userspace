@@ -27,10 +27,10 @@
 #    include "rtc.h"
 #endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
-#    include "modules/drashna/layer_map/layer_map.h"
+#    include "layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
-#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#    include "keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
 static painter_device_t display;

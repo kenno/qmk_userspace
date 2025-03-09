@@ -18,10 +18,10 @@
 #    endif
 #endif
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
-#    include "modules/drashna/layer_map/layer_map.h"
+#    include "layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
-#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#    include "keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
@@ -30,7 +30,7 @@
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // defined(RGB_MATRIX_ENABLE)
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
-#    include "modules/drashna/display_menu/oled_render_menu.h"
+#    include "oled_render_menu.h"
 #endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #ifndef OLED_BRIGHTNESS_STEP
 #    define OLED_BRIGHTNESS_STEP 32
