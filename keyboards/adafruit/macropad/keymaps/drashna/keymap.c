@@ -3,9 +3,11 @@
 
 #include "drashna.h"
 #include "display/oled/oled_stuff.h"
-#include "rtc/rtc.h"
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
-#    include "modules/drashna/keyboard_lock/keyboard_lock.h"
+#    include "keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
 // clang-format off
@@ -92,7 +94,7 @@ bool oled_task_keymap(void) {
 #endif
 
     l_render_keylock_status(host_keyboard_led_state(), 7, 5);
-#ifdef RTC_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
     oled_set_cursor(1, 6);
     if (rtc_is_connected()) {
         oled_write_ln(rtc_read_date_time_str(), false);
