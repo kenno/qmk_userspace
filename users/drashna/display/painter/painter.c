@@ -570,6 +570,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     static bool force_full_block_redraw = false;
 #ifdef SPLIT_KEYBOARD
     bool           should_render_this_side = userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left);
+    (void)should_render_this_side;
     static uint8_t last_menu_side          = 0xFF;
     if (last_menu_side != userspace_config.display.menu_render_side) {
         last_menu_side          = userspace_config.display.menu_render_side;
@@ -583,6 +584,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     const bool should_render_this_side = true;
 #endif // SPLIT_KEYBOARD
 
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
     if (should_render_this_side &&
         painter_render_menu(device, font, x, y, width, height, is_thicc, curr_hsv->primary, curr_hsv->secondary)) {
         force_full_block_redraw = true;
@@ -590,7 +592,9 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
             qp_stop_animation(nyan_token);
             nyan_token = INVALID_DEFERRED_TOKEN;
         }
-    } else {
+    } else
+#endif
+    {
         bool     block_redraw = false;
         uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
 

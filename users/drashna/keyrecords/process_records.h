@@ -145,3 +145,7 @@ We use custom codes here, so we can substitute the right stuff
 #define PD_ACRG PD_ACCEL_GROWTH_RATE
 #define PD_ACOF PD_ACCEL_OFFSET
 #define PD_ACLM PD_ACCEL_LIMIT
+
+#ifndef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+#    define DISPLAY_MENU KC_NO
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
