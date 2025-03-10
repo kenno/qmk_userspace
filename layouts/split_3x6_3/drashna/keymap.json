@@ -1,7 +1,7 @@
 {
     "modules": [
         "drashna/keyboard_lock",
-        "getreuer/sentence_case",
-        "drashna/watchdog"
+        "drashna/watchdog",
+        "getreuer/sentence_case"
     ]
 }

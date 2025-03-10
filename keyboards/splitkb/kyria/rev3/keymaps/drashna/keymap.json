@@ -3,8 +3,8 @@
         "drashna/display_menu",
         "drashna/layer_map",
         "drashna/keyboard_lock",
-        "drashna/sentence_case",
         "drashna/unicode_typing",
-        "drashna/watchdog"
+        "drashna/watchdog",
+        "getreuer/sentence_case"
     ]
 }
