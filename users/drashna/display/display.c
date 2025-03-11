@@ -250,3 +250,9 @@ void display_rotate_screen(bool clockwise) {
     oled_post_init();
 #endif // OLED_ENABLE;
 }
+
+bool display_menu_set_dirty_user(bool state) {
+    userspace_runtime_state.display.menu_state_runtime.dirty        = state;
+    userspace_runtime_state.display.menu_state_runtime.has_rendered = !state;
+    return true;
+}
