@@ -57,6 +57,11 @@ void userspace_runtime_state_sync(uint8_t initiator2target_buffer_size, const vo
             suspend_state = userspace_runtime_state.internals.is_device_suspended;
             set_is_device_suspended(suspend_state);
         }
+        if (!userspace_runtime_state.display.menu_state_runtime.has_rendered &&
+            userspace_runtime_state.display.menu_state_runtime.dirty) {
+            userspace_runtime_state.display.menu_state_runtime.has_rendered = true;
+            userspace_runtime_state.display.menu_state_runtime.dirty        = false;
+        }
     }
 }
 
@@ -185,15 +190,13 @@ void update_master_state(void) {
     userspace_runtime_state.debug_config  = debug_config;
 
 #ifdef DISPLAY_DRIVER_ENABLE
-    static bool last_dirty = false;
-
-    if (userspace_runtime_state.display.menu_state_runtime.dirty) {
-        if (last_dirty) {
-            userspace_runtime_state.display.menu_state_runtime.dirty = false;
-        }
-        last_dirty = userspace_runtime_state.display.menu_state_runtime.dirty;
+#    ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    extern menu_state_t menu_state;
+    if (memcmp(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t)) != 0) {
+        memcpy(&userspace_runtime_state.display.menu_state, &menu_state, sizeof(menu_state_t));
     }
-#endif
+#    endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+#endif     // DISPLAY_DRIVER_ENABLE
 }
 
 /**
@@ -303,8 +306,11 @@ void update_slave_state(void) {
     }
 #if defined(DISPLAY_DRIVER_ENABLE)
 #    if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+    extern menu_state_t menu_state;
+    if (memcmp(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t)) != 0) {
+        memcpy(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t));
+    }
     if (userspace_runtime_state.display.menu_state_runtime.dirty) {
-        void display_menu_set_dirty(bool dirty);
         display_menu_set_dirty(true);
     }
 #    endif
