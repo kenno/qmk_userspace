@@ -6,6 +6,7 @@ bool menu_handler_debugging_enable(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_enable = !debug_enable;
             return false;
         default:
@@ -21,6 +22,7 @@ bool menu_handler_keyboard_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_keyboard = !debug_keyboard;
             return false;
         default:
@@ -36,6 +38,7 @@ bool menu_handler_matrix_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_matrix = !debug_matrix;
             return false;
         default:
@@ -51,6 +54,7 @@ bool menu_handler_mouse_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_mouse = !debug_mouse;
             return false;
         default:
@@ -67,6 +71,7 @@ bool menu_handler_pointing_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_pointing = !debug_pointing;
             return false;
         default:
@@ -82,6 +87,7 @@ bool menu_handler_action_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_action = !debug_action;
             return false;
         default:
@@ -97,6 +103,7 @@ bool menu_handler_split_serial_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_serial = !debug_serial;
             return false;
         default:
@@ -112,6 +119,7 @@ bool menu_handler_quantum_painter_debugging(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             debug_quantum_painter = !debug_quantum_painter;
             return false;
         default:
@@ -131,6 +139,7 @@ bool menu_handler_i2c_scanner(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
             i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
@@ -150,6 +159,7 @@ bool menu_handler_scan_rate(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.debug.matrix_scan_print = !userspace_config.debug.matrix_scan_print;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
@@ -191,7 +201,7 @@ menu_entry_t debug_entries[] = {
 #endif
 #ifdef COMMUNITY_MODULE_I2C_SCANNER_ENABLE
     MENU_ENTRY_CHILD("I2C Scanner", "I2C Scan", i2c_scanner),
-#endif
+#endif // COMMUNITY_MODULE_I2C_SCANNER_ENABLE
     MENU_ENTRY_CHILD("Matrix Scan Rate Print", "Scan Rate", scan_rate),
     MENU_ENTRY_CHILD("Console Keylogger", "Keylogger", keylogger),
 };

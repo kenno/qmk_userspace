@@ -11,6 +11,7 @@ bool menu_handler_haptic_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             haptic_toggle();
             return false;
         default:
@@ -32,6 +33,7 @@ bool menu_handler_haptic_mode(menu_input_t input) {
             haptic_mode_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             haptic_mode_increase();
             return false;
         default:
@@ -54,6 +56,7 @@ bool menu_handler_feedback_mode(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             haptic_feedback_toggle();
             return false;
         default:
@@ -87,6 +90,7 @@ bool menu_handler_haptic_buzz(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             haptic_buzz_toggle();
             return false;
         default:
@@ -104,6 +108,7 @@ bool menu_handler_haptic_dwell(menu_input_t input) {
             haptic_dwell_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             haptic_dwell_increase();
             return false;
         default:
@@ -121,6 +126,7 @@ bool menu_handler_haptic_love_mode(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             haptic_toggle_continuous();
             return false;
         default:
@@ -138,6 +144,7 @@ bool menu_handler_haptic_love_intensity(menu_input_t input) {
             haptic_cont_increase();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             haptic_cont_decrease();
             return false;
         default:

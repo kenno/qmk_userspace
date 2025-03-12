@@ -7,6 +7,7 @@ bool menu_handler_bl_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             backlight_toggle();
             return false;
         default:
@@ -24,6 +25,7 @@ bool menu_handler_bl_level(menu_input_t input) {
             backlight_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             backlight_increase();
             return false;
         default:
@@ -40,6 +42,7 @@ bool menu_handler_breathing(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             backlight_toggle_breathing();
             return false;
         default:
@@ -57,6 +60,6 @@ menu_entry_t backlight_entries[] = {
     MENU_ENTRY_CHILD("Backlight Level", "Level", bl_level),
 #    ifdef BACKLIGHT_BREATHING
     MENU_ENTRY_CHILD("Backlight Breathing", "Breathing", breathing),
-#    endif
+#    endif // BACKLIGHT_BREATHING
 };
 #endif // BACKLIGHT_ENABLE

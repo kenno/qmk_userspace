@@ -7,6 +7,7 @@ bool menu_handler_audio_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             if (audio_is_on()) {
                 audio_off();
             } else {
@@ -26,6 +27,7 @@ bool menu_handler_music_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             music_toggle();
             return false;
         default:
@@ -41,6 +43,7 @@ bool menu_handler_audio_clicky_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             clicky_toggle();
             return false;
         default:
@@ -58,6 +61,7 @@ bool menu_handler_audio_clicky_freq(menu_input_t input) {
             clicky_freq_down();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             clicky_freq_up();
             return false;
         default:
@@ -74,6 +78,7 @@ bool menu_handler_gaming_song_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.gaming.song_enable = !userspace_config.gaming.song_enable;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             void set_doom_song(layer_state_t);
@@ -92,6 +97,7 @@ bool menu_handler_audio_mouse_clicky(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.pointing.audio_mouse_clicky = !userspace_config.pointing.audio_mouse_clicky;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
@@ -112,6 +118,6 @@ menu_entry_t audio_entries[] = {
     MENU_ENTRY_CHILD("Gaming Song", "GameSong", gaming_song_enabled),
 #    ifdef POINTING_DEVICE_ENABLE
     MENU_ENTRY_CHILD("Mouse Clicky", "MouseC", audio_mouse_clicky),
-#    endif
+#    endif // POINTING_DEVICE_ENABLE
 };
 #endif // AUDIO_ENABLE

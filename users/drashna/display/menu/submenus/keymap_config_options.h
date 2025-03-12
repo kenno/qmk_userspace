@@ -17,12 +17,13 @@ static float ag_norm_song[][2] = AG_NORM_SONG;
 static float ag_swap_song[][2] = AG_SWAP_SONG;
 static float cg_norm_song[][2] = CG_NORM_SONG;
 static float cg_swap_song[][2] = CG_SWAP_SONG;
-#endif
+#endif // AUDIO_ENABLE
 
 bool menu_handler_keycode_ctrl_caps(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.swap_control_capslock = !keymap_config.swap_control_capslock;
             eeconfig_update_keymap(keymap_config.raw);
             return false;
@@ -39,6 +40,7 @@ bool menu_handler_keycode_alt_gui(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.swap_lalt_lgui = keymap_config.swap_ralt_rgui = !keymap_config.swap_lalt_lgui;
 #ifdef AUDIO_ENABLE
             if (keymap_config.swap_ralt_rgui) {
@@ -62,6 +64,7 @@ bool menu_handler_keycode_ctrl_gui(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.swap_lctl_lgui = keymap_config.swap_rctl_rgui = !keymap_config.swap_lctl_lgui;
 #ifdef AUDIO_ENABLE
             if (keymap_config.swap_rctl_rgui) {
@@ -85,6 +88,7 @@ bool menu_handler_keycode_disable_gui(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.no_gui = !keymap_config.no_gui;
             eeconfig_update_keymap(keymap_config.raw);
             return false;
@@ -101,6 +105,7 @@ __attribute__((unused)) bool menu_handler_keycode_grave_esc(menu_input_t input) 
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.swap_grave_esc = !keymap_config.swap_grave_esc;
             eeconfig_update_keymap(keymap_config.raw);
             return false;
@@ -117,6 +122,7 @@ __attribute__((unused)) bool menu_handler_keycode_bslash_bspc(menu_input_t input
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.swap_backslash_backspace = !keymap_config.swap_backslash_backspace;
             eeconfig_update_keymap(keymap_config.raw);
             return false;
@@ -133,6 +139,7 @@ bool menu_handler_keycode_nkro(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.nkro = !keymap_config.nkro;
             clear_keyboard(); // clear first buffer to prevent stuck keys
             eeconfig_update_keymap(keymap_config.raw);
@@ -150,6 +157,7 @@ bool menu_handler_keycode_oneshot(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.oneshot_enable = !keymap_config.oneshot_enable;
             eeconfig_update_keymap(keymap_config.raw);
             return false;
@@ -166,6 +174,7 @@ bool menu_handler_keycode_autocorrect(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             keymap_config.autocorrect_enable = !keymap_config.autocorrect_enable;
             eeconfig_update_keymap(keymap_config.raw);
             return false;

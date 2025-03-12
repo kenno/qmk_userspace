@@ -18,6 +18,7 @@ bool menu_handler_rtc_year(menu_input_t input) {
             rtc_year_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rtc_year_increase();
             return false;
         default:
@@ -39,6 +40,7 @@ bool menu_handler_rtc_month(menu_input_t input) {
             rtc_month_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rtc_month_increase();
             return false;
         default:
@@ -60,6 +62,7 @@ bool menu_handler_rtc_date(menu_input_t input) {
             rtc_date_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rtc_date_increase();
             return false;
         default:
@@ -98,6 +101,7 @@ bool menu_handler_rtc_hour(menu_input_t input) {
             rtc_hour_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rtc_hour_increase();
             return false;
         default:
@@ -119,6 +123,7 @@ bool menu_handler_rtc_minute(menu_input_t input) {
             rtc_minute_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rtc_minute_increase();
             return false;
         default:
@@ -140,6 +145,7 @@ bool menu_handler_rtc_second(menu_input_t input) {
             rtc_second_decrease();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rtc_second_increase();
             return false;
         default:
@@ -159,6 +165,7 @@ bool menu_handler_rtc_hour_format(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             rtc_format_toggle();
             return false;
         default:
@@ -178,6 +185,7 @@ bool menu_handler_rtc_dst(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             rtc_dst_toggle();
             return false;
         default:

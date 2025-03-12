@@ -9,6 +9,7 @@ bool menu_handler_auto_mouse_enable(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.enable = !userspace_config.pointing.auto_mouse_layer.enable;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer.enable);
@@ -32,6 +33,7 @@ bool menu_handler_auto_mouse_layer(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.layer =
                 (userspace_config.pointing.auto_mouse_layer.layer + 1) % MAX_USER_LAYERS;
             set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
@@ -55,6 +57,7 @@ bool menu_handler_auto_mouse_timeout(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.timeout =
                 (userspace_config.pointing.auto_mouse_layer.timeout + 10);
             set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
@@ -78,6 +81,7 @@ bool menu_handler_auto_mouse_debounce(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.debounce =
                 (userspace_config.pointing.auto_mouse_layer.debounce + 1);
             set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
@@ -97,6 +101,7 @@ bool menu_handler_mouse_jiggler(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             pointing_device_mouse_jiggler_toggle();
             return false;
         default:
@@ -117,6 +122,7 @@ bool menu_handler_mouse_jiggler_timeout(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             if (userspace_config.pointing.mouse_jiggler.timeout != 255) {
                 userspace_config.pointing.mouse_jiggler.timeout++;
             }
@@ -140,6 +146,7 @@ bool menu_handler_dpi_config(menu_input_t input) {
             charybdis_cycle_pointer_default_dpi(false);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             charybdis_cycle_pointer_default_dpi(true);
             return false;
         default:
@@ -156,6 +163,7 @@ bool menu_handler_mouse_accel_toggle(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             pointing_device_accel_toggle_enabled();
             return false;
         default:
@@ -174,6 +182,7 @@ bool menu_handler_mouse_accel_takeoff(menu_input_t input) {
                                               pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_TAKEOFF_STEP));
             return false;
         case menu_input_right:
+        case menu_input_enter:
             pointing_device_accel_set_takeoff(pointing_device_accel_get_takeoff() +
                                               pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_TAKEOFF_STEP));
             return false;
@@ -194,6 +203,7 @@ bool menu_handler_mouse_accel_growth_rate(menu_input_t input) {
                 pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_GROWTH_RATE_STEP));
             return false;
         case menu_input_right:
+        case menu_input_enter:
             pointing_device_accel_set_growth_rate(
                 pointing_device_accel_get_growth_rate() +
                 pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_GROWTH_RATE_STEP));
@@ -214,6 +224,7 @@ bool menu_handler_mouse_accel_offset(menu_input_t input) {
                                              pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_OFFSET_STEP));
             return false;
         case menu_input_right:
+        case menu_input_enter:
             pointing_device_accel_set_offset(pointing_device_accel_get_offset() +
                                              pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_OFFSET_STEP));
             return false;
@@ -233,6 +244,7 @@ bool menu_handler_mouse_accel_limit(menu_input_t input) {
                                             pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_LIMIT_STEP));
             return false;
         case menu_input_right:
+        case menu_input_enter:
             pointing_device_accel_set_limit(pointing_device_accel_get_limit() +
                                             pointing_device_accel_get_mod_step(POINTING_DEVICE_ACCEL_LIMIT_STEP));
             return false;

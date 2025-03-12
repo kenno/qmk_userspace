@@ -6,6 +6,7 @@ bool menu_handler_rgb_layer(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             rgb_layer_indication_toggle();
             return false;
         default:
@@ -29,6 +30,7 @@ bool menu_handler_rm_enabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_toggle();
             return false;
         default:
@@ -46,6 +48,7 @@ bool menu_handler_rm_mode(menu_input_t input) {
             rgb_matrix_step_reverse();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_step();
             return false;
         default:
@@ -63,6 +66,7 @@ bool menu_handler_rm_hue(menu_input_t input) {
             rgb_matrix_decrease_hue();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_increase_hue();
             return false;
         default:
@@ -80,6 +84,7 @@ bool menu_handler_rm_sat(menu_input_t input) {
             rgb_matrix_decrease_sat();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_increase_sat();
             return false;
         default:
@@ -100,6 +105,7 @@ bool menu_handler_rm_val(menu_input_t input) {
 #    endif
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_increase_val();
 #    if defined(RGBLIGHT_CUSTOM)
             rgblight_sethsv(rgblight_get_hue(), rgblight_get_sat(), rgb_matrix_get_val());
@@ -120,6 +126,7 @@ bool menu_handler_rm_speed(menu_input_t input) {
             rgb_matrix_decrease_speed();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_increase_speed();
             return false;
         default:
@@ -135,6 +142,7 @@ bool menu_handler_rgb_idle(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             rgb_matrix_idle_anim_toggle();
             return false;
         default:
@@ -168,6 +176,7 @@ bool menu_handler_rgbenabled(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             rgblight_toggle();
             return false;
         default:
@@ -185,6 +194,7 @@ bool menu_handler_rgbmode(menu_input_t input) {
             rgblight_step_reverse();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgblight_step();
             return false;
         default:
@@ -202,6 +212,7 @@ bool menu_handler_rgbhue(menu_input_t input) {
             rgblight_decrease_hue();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgblight_increase_hue();
             return false;
         default:
@@ -219,6 +230,7 @@ bool menu_handler_rgbsat(menu_input_t input) {
             rgblight_decrease_sat();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgblight_increase_sat();
             return false;
         default:
@@ -239,6 +251,7 @@ bool menu_handler_rgbval(menu_input_t input) {
             rgblight_decrease_val();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgblight_increase_val();
             return false;
         default:
@@ -256,6 +269,7 @@ bool menu_handler_rgbspeed(menu_input_t input) {
             rgblight_decrease_speed();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             rgblight_increase_speed();
             return false;
         default:

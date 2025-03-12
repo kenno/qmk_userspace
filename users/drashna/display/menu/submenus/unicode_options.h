@@ -14,6 +14,7 @@ bool menu_handler_unicode(menu_input_t input) {
             unicode_input_mode_step_reverse();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             unicode_input_mode_step();
             return false;
         default:
@@ -58,6 +59,7 @@ bool menu_handler_unicode_typing(menu_input_t input) {
             set_unicode_tying_mode(userspace_runtime_state.unicode.typing_mode);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_runtime_state.unicode.typing_mode =
                 (userspace_runtime_state.unicode.typing_mode + 1) % UNCODES_MODE_END;
             if (userspace_runtime_state.unicode.typing_mode >= UNCODES_MODE_END) {

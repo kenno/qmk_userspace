@@ -11,12 +11,15 @@ bool menu_handler_display_menu_location(menu_input_t input) {
                 userspace_config.display.menu_render_side = 3;
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            display_menu_set_dirty(true);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.menu_render_side = (userspace_config.display.menu_render_side + 1) % 4;
             if (userspace_config.display.menu_render_side < 1) {
                 userspace_config.display.menu_render_side = 1;
             }
+            display_menu_set_dirty(true);
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
@@ -48,6 +51,7 @@ bool menu_handler_display_rotation(menu_input_t input) {
             display_rotate_screen(false);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             display_rotate_screen(true);
             return false;
         default:
@@ -79,18 +83,20 @@ __attribute__((weak)) void display_handler_display_rotation(char *text_buffer, s
     strncpy(text_buffer, "Unknown", buffer_len);
 }
 
-bool menu_handler_display_inverted(menu_input_t input) {
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     void init_display_ili9341_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #ifdef QUANTUM_PAINTER_ILI9488_ENABLE
     void init_display_ili9488_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
-    switch (input) {
-        case menu_input_left:
-        case menu_input_right:
-            userspace_config.display.inverted = !userspace_config.display.inverted;
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+
+    bool menu_handler_display_inverted(menu_input_t input) {
+        switch (input) {
+            case menu_input_left:
+            case menu_input_right:
+            case menu_input_enter:
+                userspace_config.display.inverted = !userspace_config.display.inverted;
+                eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
             init_display_ili9341_inversion();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -105,7 +111,7 @@ bool menu_handler_display_inverted(menu_input_t input) {
         default:
             return true;
     }
-}
+    }
 
 __attribute__((weak)) void display_handler_display_inverted(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, userspace_config.display.inverted ? "Inverted" : "Normal", buffer_len - 1);
@@ -121,6 +127,7 @@ bool menu_handler_oled_brightness(menu_input_t input) {
             oled_brightness_decrease_step();
             return false;
         case menu_input_right:
+        case menu_input_enter:
             oled_brightness_increase_step();
             return false;
         default:
@@ -136,6 +143,7 @@ bool menu_handler_oled_lock(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.oled.screen_lock = !userspace_config.display.oled.screen_lock;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
@@ -158,6 +166,7 @@ bool menu_handler_oled_pet_animation(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.oled.pet.index = (userspace_config.display.oled.pet.index + 1) % 3;
             if (userspace_config.display.oled.pet.index > 2) {
                 userspace_config.display.oled.pet.index = 0;
@@ -195,6 +204,7 @@ bool menu_handler_oled_pet_sleep_speed(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.oled.pet.sleep_speed = (userspace_config.display.oled.pet.sleep_speed + 1) % 100;
             if (userspace_config.display.oled.pet.sleep_speed > 100) {
                 userspace_config.display.oled.pet.sleep_speed = 0;
@@ -220,6 +230,7 @@ bool menu_handler_oled_pet_kaki_speed(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.oled.pet.kaki_speed = (userspace_config.display.oled.pet.kaki_speed + 5) % 200;
             if (userspace_config.display.oled.pet.kaki_speed > 200) {
                 userspace_config.display.oled.pet.kaki_speed = 0;
@@ -245,6 +256,7 @@ bool menu_handler_oled_pet_mati_speed(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.oled.pet.mati_speed = (userspace_config.display.oled.pet.mati_speed + 5) % 200;
             if (userspace_config.display.oled.pet.mati_speed > 200) {
                 userspace_config.display.oled.pet.mati_speed = 0;
@@ -260,7 +272,7 @@ __attribute__((weak)) void display_handler_oled_pet_mati_speed(char *text_buffer
     snprintf(text_buffer, buffer_len - 1, "%d", userspace_config.display.oled.pet.mati_speed);
 }
 
-#endif
+#endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
 #    include "display/painter/painter.h"
@@ -278,6 +290,7 @@ bool menu_handler_display_mode_master(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.painter.display_mode_master =
                 (userspace_config.display.painter.display_mode_master + 1) % 6;
             if (userspace_config.display.painter.display_mode_master > 5) {
@@ -326,6 +339,7 @@ bool menu_handler_display_mode_slave(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.painter.display_mode_slave =
                 (userspace_config.display.painter.display_mode_slave + 1) % 5;
             if (userspace_config.display.painter.display_mode_slave > 4) {
@@ -374,6 +388,7 @@ bool menu_handler_display_image(menu_input_t input) {
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             userspace_config.display.painter.display_logo =
                 (userspace_config.display.painter.display_logo + 1) % screensaver_image_size;
             if (userspace_config.display.painter.display_logo > (screensaver_image_size - 1)) {
@@ -400,6 +415,7 @@ bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
             painter_decrease_hue(painter_is_primary);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             painter_increase_hue(painter_is_primary);
             return false;
         default:
@@ -417,6 +433,7 @@ bool menu_handler_display_sat(menu_input_t input, bool painter_is_primary) {
             painter_decrease_sat(painter_is_primary);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             painter_increase_sat(painter_is_primary);
             return false;
         default:
@@ -434,6 +451,7 @@ bool menu_handler_display_val(menu_input_t input, bool painter_is_primary) {
             painter_decrease_val(painter_is_primary);
             return false;
         case menu_input_right:
+        case menu_input_enter:
             painter_increase_val(painter_is_primary);
             return false;
         default:
@@ -515,8 +533,12 @@ menu_entry_t display_option_entries[] = {
     MENU_ENTRY_MULTI("Pet Animation", "Pet", oled_pets_entries, oled_pet_animation),
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
+#    ifdef SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Display (Master)", "Master", display_mode_master),
     MENU_ENTRY_CHILD("Display (Slave)", "Slave", display_mode_slave),
+#    else  // SPLIT_KEYBOARD
+    MENU_ENTRY_CHILD("Display", "Displayn", display_mode_master),
+#    endif // SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Image", "Image", display_image),
     MENU_ENTRY_CHILD("Primary Hue", "P Hue", display_hue_primary),
     MENU_ENTRY_CHILD("Primary Saturation", "P Sat", display_sat_primary),
