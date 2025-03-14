@@ -256,3 +256,86 @@ bool display_menu_set_dirty_user(bool state) {
     userspace_runtime_state.display.menu_state_runtime.has_rendered = !state;
     return true;
 }
+
+#if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+bool process_record_display_menu_handling_user(uint16_t keycode, bool keep_processing) {
+    const bool is_qwerty  = get_highest_layer(default_layer_state) == _QWERTY,
+               is_dvorak  = get_highest_layer(default_layer_state) == _DVORAK,
+               is_colemak = get_highest_layer(default_layer_state) == _COLEMAK ||
+                            get_highest_layer(default_layer_state) == _COLEMAK_DH;
+
+    switch (keycode) {
+        case KC_D:
+            if (is_qwerty) {
+                return menu_handle_input(menu_input_down);
+            }
+            return keep_processing;
+        case KC_E:
+            if (is_qwerty) {
+                return menu_handle_input(menu_input_up);
+            } else if (is_dvorak) {
+                return menu_handle_input(menu_input_down);
+            }
+            return keep_processing;
+        case KC_F:
+            if (is_qwerty) {
+                return menu_handle_input(menu_input_right);
+            } else if (is_colemak) {
+                return menu_handle_input(menu_input_up);
+            }
+            return keep_processing;
+        case KC_O:
+            if (is_dvorak) {
+                return menu_handle_input(menu_input_left);
+            }
+            return keep_processing;
+        case KC_R:
+            if (is_colemak) {
+                return menu_handle_input(menu_input_left);
+            }
+            return keep_processing;
+        case KC_S:
+            if (is_qwerty) {
+                return menu_handle_input(menu_input_left);
+            } else if (is_colemak) {
+                return menu_handle_input(menu_input_down);
+            }
+            return keep_processing;
+        case KC_T:
+            if (is_colemak) {
+                return menu_handle_input(menu_input_right);
+            }
+            return keep_processing;
+        case KC_U:
+            if (is_dvorak) {
+                return menu_handle_input(menu_input_right);
+            }
+            return keep_processing;
+        case KC_DOT:
+            if (is_dvorak) {
+                return menu_handle_input(menu_input_right);
+            }
+            return keep_processing;
+        case DISPLAY_MENU:
+            return menu_handle_input(menu_input_exit);
+        case KC_ESC:
+        case KC_BSPC:
+        case KC_DEL:
+            return menu_handle_input(menu_input_back);
+        case KC_SPACE:
+        case KC_ENTER:
+        case KC_RETURN:
+            return menu_handle_input(menu_input_enter);
+        case KC_UP:
+            return menu_handle_input(menu_input_up);
+        case KC_DOWN:
+            return menu_handle_input(menu_input_down);
+        case KC_LEFT:
+            return menu_handle_input(menu_input_left);
+        case KC_RIGHT:
+            return menu_handle_input(menu_input_right);
+        default:
+            return keep_processing;
+    }
+}
+#endif
