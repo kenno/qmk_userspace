@@ -40,72 +40,6 @@ static float cg_norm_song[][2] = CG_NORM_SONG;
 static float cg_swap_song[][2] = CG_SWAP_SONG;
 #endif
 
-uint16_t copy_paste_timer;
-
-__attribute__((weak)) void konami_code_handler(void) {
-    dprintf("Konami code entered\n");
-    wait_ms(50);
-    reset_keyboard();
-}
-
-static bool process_record_konami_code(uint16_t keycode, keyrecord_t *record) {
-    static uint8_t        konami_index          = 0;
-    static const uint16_t konami_code[] PROGMEM = {KC_UP,   KC_UP,    KC_DOWN, KC_DOWN, KC_LEFT, KC_RIGHT,
-                                                   KC_LEFT, KC_RIGHT, KC_B,    KC_A,    KC_ENTER};
-
-    if (!record->event.pressed) {
-        switch (keycode) {
-            case QK_MOMENTARY ... QK_MOMENTARY_MAX:
-            case QK_DEF_LAYER ... QK_DEF_LAYER_MAX:
-            case QK_TOGGLE_LAYER ... QK_TOGGLE_LAYER_MAX:
-            case QK_ONE_SHOT_LAYER ... QK_ONE_SHOT_LAYER_MAX:
-            case QK_LAYER_TAP_TOGGLE ... QK_LAYER_TAP_TOGGLE_MAX:
-            case KC_BACKSPACE:
-            case KC_DELETE:
-                // Messing with layers, ignore but don't reset the counter.
-                break;
-            case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-                return process_record_konami_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode), record);
-            case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
-                return process_record_konami_code(QK_LAYER_TAP_GET_TAP_KEYCODE(keycode), record);
-            case QK_SWAP_HANDS ... QK_SWAP_HANDS_MAX:
-                return process_record_konami_code(QK_SWAP_HANDS_GET_TAP_KEYCODE(keycode), record);
-            case KC_KP_ENTER:
-            case KC_RETURN:
-            case QK_SPACE_CADET_RIGHT_SHIFT_ENTER:
-                return process_record_konami_code(KC_ENTER, record);
-            case KC_UP:
-            case KC_DOWN:
-            case KC_LEFT:
-            case KC_RIGHT:
-            case KC_B:
-            case KC_A:
-            case KC_ENTER:
-                if (keycode == pgm_read_word(&konami_code[konami_index])) {
-                    dprintf("Konami code: key released: %s\n", keycode_name(keycode, false));
-                    konami_index++;
-                    if (konami_index == ARRAY_SIZE(konami_code)) {
-                        konami_index = 0;
-                        konami_code_handler();
-                    }
-                } else {
-                    if (konami_index) {
-                        dprintf("Konami code: reset\n");
-                    }
-                    konami_index = 0;
-                }
-                break;
-            default:
-                if (konami_index) {
-                    dprintf("Konami code: reset\n");
-                }
-                konami_index = 0;
-                break;
-        }
-    }
-    return true;
-}
-
 // Defines actions tor my global custom keycodes. Defined in drashna.h file
 // Then runs the _keymap's record handier if not processed here
 
@@ -162,17 +96,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 record->tap.interrupted, record->tap.count);
     }
 #endif // KEYLOGGER_ENABLE
-
-#ifdef ACHORDION_ENABLE
-    if (!process_achordion(keycode, record)) {
-        return false;
-    }
-#endif // ACHORDION_ENABLE
-
-    if (!process_record_konami_code(keycode, record)) {
-        return false;
-    }
-
     if (!(process_record_keymap(keycode, record) && process_record_secrets(keycode, record)
 #ifdef DISPLAY_DRIVER_ENABLE
           && process_record_display_driver(keycode, record)
@@ -213,18 +136,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
 #endif // CUSTOM_TAP_DANCE_ENABLE
             break;
-
-        case KC_CCCV: // One key copy/paste
-            if (record->event.pressed) {
-                copy_paste_timer = timer_read();
-            } else {
-                if (timer_elapsed(copy_paste_timer) > TAPPING_TERM) { // Hold, copy
-                    tap_code16(LCTL(KC_C));
-                } else { // Tap, paste
-                    tap_code16(LCTL(KC_V));
-                }
-            }
-            break;
         case KC_RGB_T: // This allows me to use underglow as layer indication, or as normal
 #if defined(CUSTOM_RGBLIGHT) || defined(CUSTOM_RGB_MATRIX)
             if (record->event.pressed) {
@@ -232,7 +143,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
 #endif // CUSTOM_RGBLIGHT || CUSTOM_RGB_MATRIX
             break;
-
 #if defined(CUSTOM_RGBLIGHT) || defined(CUSTOM_RGB_MATRIX)
         case QK_RGB_MATRIX_TOGGLE:
         case QK_UNDERGLOW_TOGGLE:
