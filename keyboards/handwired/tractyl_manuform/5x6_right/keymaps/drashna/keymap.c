@@ -100,3 +100,20 @@ void early_hardware_init_post(void) {
         B15, PAL_MODE_ALTERNATE(12) | PAL_STM32_OTYPE_PUSHPULL | PAL_STM32_OSPEED_HIGHEST | PAL_STM32_PUPDR_FLOATING);
 }
 #endif
+
+#ifdef COMMUNITY_MODULE_KEYCODE_STRING_ENABLE
+#    include "keycode_string.h"
+const keycode_string_name_t *keycode_string_names_kb = (keycode_string_name_t[]){
+    // clang-format off
+    {QK_KB_0, "DPI_INC"},
+    {QK_KB_1, "DPI_DEC"},
+    {QK_KB_2, "SNI_INC"},
+    {QK_KB_3, "SNI_DEC"},
+    {QK_KB_4, "SNIP_MO"},
+    {QK_KB_5, "SNIP_TG"},
+    {QK_KB_6, "DRAG_MO"},
+    {QK_KB_7, "DRAG_TG"},
+    {0, NULL},
+    // clang-format on
+};
+#endif
