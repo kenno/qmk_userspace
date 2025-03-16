@@ -7,6 +7,9 @@
 #ifdef UNICODE_COMMON_ENABLE
 #    include "keyrecords/unicode.h"
 #endif // UNICODE_COMMON_ENABLE
+#if defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
+#    include "keycode_string.h"
+#endif
 
 userspace_config_t userspace_config;
 
@@ -218,17 +221,23 @@ void set_doom_song(layer_state_t state) {
 }
 #endif // AUDIO_ENABLE
 
-#if defined(COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE) && defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
+#if defined(COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE)
 void console_keylogging_print_handler(uint16_t keycode, keyrecord_t *record) {
+#    if defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
+    xprintf("KL: %s, kc: 0x%04X, col: %2u, row: %2u, pressed: %1d, time: %5u, int: %1d, count: %u\n",
+            get_keycode_string(keycode), keycode, record->event.key.col, record->event.key.row, record->event.pressed,
+            record->event.time, record->tap.interrupted, record->tap.count);
+#    else
     xprintf("KL: %s, kc: 0x%04X, col: %2u, row: %2u, pressed: %1d, time: %5u, int: %1d, count: %u\n",
             keycode_name(keycode, (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT), keycode, record->event.key.col,
             record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted,
             record->tap.count);
+#    endif
 }
 #endif
 
 #ifdef COMMUNITY_MODULE_KONAMI_CODE_ENABLE
-void konami_code_handler(void) {
+__attribute__((weak)) void konami_code_handler(void) {
     dprintf("Konami code entered\n");
     wait_ms(50);
     reset_keyboard();
