@@ -186,8 +186,8 @@ void                       suspend_wakeup_init_user(void) {
 
 void layer_state_set_gaming(layer_state_t state) {
     static bool l_is_gaming_layer_active = false, is_swap_active = false;
-    if (l_is_gaming_layer_active != is_gaming_layer_active()) {
-        l_is_gaming_layer_active = is_gaming_layer_active();
+    if (l_is_gaming_layer_active != is_gaming_layer_active(state)) {
+        l_is_gaming_layer_active = is_gaming_layer_active(state);
         if (l_is_gaming_layer_active) {
             is_swap_active = keymap_config.swap_lctl_lgui;
         } else {
