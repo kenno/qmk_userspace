@@ -226,3 +226,11 @@ void console_keylogging_print_handler(uint16_t keycode, keyrecord_t *record) {
             record->tap.count);
 }
 #endif
+
+#ifdef COMMUNITY_MODULE_KONAMI_CODE_ENABLE
+void konami_code_handler(void) {
+    dprintf("Konami code entered\n");
+    wait_ms(50);
+    reset_keyboard();
+}
+#endif
