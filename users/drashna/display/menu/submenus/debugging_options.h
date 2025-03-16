@@ -172,12 +172,15 @@ __attribute__((weak)) void display_handler_scan_rate(char *text_buffer, size_t b
     snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.debug.matrix_scan_print ? "on" : "off");
 }
 
+#ifdef COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE
+#    include "console_keylogging.h"
 bool menu_handler_keylogger(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
             userspace_config.debug.console_keylogger = !userspace_config.debug.console_keylogger;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            console_keylogger_set_enabled(userspace_config.debug.console_keylogger);
             return false;
         default:
             return true;
@@ -185,8 +188,9 @@ bool menu_handler_keylogger(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_keylogger(char *text_buffer, size_t buffer_len) {
-    snprintf(text_buffer, buffer_len - 1, "%s", userspace_config.debug.console_keylogger ? "on" : "off");
+    snprintf(text_buffer, buffer_len - 1, "%s", console_keylogger_get_enabled() ? "on" : "off");
 }
+#endif // COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE
 
 menu_entry_t debug_entries[] = {
     MENU_ENTRY_CHILD("Debugging", "Enabled", debugging_enable), // force formatting
@@ -203,5 +207,7 @@ menu_entry_t debug_entries[] = {
     MENU_ENTRY_CHILD("I2C Scanner", "I2C Scan", i2c_scanner),
 #endif // COMMUNITY_MODULE_I2C_SCANNER_ENABLE
     MENU_ENTRY_CHILD("Matrix Scan Rate Print", "Scan Rate", scan_rate),
+#ifdef COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE
     MENU_ENTRY_CHILD("Console Keylogger", "Keylogger", keylogger),
+#endif // COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE
 };

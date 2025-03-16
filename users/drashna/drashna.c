@@ -217,3 +217,12 @@ void set_doom_song(layer_state_t state) {
     }
 }
 #endif // AUDIO_ENABLE
+
+#if defined(COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE) && defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
+void console_keylogging_print_handler(uint16_t keycode, keyrecord_t *record) {
+    xprintf("KL: %s, kc: 0x%04X, col: %2u, row: %2u, pressed: %1d, time: %5u, int: %1d, count: %u\n",
+            keycode_name(keycode, (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT), keycode, record->event.key.col,
+            record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted,
+            record->tap.count);
+}
+#endif
