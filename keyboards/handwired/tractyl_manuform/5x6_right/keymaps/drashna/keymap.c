@@ -103,8 +103,8 @@ void early_hardware_init_post(void) {
 
 #ifdef COMMUNITY_MODULE_KEYCODE_STRING_ENABLE
 #    include "keycode_string.h"
-const keycode_string_name_t *keycode_string_names_kb = (keycode_string_name_t[]){
-    // clang-format off
+// clang-format off
+KEYCODE_STRING_NAMES_KB(
     {QK_KB_0, "DPI_INC"},
     {QK_KB_1, "DPI_DEC"},
     {QK_KB_2, "SNI_INC"},
@@ -113,7 +113,6 @@ const keycode_string_name_t *keycode_string_names_kb = (keycode_string_name_t[])
     {QK_KB_5, "SNIP_TG"},
     {QK_KB_6, "DRAG_MO"},
     {QK_KB_7, "DRAG_TG"},
-    {0, NULL},
-    // clang-format on
-};
+);
+// clang-format on
 #endif

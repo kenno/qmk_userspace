@@ -29,6 +29,9 @@
 #else // COMMUNITY_MODULE_RTC_ENABLE
 #    include "version.h"
 #endif // COMMUNITY_MODULE_RTC_ENABLE
+#if defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
+#    include "keycode_string.h"
+#endif // COMMUNITY_MODULE_KEYCODE_STRING_ENABLE
 
 static painter_device_t       display;
 painter_image_handle_t        screen_saver;

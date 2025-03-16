@@ -15,7 +15,8 @@
 #ifdef COMMUNITY_MODULE_KEYCODE_STRING_ENABLE
 #    include "keyrecords/process_records.h"
 #    include "keycode_string.h"
-const keycode_string_name_t *keycode_string_names_user = (keycode_string_name_t[]){
+// clang-format off
+KEYCODE_STRING_NAMES_USER(
     {VRSN, "VRSN"},
     {KC_DIABLO_CLEAR, "DIAB_CLR"},
     {KC_RGB_T, "RGB_T"},
@@ -64,8 +65,8 @@ const keycode_string_name_t *keycode_string_names_user = (keycode_string_name_t[
     {CLAP_TRAP_TOGGLE, "SOCD_TG"},
     {US_I2C_SCAN_ENABLE, "I2C_SCAN"},
     {US_GAMING_SCAN_TOGGLE, "GAME_MODE"},
-    {0, NULL},
-};
+);
+// clang-format on
 #endif
 
 #ifndef __AVR__
