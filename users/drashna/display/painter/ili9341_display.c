@@ -541,7 +541,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, "Last keycode:", curr_hsv.primary.h,
                                     curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
                 ypos += font_oled->line_height + 4;
+#    if defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
+                snprintf(buf, 17, "%16s", get_keycode_string(last_keycode));
+#    else
                 snprintf(buf, 17, "%16s", keycode_name(last_keycode, false));
+#    endif
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
                                     curr_hsv.secondary.v, 0, 0, 0);
             }
