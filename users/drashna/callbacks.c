@@ -184,6 +184,20 @@ void                       suspend_wakeup_init_user(void) {
     suspend_wakeup_init_keymap();
 }
 
+void layer_state_set_gaming(layer_state_t state) {
+    static bool l_is_gaming_layer_active = false, is_swap_active = false;
+    if (l_is_gaming_layer_active != is_gaming_layer_active()) {
+        l_is_gaming_layer_active = is_gaming_layer_active();
+        if (l_is_gaming_layer_active) {
+            is_swap_active = keymap_config.swap_lctl_lgui;
+        } else {
+            if (is_swap_active) {
+                keymap_config.raw = eeconfig_read_keymap();
+            }
+        }
+    }
+}
+
 // on layer change, no matter where the change was initiated
 // Then runs keymap's layer change check
 __attribute__((weak)) layer_state_t layer_state_set_keymap(layer_state_t state) {
@@ -213,6 +227,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         swap_hands_off();
     }
 #endif // SWAP_HANDS_ENABLE
+    layer_state_set_gaming(state);
     return state;
 }
 
