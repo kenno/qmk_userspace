@@ -718,6 +718,9 @@ const char *unicode_typing_mode(uint8_t mode) {
         case UCTM_DOUBLE_STRUCK:
             // 𝕯𝖔𝖚𝖇𝖑𝖊 𝕾𝖙𝖗𝖚𝖈𝖐
             return "DoubleStruck";
+        case UCTM_SCREAM:
+            // AÃA̱ĂẠǍA̧ĂAẢÁǍA̱AaÅÃẢA̋A̓ÅẢǍAA̱d
+            return "XKCD Scream";
         default:
             // Normal
             return "Unknown";
