@@ -683,7 +683,7 @@ const char *os_variant_to_string(os_variant_t os_detected) {
  * @param mode The mode to be converted to a string.
  * @return A constant character pointer to the string representing the Unicode typing mode.
  */
-const char *unicode_typing_mode(uint8_t mode) {
+const char *get_unicode_typing_mode_str(uint8_t mode) {
     switch (mode) {
         case UCTM_NO_MODE:
             // Normal
@@ -718,7 +718,7 @@ const char *unicode_typing_mode(uint8_t mode) {
         case UCTM_DOUBLE_STRUCK:
             // 𝕯𝖔𝖚𝖇𝖑𝖊 𝕾𝖙𝖗𝖚𝖈𝖐
             return "DoubleStruck";
-        case UCTM_SCREAM:
+        case UCTM_SCREAM_CYPHER:
             // AÃA̱ĂẠǍA̧ĂAẢÁǍA̱AaÅÃẢA̋A̓ÅẢǍAA̱d
             return "XKCD Scream";
         default:
