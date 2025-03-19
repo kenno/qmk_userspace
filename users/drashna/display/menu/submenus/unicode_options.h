@@ -72,7 +72,7 @@ bool menu_handler_unicode_typing(menu_input_t input) {
     }
 }
 __attribute__((weak)) void display_handler_unicode_typing(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, unicode_typing_mode(get_unicode_typing_mode()), buffer_len);
+    strncpy(text_buffer, get_unicode_typing_mode_str(get_unicode_typing_mode()), buffer_len);
 }
 #    endif
 

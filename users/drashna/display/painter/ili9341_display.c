@@ -32,6 +32,9 @@
 #if defined(COMMUNITY_MODULE_KEYCODE_STRING_ENABLE)
 #    include "keycode_string.h"
 #endif // COMMUNITY_MODULE_KEYCODE_STRING_ENABLE
+#ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
+#    include "unicode_typing.h"
+#endif // COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
 
 static painter_device_t       display;
 painter_image_handle_t        screen_saver;
@@ -590,7 +593,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, "Typing Mode:", curr_hsv.primary.h,
                                     curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
                 ypos += font_oled->line_height + 4;
-                snprintf(buf, sizeof(buf), "%14s", unicode_typing_mode(last_unicode_typing_mode));
+                snprintf(buf, sizeof(buf), "%14s", get_unicode_typing_mode_str(last_unicode_typing_mode));
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
                                     curr_hsv.secondary.v, 0, 0, 0);
             }

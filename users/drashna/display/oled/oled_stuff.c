@@ -23,6 +23,9 @@
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 #    include "keyboard_lock.h"
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#ifdef COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
+#    include "unicode_typing.h"
+#endif // COMMUNITY_MODULE_UNICODE_TYPING_ENABLE
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
@@ -637,7 +640,7 @@ void render_unicode_mode(uint8_t col, uint8_t line) {
     oled_set_cursor(col, line);
     oled_write_P(PSTR("Unicode:"), false);
     char buf[13] = {0};
-    snprintf(buf, sizeof(buf), "%12s", unicode_typing_mode(userspace_runtime_state.unicode.typing_mode));
+    snprintf(buf, sizeof(buf), "%12s", get_unicode_typing_mode_str(userspace_runtime_state.unicode.typing_mode));
     oled_write(buf, false);
 #endif
 }
@@ -647,7 +650,7 @@ void render_unicode_mode_small(uint8_t col, uint8_t line, bool invert) {
     oled_set_cursor(col, line);
     oled_write_P(PSTR("UC"), invert);
     char buf[13] = {0};
-    snprintf(buf, sizeof(buf), "%12s", unicode_typing_mode(userspace_runtime_state.unicode.typing_mode));
+    snprintf(buf, sizeof(buf), "%12s", get_unicode_typing_mode_str(userspace_runtime_state.unicode.typing_mode));
     oled_write(buf, invert);
 #endif
 }

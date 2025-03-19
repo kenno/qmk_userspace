@@ -21,6 +21,3 @@ const char *get_haptic_drv2605l_effect_name(drv2605l_effect_t effect);
 #ifdef OS_DETECTION_ENABLE
 const char *os_variant_to_string(os_variant_t os);
 #endif // OS_DETECTION_ENABLE
-#ifdef CUSTOM_UNICODE_ENABLE
-const char *unicode_typing_mode(uint8_t mode);
-#endif // CUSTOM_UNICODE_ENABLE
