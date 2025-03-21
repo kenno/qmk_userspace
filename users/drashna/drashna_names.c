@@ -211,48 +211,6 @@ __attribute__((unused)) static const char *layer_name_pretty(const char *input) 
 }
 
 /**
- * Returns the name of the given layer.
- *
- * @param layer The layer number to get the name for.
- * @return A pointer to a string containing the name of the layer.
- */
-const char *layer_name(uint8_t layer) {
-    static char buffer[16];
-    switch (layer) {
-        case _QWERTY:
-            return "QWERTY";
-        case _COLEMAK:
-            return "Colemak";
-        case _COLEMAK_DH:
-            return "Colemak-DH";
-        case _DVORAK:
-            return "Dvorak";
-        case _GAMEPAD:
-            return "Gamepad";
-        case _DIABLO:
-            return "Diablo";
-        case _DIABLOII:
-            return "Diablo II";
-        case _MOUSE:
-            return "Mouse";
-        case _MEDIA:
-            return "Media";
-        case _LOWER:
-            return "Lower";
-        case _RAISE:
-            return "Raise";
-        case _ADJUST:
-            return "Adjust";
-        default:
-            break;
-    }
-
-    const char *n = get_numeric_str(buffer, sizeof(buffer), layer, ' ');
-    n += strspn(n, " ");
-    return n;
-}
-
-/**
  * Returns the name of the modifier key based on the given modifier code.
  *
  * @param mod The modifier code.
@@ -727,3 +685,81 @@ const char *get_unicode_typing_mode_str(uint8_t mode) {
     }
 }
 #endif // CUSTOM_UNICODE_ENABLE
+
+/**
+ * @brief Generates a string of the layer state bitmask
+ *
+ * @param buffer char string buffer to write to
+ * @param state layer state bitmask
+ * @param default_state default layer state bitmask (so we can represent default layer differently)
+ */
+void format_layer_bitmap_string(char *buffer, layer_state_t state, layer_state_t default_state) {
+    for (uint8_t i = 0; i < 16; i++) {
+        if (i == 0 || i == 4 || i == 8 || i == 12) {
+            *buffer = ' ';
+            ++buffer;
+        }
+
+        uint8_t layer = i;
+        if ((default_state & ((layer_state_t)1 << layer)) != 0) {
+            *buffer = 'D';
+        } else if ((state & ((layer_state_t)1 << layer)) != 0) {
+            *buffer = '1';
+        } else {
+            *buffer = '_';
+        }
+        ++buffer;
+    }
+    *buffer = '\0';
+}
+
+/**
+ * @brief Get the layer name string object
+ *
+ * @param state layer state bitmask
+ * @param alt_name Use altname?
+ * @param is_default do we want the default layer's name?
+ * @return const char* Layer name in string format
+ */
+const char *get_layer_name_string(uint8_t layer, bool alt_name, bool is_default) {
+    switch (layer) {
+        case _QWERTY:
+            return alt_name ? "Num Pad" : is_default ? "QWERTY" : "Base";
+        case _COLEMAK:
+            return "Colemak";
+        case _COLEMAK_DH:
+            return "Colemak-DH";
+        case _DVORAK:
+            return "Dvorak";
+        case _GAMEPAD:
+            return "Gamepad";
+        case _DIABLO:
+            return "Diablo";
+        case _DIABLOII:
+            return "Diablo II";
+        case _MOUSE:
+            return alt_name ? "Macros" : "Mouse";
+        case _MEDIA:
+            return "Media";
+        case _LOWER:
+            return "Lower";
+        case _RAISE:
+            return "Raise";
+        case _ADJUST:
+            return "Adjust";
+        default:
+            return "Unknown";
+    }
+}
+
+/**
+ * @brief Checks to see if one or more gaming layers are active
+ *
+ * @param state layer state bitmask
+ * @return true A gaming layer is active
+ * @return false No gaming layers active
+ */
+
+bool is_gaming_layer_active(layer_state_t state) {
+    return ((state & (1 << _GAMEPAD)) != 0) || ((state & (1 << _DIABLO)) != 0) || ((state & (1 << _DIABLOII)) != 0);
+}

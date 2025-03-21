@@ -52,7 +52,3 @@ enum userspace_layers {
 #define DEFAULT_LAYER_2_RGB RGB_CHARTREUSE
 #define DEFAULT_LAYER_3_RGB RGB_MAGENTA
 #define DEFAULT_LAYER_4_RGB RGB_GOLDENROD
-
-bool        is_gaming_layer_active(layer_state_t state);
-void        format_layer_bitmap_string(char *buffer, layer_state_t state, layer_state_t default_state);
-const char *get_layer_name_string(layer_state_t state, bool alt_name, bool is_default);
