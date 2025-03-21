@@ -190,6 +190,7 @@ void layer_state_set_gaming(layer_state_t state) {
         l_is_gaming_layer_active = is_gaming_layer_active(state);
         if (l_is_gaming_layer_active) {
             is_swap_active = keymap_config.swap_lctl_lgui;
+            keymap_config.swap_lctl_lgui = false;
         } else {
             if (is_swap_active) {
                 keymap_config.raw = eeconfig_read_keymap();
