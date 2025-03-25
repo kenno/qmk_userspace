@@ -56,7 +56,7 @@ bool menu_handler_unicode_typing(menu_input_t input) {
             if (userspace_runtime_state.unicode.typing_mode >= UNCODES_MODE_END) {
                 userspace_runtime_state.unicode.typing_mode = UNCODES_MODE_END - 1;
             }
-            set_unicode_tying_mode(userspace_runtime_state.unicode.typing_mode);
+            set_unicode_typing_mode(userspace_runtime_state.unicode.typing_mode);
             return false;
         case menu_input_right:
         case menu_input_enter:
@@ -65,7 +65,7 @@ bool menu_handler_unicode_typing(menu_input_t input) {
             if (userspace_runtime_state.unicode.typing_mode >= UNCODES_MODE_END) {
                 userspace_runtime_state.unicode.typing_mode = 0;
             }
-            set_unicode_tying_mode(userspace_runtime_state.unicode.typing_mode);
+            set_unicode_typing_mode(userspace_runtime_state.unicode.typing_mode);
             return false;
         default:
             return true;

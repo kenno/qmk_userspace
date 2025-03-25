@@ -107,7 +107,7 @@ void housekeeping_task_display(void) {
  * This adds pressed keys to buffer, but also resets the oled timer
  *
  * @param keycode Keycode from matrix
- * @param record keyrecord data struture
+ * @param record keyrecord data structure
  * @return true
  * @return false
  */

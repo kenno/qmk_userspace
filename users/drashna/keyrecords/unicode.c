@@ -12,7 +12,7 @@
  * @brief Main handler for unicode input
  *
  * @param keycode Keycode from switch matrix
- * @param record keyrecord_t data struture
+ * @param record keyrecord_t data structure
  * @return true Send keycode from matrix to host
  * @return false Stop processing and do not send to host
  */
