@@ -9,7 +9,7 @@
 #include "qp_comms.h"
 #include "display/painter/painter.h"
 #include "display/painter/ili9341_display.h"
-#include "hardware_id.h"
+#include "hardware_id_string.h"
 #include "version.h"
 #ifdef QUANTUM_PAINTER_DRIVERS_ILI9341_SURFACE
 #    include "qp_surface.h"
@@ -615,9 +615,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         ypos = height - (font_mono->line_height + 2);
         xpos = 27;
         if (hue_redraw) {
-            hardware_id_t id = get_hardware_id();
-            snprintf(buf, sizeof(buf), "SN: %02X%02X%02X%02X%02X%02X BD: %10.10s", id.data[0], id.data[1], id.data[2],
-                     id.data[3], id.data[4], id.data[5], QMK_BUILDDATE);
+            snprintf(buf, sizeof(buf), "SN: %s BD: %10.10s", get_hardware_id_string(), QMK_BUILDDATE);
             xpos += qp_drawtext_recolor(display, xpos, ypos, font_mono, buf, 0, 0, 0, curr_hsv.primary.h,
                                         curr_hsv.primary.s, curr_hsv.primary.v);
         }

@@ -22,6 +22,9 @@ ifeq ($(PLATFORM_KEY),chibios)
     CUSTOM_UNICODE_ENABLE ?= yes
     SRC += $(USER_PATH)/hardware/hardware_id.c
     VPATH += $(USER_PATH)/hardware
+    ifeq ($(strip $(MCU_FAMILY)), STM32)
+        OPT_DEFS += -DSERIAL_NUMBER_LENGTH=12
+    endif
 else
     ifneq ($(strip $(LTO_SUPPORTED)), no)
         LTO_ENABLE        = yes
