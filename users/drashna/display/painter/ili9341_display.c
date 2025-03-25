@@ -458,7 +458,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, "Layout: ", curr_hsv.primary.h, curr_hsv.primary.s,
                                     curr_hsv.primary.v, 0, 0, 0);
                 ypos += font_oled->line_height + 4;
-                snprintf(buf, sizeof(buf), "%10s", get_layer_name_string(default_layer_state, false, true));
+                snprintf(buf, sizeof(buf), "%10s",
+                         get_layer_name_string(get_highest_layer(default_layer_state), false, true));
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
                                     curr_hsv.secondary.v, 0, 0, 0);
             } else {
@@ -477,7 +478,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                 if (is_gaming_layer_active(last_layer_state)) {
                     temp = last_layer_state & ~((layer_state_t)1 << _MOUSE);
                 }
-                snprintf(buf, sizeof(buf), "%10s", get_layer_name_string(temp, false, false));
+                snprintf(buf, sizeof(buf), "%10s", get_layer_name_string(get_highest_layer(temp), false, false));
                 qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h, curr_hsv.secondary.s,
                                     curr_hsv.secondary.v, 0, 0, 0);
                 ypos = 122 + 4;
