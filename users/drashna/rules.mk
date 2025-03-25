@@ -15,8 +15,8 @@ SPACE_CADET_ENABLE            := no
 DEBUG_MATRIX_SCAN_RATE_ENABLE := no
 
 ifeq ($(PLATFORM_KEY),chibios)
-    # cortex-m4 has DSP+FPU support, so use hack to enable it for lib8tion
-    ifeq ($(strip $(MCU)), cortex-m4)
+    # If MCU has FPU support, use hack to enable it for lib8tion
+    ifeq ($(strip $(USE_FPU)), yes)
         OPT_DEFS += -DFASTLED_TEENSY3
     endif
     CUSTOM_UNICODE_ENABLE ?= yes
