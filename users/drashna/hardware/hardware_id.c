@@ -57,11 +57,11 @@ hardware_id_t get_hardware_id(void) {
 }
 
 #ifndef SERIAL_NUMBER_LENGTH
-#    define SERIAL_NUMBER_LENGTH (sizeof(hardware_id_t))
+#    define SERIAL_NUMBER_LENGTH (sizeof(hardware_id_t) * 2)
 #endif
 
 const char *get_hardware_id_string(void) {
-    static char buf[SERIAL_NUMBER_LENGTH * 2 + 1] = {0};
+    static char buf[SERIAL_NUMBER_LENGTH + 1] = {0};
 #if defined(UID_BASE)
     uint32_t base[3];
     base[0] = (uint32_t)(*((uint32_t *)UID_BASE));
