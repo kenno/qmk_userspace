@@ -72,8 +72,8 @@ const char *get_hardware_id_string(void) {
         uid[index] = (uint8_t)(base[index / 4] >> ((index % 4) * 8));
     }
 
-    snprintf(buf, sizeof(buf), "%02X%02X%02X%02X%02X%02X", uid[11], uid[10] + uid[2], uid[9], uid[8] + uid[0], uid[7],
-             uid[6]);
+    snprintf(buf, sizeof(buf), "%02X%02X%02X%02X%02X%02X", uid[11], (uint8_t)(uid[10] + uid[2]), uid[9],
+             (uint8_t)(uid[8] + uid[0]), uid[7], uid[6]);
 #else
     hardware_id_t id = get_hardware_id();
     snprintf(buf, sizeof(buf), "%08lX%08lX%08lX%08lX", id.data[0], id.data[1], id.data[2], id.data[3]);
