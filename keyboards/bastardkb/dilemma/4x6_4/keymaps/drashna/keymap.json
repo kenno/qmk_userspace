@@ -1,7 +1,6 @@
 {
     "modules": [
         "drashna/keyboard_lock",
-        "drashna/rtc",
         "drashna/unicode_typing",
         "drashna/watchdog",
         "getreuer/sentence_case"
