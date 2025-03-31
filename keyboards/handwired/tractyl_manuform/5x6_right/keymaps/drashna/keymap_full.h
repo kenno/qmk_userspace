@@ -16,7 +16,7 @@
      KC_GRV, DISPLAY_MENU, OS_LALT, OS_LGUI,                                            OS_RGUI, OS_RALT, DISPLAY_MENU, KC_ESC, \
                                 KC_MUTE, KC_GRV,                                        KC_BTN3,  \
                                          KC_SPC,  UC_IRNY,                     KC_ENT,  \
-                                         BK_LWER, TT(_MOUSE),      TT(_MOUSE), DL_RAIS  \
+                                         BK_LWER, MO(_MOUSE),      TG(_MOUSE), DL_RAIS  \
   )
 #define LAYOUT_base_wrapper(...)       LAYOUT_5x6_full_right_base(__VA_ARGS__)
 
@@ -117,7 +117,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void matrix_output_unselect_delay(uint8_t line, bool key_pressed) {
-    for (int32_t i = 0; i < 30; i++) {
+    for (int32_t i = 0; i < 40; i++) {
         __asm__ volatile("nop" ::: "memory");
     }
 }
