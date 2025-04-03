@@ -21,9 +21,9 @@ rgb_t           rgb_matrix_hsv_to_rgb(hsv_t hsv);
 
 void rgb_matrix_layer_helper(uint8_t hue, uint8_t sat, uint8_t val, uint8_t mode, uint8_t speed, uint8_t led_type,
                              uint8_t led_min, uint8_t led_max) {
-    hsv_t hsv = {hue, sat, val};
-    rgb_t    rgb  = {0};
-    uint16_t time = scale16by8(g_rgb_timer, speed / 8);
+    hsv_t   hsv  = {hue, sat, val};
+    rgb_t   rgb  = {0};
+    uint8_t time = scale16by8(g_rgb_timer, qadd8(speed / 4, 1));
     if (hsv.v > rgb_matrix_get_val()) {
         hsv.v = rgb_matrix_get_val();
     }
@@ -52,6 +52,16 @@ void rgb_matrix_layer_helper(uint8_t hue, uint8_t sat, uint8_t val, uint8_t mode
                 if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
                     hsv.h = g_led_config.point[i].x - time;
                     rgb   = rgb_matrix_hsv_to_rgb(hsv);
+                    rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+                }
+            }
+            break;
+        case 4: // Snek
+            for (uint8_t i = led_min; i < led_max; i++) {
+                if (HAS_FLAGS(g_led_config.flags[i], led_type)) {
+                    int16_t v = hsv.v - abs(scale8(g_led_config.point[i].x, 228) + 28 - time) * 8;
+                    hsv.v     = scale8(v < 0 ? 0 : v, hsv.v);
+                    rgb       = rgb_matrix_hsv_to_rgb(hsv);
                     rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
                 }
             }
@@ -186,7 +196,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 #else  // RGBLIGHT_ENABLE && RGBLIGHT_CUSTOM
         switch (get_highest_layer(layer_state & ~((layer_state_t)1 << _MOUSE))) {
             case _GAMEPAD:
-                rgb_matrix_layer_helper(HSV_ORANGE, 1, rgb_matrix_config.speed, LED_FLAG_MODIFIER, led_min, led_max);
+                rgb_matrix_layer_helper(HSV_ORANGE, 4, rgb_matrix_config.speed, LED_FLAG_MODIFIER, led_min, led_max);
                 break;
             case _DIABLO:
                 rgb_matrix_layer_helper(HSV_RED, 1, rgb_matrix_config.speed * 8, LED_FLAG_MODIFIER, led_min, led_max);
