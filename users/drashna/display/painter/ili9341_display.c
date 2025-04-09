@@ -557,6 +557,29 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                                     curr_hsv.secondary.v, 0, 0, 0);
             }
 
+            static keyevent_t last_event = {0};
+            if (hue_redraw || memcmp(&last_event, &userspace_runtime_state.last_key_event, sizeof(keyevent_t))) {
+                memcpy(&last_event, &userspace_runtime_state.last_key_event, sizeof(keyevent_t));
+                ypos = 111;
+                xpos = 142;
+                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Last keyevent:", curr_hsv.primary.h,
+                                    curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
+                ypos += font_oled->line_height + 4;
+                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Row:", curr_hsv.primary.h, curr_hsv.primary.s,
+                                    curr_hsv.primary.v, 0, 0, 0);
+
+                snprintf(buf, 4, "%3s", get_u8_str(last_event.key.row, ' '));
+                qp_drawtext_recolor(display, 240 - (4 + qp_textwidth(font_oled, buf)), ypos, font_oled, buf,
+                                    curr_hsv.secondary.h, curr_hsv.secondary.s, curr_hsv.secondary.v, 0, 0, 0);
+                ypos += font_oled->line_height + 4;
+                qp_drawtext_recolor(display, xpos, ypos, font_oled, "Column:", curr_hsv.primary.h, curr_hsv.primary.s,
+                                    curr_hsv.primary.v, 0, 0, 0);
+
+                snprintf(buf, 4, "%3s", get_u8_str(last_event.key.col, ' '));
+                qp_drawtext_recolor(display, 240 - (4 + qp_textwidth(font_oled, buf)), ypos, font_oled, buf,
+                                    curr_hsv.secondary.h, curr_hsv.secondary.s, curr_hsv.secondary.v, 0, 0, 0);
+            }
+
 #    ifdef CUSTOM_UNICODE_ENABLE
             ypos                             = 149;
             static uint8_t last_unicode_mode = UNICODE_MODE_COUNT;
