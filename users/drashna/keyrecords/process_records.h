@@ -33,11 +33,6 @@ enum userspace_custom_keycodes {
     PRINT_SETUPS,
 
     PD_JIGGLER,
-    PD_ACCEL_TOGGLE,
-    PD_ACCEL_TAKEOFF,
-    PD_ACCEL_GROWTH_RATE,
-    PD_ACCEL_OFFSET,
-    PD_ACCEL_LIMIT,
 
     US_MATRIX_SCAN_RATE_PRINT,
 

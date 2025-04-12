@@ -159,6 +159,8 @@ __attribute__((weak)) void display_handler_dpi_config(char *text_buffer, size_t 
 }
 #    endif
 
+#    ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+#        include "pointing_device_accel.h"
 bool menu_handler_mouse_accel_toggle(menu_input_t input) {
     switch (input) {
         case menu_input_left:
@@ -264,6 +266,7 @@ menu_entry_t pointing_acceleration_entries[] = {
     MENU_ENTRY_CHILD("Offset", "Offset", mouse_accel_offset),
     MENU_ENTRY_CHILD("Limit", "Limit", mouse_accel_limit),
 };
+#    endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
 
 menu_entry_t pointing_auto_layer_entries[] = {
     MENU_ENTRY_CHILD("Layer", "Layer", auto_mouse_layer),
@@ -272,7 +275,9 @@ menu_entry_t pointing_auto_layer_entries[] = {
 };
 
 menu_entry_t pointing_entries[] = {
+#    ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
     MENU_ENTRY_MULTI("Mouse Acceleration", "Accel", pointing_acceleration_entries, mouse_accel_toggle),
+#    endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
 #    if defined(KEYBOARD_handwired_tractyl_manuform) || defined(KEYBOARD_bastardkb_charybdis)
     MENU_ENTRY_CHILD("DPI Config", "DPI", dpi_config),
 #    endif // KEYBOARD_handwired_tractyl_manuform || KEYBOARD_bastardkb_charybdis
