@@ -1,0 +1,7 @@
+{
+    "maintainer": "elpekenin",
+    "module_name": "glitch_text",
+    "features": {
+        "deferred_exec": true
+    }
+}
