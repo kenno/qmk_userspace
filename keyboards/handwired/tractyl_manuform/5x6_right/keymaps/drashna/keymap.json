@@ -6,6 +6,7 @@
         "drashna/i2c_scanner",
         "drashna/layer_map",
         "drashna/keyboard_lock",
+        "drashna/pointing_device_accel",
         "drashna/rtc",
         "drashna/unicode_typing",
         "drashna/watchdog",

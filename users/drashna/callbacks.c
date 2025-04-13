@@ -303,6 +303,10 @@ void                       eeconfig_init_user(void) {
 
     eeconfig_init_keymap();
     eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+#ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+    void eeconfig_init_pointing_device(void);
+    eeconfig_init_pointing_device();
+#endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
 }
 
 /**
