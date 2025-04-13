@@ -142,6 +142,10 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         mouse_report.y = 0;
     }
 
+#ifdef POINTING_DEVICE_ACCEL_SHIM
+    mouse_report = pointing_device_task_pointing_device_accel(mouse_report);
+#endif // POINTING_DEVICE_ACCEL_SHIM
+
     return pointing_device_task_keymap(mouse_report);
 }
 
