@@ -176,7 +176,17 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     if (!rgb_matrix_indicators_advanced_keymap(led_min, led_max)) {
         return false;
     }
+    rgb_matrix_indicators_render_layer(led_min, led_max);
+    return false;
+}
 
+/**
+ * @brief Render the RGB Matrix layer indicators
+ *
+ * @param led_min
+ * @param led_max
+ */
+void rgb_matrix_indicators_render_layer(uint8_t led_min, uint8_t led_max) {
     if (userspace_config.rgb.layer_change) {
 #if defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)
 #    if defined(SPLIT_KEYBOARD) && defined(SPLIT_LAYER_STATE_ENABLE)
@@ -238,7 +248,6 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         }
 #endif // RGBLIGHT_ENABLE && RGBLIGHT_CUSTOM
     }
-    return false;
 }
 
 __attribute__((weak)) bool rgb_matrix_indicators_keymap(void) {
