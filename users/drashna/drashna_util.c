@@ -67,6 +67,53 @@ bool hasAllBitsInMask(uint8_t value, uint8_t mask) {
     return (value & mask) == mask;
 }
 
+/** \brief mod_config_8bit
+ *
+ *  This function checks the mods passed to it against the bootmagic config,
+ *  and will remove or replace mods, based on that.
+ */
+
+ __attribute__((weak)) uint8_t mod_config_8bit(uint8_t mod) {
+    /**
+     * Note: This function is for the full 8-bit mods, NOT the 5-bit packed mods.
+     * More info about the mods can be seen in modifiers.h.
+     */
+    if (keymap_config.swap_lalt_lgui) {
+        /** If both modifiers pressed or neither pressed, do nothing
+         * Otherwise swap the values
+         */
+        if (((mod & MOD_BIT(KC_LALT)) && !(mod & MOD_BIT(KC_LGUI))) ||
+            (!(mod & MOD_BIT(KC_LALT)) && (mod & MOD_BIT(KC_LGUI)))) {
+            mod ^= (MOD_BIT(KC_LALT) | MOD_BIT(KC_LGUI));
+        }
+    }
+    if (keymap_config.swap_ralt_rgui) {
+        if (((mod & MOD_BIT(KC_RALT)) && !(mod & MOD_BIT(KC_RGUI))) ||
+            (!(mod & MOD_BIT(KC_RALT)) && (mod & MOD_BIT(KC_RGUI)))) {
+            mod ^= (MOD_BIT(KC_RALT) | MOD_BIT(KC_RGUI));
+        }
+    }
+    if (keymap_config.swap_lctl_lgui) {
+        if (((mod & MOD_BIT(KC_LCTL)) && !(mod & MOD_BIT(KC_LGUI))) ||
+            (!(mod & MOD_BIT(KC_LCTL)) && (mod & MOD_BIT(KC_LGUI)))) {
+            mod ^= (MOD_BIT(KC_LCTL) | MOD_BIT(KC_LGUI));
+        }
+    }
+    if (keymap_config.swap_rctl_rgui) {
+        if (((mod & MOD_BIT(KC_RCTL)) && !(mod & MOD_BIT(KC_RGUI))) ||
+            (!(mod & MOD_BIT(KC_RCTL)) && (mod & MOD_BIT(KC_RGUI)))) {
+            mod ^= (MOD_BIT(KC_RCTL) | MOD_BIT(KC_RGUI));
+        }
+    }
+    if (keymap_config.no_gui) {
+        mod &= ~MOD_BIT(KC_LGUI);
+        mod &= ~MOD_BIT(KC_RGUI);
+    }
+
+    return mod;
+}
+
+
 /**
  * @brief Tap keycode, with no mods
  *
