@@ -143,6 +143,9 @@ bool process_record_user_rgb_matrix(uint16_t keycode, keyrecord_t *record) {
 
 #if defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)
 #    include "rgblight_drivers.h"
+#    if defined(SPLIT_KEYBOARD) && defined(SPLIT_LAYER_STATE_ENABLE)
+#        include "rgb_stuff.h"
+#    endif // SPLIT_KEYBOARD && SPLIT_LAYER_STATE_ENABLE
 
 rgb_t led_array[RGBLIGHT_LED_COUNT] = {0};
 
