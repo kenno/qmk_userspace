@@ -12,6 +12,7 @@
 #include "pointing.h"
 #include "math.h"
 #include <stdlib.h>
+#include <string.h>
 #ifdef AUDIO_ENABLE
 #    include "audio.h"
 #    ifdef AUDIO_CLICKY
