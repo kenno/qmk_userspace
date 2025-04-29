@@ -304,22 +304,6 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
         snprintf(buf, sizeof(buf), "%3u", get_current_wpm());
         qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
-        temp_x = x;
-        y += font->line_height + 4;
-        temp_x += qp_drawtext_recolor(device, temp_x, y, font, "Peak:", curr_hsv->primary.h, curr_hsv->primary.s,
-                                      curr_hsv->primary.v, 0, 0, 0) +
-                  5;
-        snprintf(buf, sizeof(buf), "%3u", userspace_runtime_state.wpm.wpm_peak);
-        qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
-                            curr_hsv->secondary.v, 0, 0, 0);
-        temp_x = x;
-        y += font->line_height + 4;
-        temp_x += qp_drawtext_recolor(device, temp_x, y, font, "Avg: ", curr_hsv->primary.h, curr_hsv->primary.s,
-                                      curr_hsv->primary.v, 0, 0, 0) +
-                  5;
-        snprintf(buf, sizeof(buf), "%3u", userspace_runtime_state.wpm.wpm_avg);
-        qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
-                            curr_hsv->secondary.v, 0, 0, 0);
     }
 #endif // WPM_ENABLE
 }
@@ -509,7 +493,7 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
         qp_line(device, xpos + 80, 80, xpos + 237, 80, hsv.h, hsv.s, hsv.v);
 
         // horizontal line below wpm
-        qp_line(device, xpos + 80, 118, xpos + 138, 118, hsv.h, hsv.s, hsv.v);
+        qp_line(device, xpos + 80, 95, xpos + 138, 95, hsv.h, hsv.s, hsv.v);
         // vertical line next to wpm
         qp_line(device, xpos + 138, 80, xpos + 138, 145, hsv.h, hsv.s, hsv.v);
         // line below last key
