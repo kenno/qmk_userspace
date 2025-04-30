@@ -535,8 +535,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if defined(HAPTIC_ENABLE)
             painter_render_haptic(display, font_oled, 83, 58, hue_redraw, &curr_hsv);
 #    endif // HAPTIC_ENABLE
-            ypos = 84;
-            xpos = 84;
+            ypos = 80;
+            xpos = 80;
 #    ifdef WPM_ENABLE
             painter_render_wpm(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
 #    endif

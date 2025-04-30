@@ -295,15 +295,46 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
 #ifdef WPM_ENABLE
     static wpm_sync_data_t last_wpm_update = {0};
     static char            buf[4]          = {0};
-    uint16_t               temp_x          = x;
+    uint16_t               temp_x = x + 4, temp_y = y + 4;
     if (force_redraw || memcmp(&last_wpm_update, &userspace_runtime_state.wpm, sizeof(wpm_sync_data_t)) != 0) {
         memcpy(&last_wpm_update, &userspace_runtime_state.wpm, sizeof(wpm_sync_data_t));
-        temp_x += qp_drawtext_recolor(device, temp_x, y, font, "WPM: ", curr_hsv->primary.h, curr_hsv->primary.s,
+        temp_x += qp_drawtext_recolor(device, temp_x, temp_y, font, "WPM: ", curr_hsv->primary.h, curr_hsv->primary.s,
                                       curr_hsv->primary.v, 0, 0, 0) +
                   5;
         snprintf(buf, sizeof(buf), "%3u", get_current_wpm());
-        qp_drawtext_recolor(device, temp_x, y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
+        qp_drawtext_recolor(device, temp_x, temp_y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
+
+        temp_y += font->line_height + 4;
+        // Example: Render a simple graph using qp_line
+        static uint16_t      graph_data[10]  = {10, 20, 15, 25, 30, 20, 10, 15, 25, 5};
+        static const uint8_t graph_data_size = ARRAY_SIZE(graph_data) - 1;
+        uint16_t             graph_x         = x;
+        uint16_t             graph_y         = temp_y;
+        uint16_t             graph_width     = 58;
+        uint16_t             graph_height    = 49;
+
+        // Draw graph axes
+        qp_line(device, graph_x, graph_y, graph_x, graph_y + graph_height, curr_hsv->primary.h, curr_hsv->primary.s,
+                curr_hsv->primary.v);
+        qp_line(device, graph_x, graph_y + graph_height, graph_x + graph_width, graph_y + graph_height,
+                curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
+
+        // Add markers on the y-axis for every 5 units
+        for (uint16_t i = 0; i <= graph_height; i += 5) {
+            uint16_t marker_y = graph_y + graph_height - i;
+            qp_line(device, graph_x, marker_y, graph_x + 2, marker_y, curr_hsv->primary.h, curr_hsv->primary.s,
+                    curr_hsv->primary.v);
+        }
+
+        // Plot graph data
+        for (uint8_t i = 0; i < graph_data_size; i++) {
+            uint16_t x1 = graph_x + (i * (graph_width / graph_data_size));
+            uint16_t y1 = graph_y + graph_height - graph_data[i];
+            uint16_t x2 = graph_x + ((i + 1) * (graph_width / graph_data_size)) + (i >= (graph_data_size - 1) ? 4 : 0);
+            uint16_t y2 = graph_y + graph_height - graph_data[i + 1];
+            qp_line(device, x1, y1, x2, y2, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
+        }
     }
 #endif // WPM_ENABLE
 }
