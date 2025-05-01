@@ -304,19 +304,20 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
         snprintf(buf, sizeof(buf), "%3u", get_current_wpm());
         qp_drawtext_recolor(device, temp_x, temp_y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
+    }
+    temp_y += font->line_height + 4;
 
-        temp_y += font->line_height + 4;
-        static bool has_init = false;
+    static uint8_t last_average = 0;
 
-        if (!has_init) {
-            // Example: Render a simple graph using qp_line
-            uint8_t graph_data[19] = {10, 20, 15, 25, 30, 20, 10, 15, 25, 5, 22, 5, 15, 10, 20, 15, 45, 50, 20};
+    if (userspace_runtime_state.wpm.wpm_avg != last_average || force_redraw) {
+        last_average = userspace_runtime_state.wpm.wpm_avg;
 
-            const uint8_t graph_segments = ARRAY_SIZE(graph_data) - 1;
+        // Example: Render a simple graph using qp_line
+        extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
 
-            qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv, graph_data, graph_segments);
-            has_init = true;
-        }
+        const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
+
+        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments);
     }
 #endif // WPM_ENABLE
 }
@@ -1230,7 +1231,6 @@ bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, 
     uint8_t spacing   = graph_width / (graph_segments);
     uint8_t remainder = graph_width - (graph_segments * spacing);
 
-    xprintf("Graph data size: %d, spacing: %d, remainder: %d\n", graph_segments, spacing, remainder);
     // Plot graph data
     uint8_t offset = 0;
     for (uint8_t i = graph_starting_index; i < graph_segments; i++) {
@@ -1240,7 +1240,6 @@ bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, 
         uint16_t x2 = graph_x + (((i - graph_starting_index) + 1) * spacing) + offset;
         uint16_t y2 = graph_y + graph_height - graph_data[i + 1];
         qp_line(device, x1, y1, x2, y2, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v);
-        xprintf("Graph data %d: %d, %d, offset %d\n", i, x1 - graph_x, x2 - graph_x, offset);
     }
 
     // Add markers on the y-axis for every 5 units
