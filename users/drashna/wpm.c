@@ -8,7 +8,7 @@
 #endif
 
 void update_wpm_avg(void) {
-    static uint16_t wpm_samples[10] = {0};
+    static uint8_t wpm_samples[10] = {0};
     static uint8_t  index           = 0;
     uint16_t        sum             = 0;
 
