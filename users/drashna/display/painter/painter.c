@@ -306,34 +306,53 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
                             curr_hsv->secondary.v, 0, 0, 0);
 
         temp_y += font->line_height + 4;
-        // Example: Render a simple graph using qp_line
-        static uint16_t      graph_data[10]  = {10, 20, 15, 25, 30, 20, 10, 15, 25, 5};
-        static const uint8_t graph_data_size = ARRAY_SIZE(graph_data) - 1;
-        uint16_t             graph_x         = x;
-        uint16_t             graph_y         = temp_y;
-        uint16_t             graph_width     = 58;
-        uint16_t             graph_height    = 49;
+        static bool has_init = false;
 
-        // Draw graph axes
-        qp_line(device, graph_x, graph_y, graph_x, graph_y + graph_height, curr_hsv->primary.h, curr_hsv->primary.s,
-                curr_hsv->primary.v);
-        qp_line(device, graph_x, graph_y + graph_height, graph_x + graph_width, graph_y + graph_height,
-                curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
+        if (!has_init) {
+            // Example: Render a simple graph using qp_line
+            static uint16_t graph_data[] = {10, 20, 15, 25, 30, 20, 10, 15, 25, 5, 22, 5, 15, 10, 20, 15, 45, 50, 20};
 
-        // Add markers on the y-axis for every 5 units
-        for (uint16_t i = 0; i <= graph_height; i += 5) {
-            uint16_t marker_y = graph_y + graph_height - i;
-            qp_line(device, graph_x, marker_y, graph_x + 2, marker_y, curr_hsv->primary.h, curr_hsv->primary.s,
+            uint8_t graph_segments = ARRAY_SIZE(graph_data) - 1;
+
+            uint16_t graph_x              = x;
+            uint16_t graph_y              = temp_y;
+            uint16_t graph_width          = 57;
+            uint16_t graph_height         = 49;
+            uint8_t  graph_starting_index = 0;
+            if (graph_segments >= graph_width) {
+                graph_starting_index = graph_segments - graph_width;
+                graph_segments       = graph_width;
+            }
+
+            // Draw graph axes
+            qp_line(device, graph_x, graph_y, graph_x, graph_y + graph_height, curr_hsv->primary.h, curr_hsv->primary.s,
                     curr_hsv->primary.v);
-        }
+            qp_line(device, graph_x, graph_y + graph_height, graph_x + graph_width, graph_y + graph_height,
+                    curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
 
-        // Plot graph data
-        for (uint8_t i = 0; i < graph_data_size; i++) {
-            uint16_t x1 = graph_x + (i * (graph_width / graph_data_size));
-            uint16_t y1 = graph_y + graph_height - graph_data[i];
-            uint16_t x2 = graph_x + ((i + 1) * (graph_width / graph_data_size)) + (i >= (graph_data_size - 1) ? 4 : 0);
-            uint16_t y2 = graph_y + graph_height - graph_data[i + 1];
-            qp_line(device, x1, y1, x2, y2, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v);
+            uint8_t spacing   = graph_width / (graph_segments);
+            uint8_t remainder = graph_width - (graph_segments * spacing);
+
+            xprintf("Graph data size: %d, spacing: %d, remainder: %d\n", graph_segments, spacing, remainder);
+            // Plot graph data
+            uint8_t offset = 0;
+            for (uint8_t i = graph_starting_index; i < graph_segments; i++) {
+                offset += (remainder != 0 && (i - graph_starting_index) % (graph_segments / remainder) == 0) ? 1 : 0;
+                uint16_t x1 = graph_x + ((i - graph_starting_index) * spacing) + offset;
+                uint16_t y1 = graph_y + graph_height - graph_data[i];
+                uint16_t x2 = graph_x + (((i - graph_starting_index) + 1) * spacing) + offset;
+                uint16_t y2 = graph_y + graph_height - graph_data[i + 1];
+                qp_line(device, x1, y1, x2, y2, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v);
+                xprintf("Graph data %d: %d, %d, offset %d\n", i, x1 - graph_x, x2 - graph_x, offset);
+            }
+
+            // Add markers on the y-axis for every 5 units
+            for (uint16_t i = 0; i <= graph_height; i += 5) {
+                uint16_t marker_y = graph_y + graph_height - i;
+                qp_line(device, graph_x, marker_y, graph_x + 2, marker_y, curr_hsv->primary.h, curr_hsv->primary.s,
+                        curr_hsv->primary.v);
+            }
+            has_init = true;
         }
     }
 #endif // WPM_ENABLE
@@ -584,9 +603,9 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                                bool is_thicc) {
     static bool force_full_block_redraw = false;
 #ifdef SPLIT_KEYBOARD
-    bool           should_render_this_side = userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left);
+    bool should_render_this_side = userspace_config.display.menu_render_side & (1 << (uint8_t)!is_left);
     (void)should_render_this_side;
-    static uint8_t last_menu_side          = 0xFF;
+    static uint8_t last_menu_side = 0xFF;
     if (last_menu_side != userspace_config.display.menu_render_side) {
         last_menu_side          = userspace_config.display.menu_render_side;
         force_full_block_redraw = true;
