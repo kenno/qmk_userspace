@@ -307,17 +307,17 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
     }
     temp_y += font->line_height + 4;
 
-    static uint8_t last_average = 0;
+    static uint16_t wpm_timer = 0;
 
-    if (userspace_runtime_state.wpm.wpm_avg != last_average || force_redraw) {
-        last_average = userspace_runtime_state.wpm.wpm_avg;
+    if (force_redraw || timer_elapsed(wpm_timer) > 1000) {
+        wpm_timer = timer_read();
 
         // Example: Render a simple graph using qp_line
         extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
 
         const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
 
-        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments);
+        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments, 120);
     }
 #endif // WPM_ENABLE
 }
@@ -1213,14 +1213,20 @@ void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hs
         last_tick   = now;
     }
 }
+// Scale graph data to fit graph_height
+static inline uint8_t scale_value(uint8_t value, uint8_t from, uint8_t to) {
+    return (value * from / to);
+}
 
 bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, uint16_t graph_width,
-                   uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t *graph_data, uint8_t graph_segments) {
+                   uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t* graph_data, uint8_t graph_segments,
+                   uint8_t scale_to) {
     uint8_t graph_starting_index = 0;
     if (graph_segments >= graph_width) {
         graph_starting_index = graph_segments - graph_width;
         graph_segments       = graph_width;
     }
+    qp_rect(device, graph_x, graph_y, graph_x + graph_width, graph_y + graph_height, 0, 0, 0, true);
 
     // Draw graph axes
     qp_line(device, graph_x, graph_y, graph_x, graph_y + graph_height, curr_hsv->primary.h, curr_hsv->primary.s,
@@ -1236,15 +1242,15 @@ bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, 
     for (uint8_t i = graph_starting_index; i < graph_segments; i++) {
         offset += (remainder != 0 && (i - graph_starting_index) % (graph_segments / remainder) == 0) ? 1 : 0;
         uint16_t x1 = graph_x + ((i - graph_starting_index) * spacing) + offset;
-        uint16_t y1 = graph_y + graph_height - graph_data[i];
+        uint16_t y1 = graph_y + graph_height - scale_value(graph_data[i], graph_height - 1, scale_to) - 1;
         uint16_t x2 = graph_x + (((i - graph_starting_index) + 1) * spacing) + offset;
-        uint16_t y2 = graph_y + graph_height - graph_data[i + 1];
+        uint16_t y2 = graph_y + graph_height - scale_value(graph_data[i + 1], graph_height - 1, scale_to) - 1;
         qp_line(device, x1, y1, x2, y2, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v);
     }
 
-    // Add markers on the y-axis for every 5 units
-    for (uint16_t i = 0; i <= graph_height; i += 5) {
-        uint16_t marker_y = graph_y + graph_height - i;
+    // Add markers on the y-axis for every 10 units, scaled to scale_to
+    for (uint16_t i = 0; i <= scale_to; i += 10) {
+        uint16_t marker_y = graph_y + graph_height - scale_value(i, graph_height - 1, scale_to);
         qp_line(device, graph_x, marker_y, graph_x + 2, marker_y, curr_hsv->primary.h, curr_hsv->primary.s,
                 curr_hsv->primary.v);
     }
