@@ -68,6 +68,8 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv);
 bool painter_render_shutdown(painter_device_t device, bool jump_to_bootloader);
 void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hsv_t* curr_hsv, bool force_redraw);
+bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, uint16_t graph_width,
+                   uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t *graph_data, uint8_t graph_segments);
 
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);
