@@ -27,6 +27,9 @@ extern bool           delayed_tasks_run;
 #ifdef SWAP_HANDS_ENABLE
 extern bool swap_hands;
 #endif
+#ifdef WPM_ENABLE
+extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
+#endif // WPM_ENABLE
 #ifdef DISPLAY_DRIVER_ENABLE
 #    include "display/display.h"
 #endif // DISPLAY_DRIVER_ENABLEj
@@ -39,6 +42,67 @@ _Static_assert(sizeof(userspace_config_t) <= RPC_M2S_BUFFER_SIZE,
                "userspace_config_t is larger than split buffer size!");
 _Static_assert(sizeof(user_runtime_config_t) <= RPC_M2S_BUFFER_SIZE,
                "user_runtime_config_t is larger than split buffer size!");
+
+typedef enum extended_id_t {
+    RPC_ID_EXTENDED_WPM_GRAPH_DATA = 0,
+    NUM_EXTENDED_IDS,
+} extended_id_t;
+
+typedef struct PACKED {
+    extended_id_t id;
+    uint8_t       data[RPC_M2S_BUFFER_SIZE - sizeof(extended_id_t) - sizeof(size_t)];
+    size_t        size;
+} extended_msg_t;
+
+_Static_assert(sizeof(extended_msg_t) <= RPC_M2S_BUFFER_SIZE, "extended_rpc_t is larger than split buffer size!");
+
+typedef void (*handler_fn_t)(const uint8_t* data, size_t size);
+
+void send_extended_message_handler(enum extended_id_t id, uint8_t* data, size_t size) {
+    extended_msg_t msg = {
+        .id   = id,
+        .data = {0},
+        .size = size,
+    };
+    memcpy(&msg.data, data, size);
+    transaction_rpc_send(RPC_ID_EXTENDED_SYNC_TRANSPORT, RPC_M2S_BUFFER_SIZE, &msg);
+    // xprintf("Extended Transaction sent:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
+    // for (uint8_t i = 0; i < size; ++i) {
+    //     xprintf("%d ", msg.data[i]);
+    // }
+    // xprintf("\n");
+}
+
+void recv_wpm_graph_data(const uint8_t* data, size_t size) {
+#ifdef WPM_ENABLE
+    if (memcmp(data, wpm_graph_samples, size) != 0) {
+        memcpy(wpm_graph_samples, data, size);
+    }
+#endif
+}
+
+static const handler_fn_t handlers[NUM_EXTENDED_IDS] = {
+    [RPC_ID_EXTENDED_WPM_GRAPH_DATA] = recv_wpm_graph_data,
+};
+
+void extended_message_handler(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
+                              uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
+    extended_msg_t msg = {0};
+    memcpy(&msg, initiator2target_buffer, initiator2target_buffer_size);
+    if (msg.id >= NUM_EXTENDED_IDS) {
+        xprintf("Invalid extended message ID: %d\n", msg.id);
+        return;
+    }
+
+    handler_fn_t handler = handlers[msg.id];
+    xprintf("Extended Transaction received:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
+    for (uint8_t i = 0; i < msg.size; ++i) {
+        xprintf("%d ", msg.data[i]);
+    }
+    xprintf("\n");
+
+    handler(msg.data, msg.size);
+}
 
 /**
  * @brief Syncs user state between halves of split keyboard
@@ -156,6 +220,7 @@ void keyboard_post_init_transport_sync(void) {
     transaction_register_rpc(RPC_ID_USER_CONFIG_SYNC, user_config_sync);
     transaction_register_rpc(RPC_ID_USER_AUTOCORRECT_STR, autocorrect_string_sync);
     transaction_register_rpc(RPC_ID_USER_DISPLAY_KEYLOG_STR, keylogger_string_sync);
+    transaction_register_rpc(RPC_ID_EXTENDED_SYNC_TRANSPORT, extended_message_handler);
 }
 
 /**
@@ -442,6 +507,9 @@ void sync_keylogger_string(bool* needs_sync, uint32_t* last_sync, char* keylog_t
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 
 #if defined(AUTOCORRECT_ENABLE)
+static char temp_autocorrected_str[2][21] = {0};
+_Static_assert(sizeof(temp_autocorrected_str) == sizeof(autocorrected_str_raw),
+               "Size mismatch for autocorrect string syncing!");
 /**
  * @brief Synchronizes the autocorrect strings between split keyboards.
  *
@@ -470,6 +538,26 @@ void sync_autocorrect_string(bool* needs_sync, uint32_t* last_sync, char temp_au
 }
 #endif // AUTOCORRECT_ENABLE
 
+#ifdef WPM_ENABLE
+void sync_wpm_graph_data(bool* needs_sync, uint32_t* last_sync) {
+    static uint8_t local_wpm_graph_samples[WPM_GRAPH_SAMPLES] = {0};
+
+    if (memcmp(wpm_graph_samples, local_wpm_graph_samples, sizeof(local_wpm_graph_samples))) {
+        *needs_sync = true;
+        memcpy(local_wpm_graph_samples, wpm_graph_samples, sizeof(local_wpm_graph_samples));
+    }
+    if (timer_elapsed32(*last_sync) > (FORCED_SYNC_THROTTLE_MS * 100)) {
+        *needs_sync = true;
+    }
+    if (*needs_sync) {
+        send_extended_message_handler(RPC_ID_EXTENDED_WPM_GRAPH_DATA, local_wpm_graph_samples,
+                                      sizeof(local_wpm_graph_samples));
+        *last_sync  = timer_read32();
+        *needs_sync = false;
+    }
+}
+#endif // WPM_ENABLE
+
 /**
  * @brief Synchronizes user-specific transport settings.
  *
@@ -486,9 +574,6 @@ void user_transport_sync(void) {
 #if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
         static char keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
-#if defined(AUTOCORRECT_ENABLE)
-        static char temp_autocorrected_str[2][22] = {0};
-#endif // AUTOCORRECT_ENABLE
 
         sync_userspace_runtime_state(&needs_sync, &last_sync[0], &last_user_state);
         sync_userspace_config(&needs_sync, &last_sync[1], &last_config);
@@ -496,8 +581,11 @@ void user_transport_sync(void) {
         sync_keylogger_string(&needs_sync, &last_sync[2], keylog_temp);
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 #if defined(AUTOCORRECT_ENABLE)
-        sync_autocorrect_string(&needs_sync, &last_sync[3], temp_autocorrected_str);
+        sync_autocorrect_string(&needs_sync, &last_sync[3]);
 #endif // AUTOCORRECT_ENABLE
+#ifdef WPM_ENABLE
+        sync_wpm_graph_data(needs_sync, &last_sync[4]);
+#endif // WPM_ENABLE
     }
 }
 
@@ -523,7 +611,7 @@ void housekeeping_task_transport_sync(void) {
         // Data sync from slave to master
         static bool is_first_run = true;
         (void)is_first_run;
-#if defined(RGB_MATRIX_ENABLE)
+#    if defined(RGB_MATRIX_ENABLE)
         static rgb_config_t last_rgb_matrix_config = {0};
         if (is_first_run) {
             eeprom_read_block(&last_rgb_matrix_config, EECONFIG_RGB_MATRIX, sizeof(last_rgb_matrix_config));
@@ -534,8 +622,8 @@ void housekeeping_task_transport_sync(void) {
             rgb_matrix_reload_from_eeprom();
             xprintf("RGB Matrix config updated\n");
         }
-#endif // RGB_MATRIX_ENABLE
-#if defined(RGBLIGHT_ENABLE) && (defined(RGB_MATRIX_ENABLE) && !defined(RGBLIGHT_CUSTOM))
+#    endif // RGB_MATRIX_ENABLE
+#    if defined(RGBLIGHT_ENABLE) && (defined(RGB_MATRIX_ENABLE) && !defined(RGBLIGHT_CUSTOM))
         static rgblight_config_t last_rgblight_config = {0};
         extern rgblight_config_t rgblight_config;
 
@@ -548,8 +636,8 @@ void housekeeping_task_transport_sync(void) {
             rgblight_reload_from_eeprom();
             xprintf("RGB Light config updated\n");
         }
-#endif // RGBLIGHT_ENABLE && (RGB_MATRIX_ENABLE && !RGBLIGHT_CUSTOM)
-#if defined(HAPTIC_ENABLE) && defined(SPLIT_HAPTIC_ENABLE)
+#    endif // RGBLIGHT_ENABLE && (RGB_MATRIX_ENABLE && !RGBLIGHT_CUSTOM)
+#    if defined(HAPTIC_ENABLE) && defined(SPLIT_HAPTIC_ENABLE)
         static haptic_config_t last_haptic_config = {0};
         extern haptic_config_t haptic_config;
 
@@ -561,59 +649,27 @@ void housekeeping_task_transport_sync(void) {
             eeconfig_update_haptic(haptic_config.raw);
             xprintf("Haptic config updated\n");
         }
-#endif
-#if defined(BACKLIGHT_ENABLE)
+#    endif
+#    if defined(BACKLIGHT_ENABLE)
         static backlight_config_t last_backlight_config = {0};
         extern backlight_config_t backlight_config;
 
         if (is_first_run) {
             last_backlight_config.raw = eeconfig_read_backlight();
         }
-#    if defined(QUANTUM_PAINTER_ENABLE)
+#        if defined(QUANTUM_PAINTER_ENABLE)
         if (last_backlight_config.level != backlight_config.level ||
             last_backlight_config.breathing != backlight_config.breathing)
-#    else
+#        else
         if (last_backlight_config.raw != backlight_config.raw)
-#    endif
+#        endif
         {
             last_backlight_config = backlight_config;
             eeconfig_update_backlight(backlight_config.raw);
             xprintf("Backlight config updated\n");
         }
-#endif // BACKLIGHT_ENABLE
+#    endif // BACKLIGHT_ENABLE
         is_first_run = false;
 #endif
     }
 }
-
-#if 0
-// lets define a custom data type to make things easier to work with
-typedef struct {
-    uint8_t position; // position of the string on the array
-    uint8_t length;
-    char    str[RPC_S2M_BUFFER_SIZE - 2]; // this is as big as you can fit on the split comms message
-} split_msg_t;
-_Static_assert(sizeof(split_msg_t) == RPC_S2M_BUFFER_SIZE, "Wrong size");
-
-
-// instead of
-    transaction_rpc_send(RPC_ID_USER_STR, ARRAY_SIZE(stringToWrite), stringToWrite);
-// you now do:
-    split_msg_t msg = {0};
-    msg.position = <your_variable>;
-    msg.length = strlen(<your_string>) + 1;
-    if (msg.length > ARRAY_SIZE(split_msg_t.str)) {
-        // too big to fit
-        // do something here if you like, but do not send the message
-        return;
-    }
-    strcpy(msg.str, <your_string>);
-    transaction_rpc_send(RPC_ID_USER_STR, sizeof(msg), &msg);
-
-// instead of
-    memcpy(stringToWrite, initiator2target_buffer, initiator2target_buffer_size);
-// you now do:
-    split_msg_t *msg = (split_msg_t *)initiator2target_buffer;
-    memcpy(<your_array>[msg->position], msg->str, msg->length);
-}
-#endif
