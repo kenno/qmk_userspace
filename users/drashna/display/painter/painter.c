@@ -1222,17 +1222,26 @@ bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, 
                    uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t* graph_data, uint8_t graph_segments,
                    uint8_t scale_to) {
     uint8_t graph_starting_index = 0;
+    // if there are more segments than the graph width is wide in pixels, then set up things to only render the last
+    // graph_width segments of the array.
     if (graph_segments >= graph_width) {
         graph_starting_index = graph_segments - graph_width;
         graph_segments       = graph_width;
     }
-    qp_rect(device, graph_x, graph_y, graph_x + graph_width, graph_y + graph_height, 0, 0, 0, true);
+    // clear the graph area for redrawing
+    if (!qp_rect(device, graph_x, graph_y, graph_x + graph_width, graph_y + graph_height, 0, 0, 0, true)) {
+        return false;
+    }
 
     // Draw graph axes
-    qp_line(device, graph_x, graph_y, graph_x, graph_y + graph_height, curr_hsv->primary.h, curr_hsv->primary.s,
-            curr_hsv->primary.v);
-    qp_line(device, graph_x, graph_y + graph_height, graph_x + graph_width, graph_y + graph_height, curr_hsv->primary.h,
-            curr_hsv->primary.s, curr_hsv->primary.v);
+    if (!qp_line(device, graph_x, graph_y, graph_x, graph_y + graph_height, curr_hsv->primary.h, curr_hsv->primary.s,
+                 curr_hsv->primary.v)) {
+        return false;
+    }
+    if (!qp_line(device, graph_x, graph_y + graph_height, graph_x + graph_width, graph_y + graph_height,
+                 curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v)) {
+        return false;
+    }
 
     uint8_t spacing   = graph_width / (graph_segments);
     uint8_t remainder = graph_width - (graph_segments * spacing);
@@ -1245,14 +1254,18 @@ bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, 
         uint16_t y1 = graph_y + graph_height - scale_value(graph_data[i], graph_height - 1, scale_to) - 1;
         uint16_t x2 = graph_x + (((i - graph_starting_index) + 1) * spacing) + offset;
         uint16_t y2 = graph_y + graph_height - scale_value(graph_data[i + 1], graph_height - 1, scale_to) - 1;
-        qp_line(device, x1, y1, x2, y2, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v);
+        if (!qp_line(device, x1, y1, x2, y2, curr_hsv->secondary.h, curr_hsv->secondary.s, curr_hsv->secondary.v)) {
+            return false;
+        }
     }
 
     // Add markers on the y-axis for every 10 units, scaled to scale_to
     for (uint16_t i = 0; i <= scale_to; i += 10) {
         uint16_t marker_y = graph_y + graph_height - scale_value(i, graph_height - 1, scale_to);
-        qp_line(device, graph_x, marker_y, graph_x + 2, marker_y, curr_hsv->primary.h, curr_hsv->primary.s,
-                curr_hsv->primary.v);
+        if (!qp_line(device, graph_x, marker_y, graph_x + 2, marker_y, curr_hsv->primary.h, curr_hsv->primary.s,
+                     curr_hsv->primary.v)) {
+            return false;
+        }
     }
 
     return true;
