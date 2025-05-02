@@ -521,7 +521,7 @@ _Static_assert(sizeof(temp_autocorrected_str) == sizeof(autocorrected_str_raw),
  * @param last_sync Pointer to the timestamp of the last synchronization.
  * @param temp_autocorrected_str 2D array holding the autocorrect strings for both halves.
  */
-void sync_autocorrect_string(bool* needs_sync, uint32_t* last_sync, char temp_autocorrected_str[2][22]) {
+void sync_autocorrect_string(bool* needs_sync, uint32_t* last_sync) {
     if (memcmp(&autocorrected_str_raw, temp_autocorrected_str, sizeof(autocorrected_str_raw))) {
         *needs_sync = true;
         memcpy(temp_autocorrected_str, &autocorrected_str_raw, sizeof(autocorrected_str_raw));
@@ -584,7 +584,7 @@ void user_transport_sync(void) {
         sync_autocorrect_string(&needs_sync, &last_sync[3]);
 #endif // AUTOCORRECT_ENABLE
 #ifdef WPM_ENABLE
-        sync_wpm_graph_data(needs_sync, &last_sync[4]);
+        sync_wpm_graph_data(&needs_sync, &last_sync[4]);
 #endif // WPM_ENABLE
     }
 }
