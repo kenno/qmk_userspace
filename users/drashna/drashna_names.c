@@ -718,14 +718,23 @@ void format_layer_bitmap_string(char *buffer, layer_state_t state, layer_state_t
  */
 const char *get_layer_name_string(uint8_t layer, bool alt_name, bool is_default) {
     switch (layer) {
-        case _QWERTY:
-            return alt_name ? "Num Pad" : is_default ? "QWERTY" : "Base";
-        case _COLEMAK:
-            return "Colemak";
-        case _COLEMAK_DH:
-            return "Colemak-DH";
-        case _DVORAK:
-            return "Dvorak";
+        case _QWERTY ... _DVORAK:
+            if (alt_name) {
+                return "Alt";
+            }
+            if (is_default) {
+                switch (layer) {
+                    case _QWERTY:
+                        return "QWERTY";
+                    case _COLEMAK:
+                        return "Colemak";
+                    case _COLEMAK_DH:
+                        return "Colemak-DH";
+                    case _DVORAK:
+                        return "Dvorak";
+                }
+            }
+            return "Base";
         case _GAMEPAD:
             return "Gamepad";
         case _DIABLO:
