@@ -85,6 +85,7 @@ void user_config_sync(uint8_t initiator2target_buffer_size, const void* initiato
 
 #if defined(AUTOCORRECT_ENABLE)
 extern char autocorrected_str[2][22];
+extern bool autocorrect_str_has_changed;
 _Static_assert(sizeof(autocorrected_str) <= RPC_M2S_BUFFER_SIZE, "Autocorrect array larger than buffer size!");
 #endif
 /**
@@ -99,7 +100,10 @@ void autocorrect_string_sync(uint8_t initiator2target_buffer_size, const void* i
                              uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
 #if defined(AUTOCORRECT_ENABLE)
     if (initiator2target_buffer_size == (sizeof(autocorrected_str))) {
-        memcpy(&autocorrected_str, initiator2target_buffer, initiator2target_buffer_size);
+        if (memcmp(&autocorrected_str, initiator2target_buffer, initiator2target_buffer_size) != 0) {
+            memcpy(&autocorrected_str, initiator2target_buffer, sizeof(autocorrected_str));
+            autocorrect_str_has_changed = true;
+        }
     }
 #endif
 }
@@ -116,7 +120,10 @@ void keylogger_string_sync(uint8_t initiator2target_buffer_size, const void* ini
                            uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
 #if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
     if (initiator2target_buffer_size == (DISPLAY_KEYLOGGER_LENGTH + 1)) {
-        memcpy(&display_keylogger_string, initiator2target_buffer, initiator2target_buffer_size);
+        if (memcmp(&display_keylogger_string, initiator2target_buffer, initiator2target_buffer_size) != 0) {
+            memcpy(&display_keylogger_string, initiator2target_buffer, initiator2target_buffer_size);
+            keylogger_has_changed = true;
+        }
     }
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 }
