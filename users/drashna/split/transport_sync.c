@@ -84,9 +84,11 @@ void user_config_sync(uint8_t initiator2target_buffer_size, const void* initiato
 }
 
 #if defined(AUTOCORRECT_ENABLE)
-extern char autocorrected_str[2][22];
+extern char autocorrected_str[2][21];
+extern char autocorrected_str_raw[2][21];
 extern bool autocorrect_str_has_changed;
 _Static_assert(sizeof(autocorrected_str) <= RPC_M2S_BUFFER_SIZE, "Autocorrect array larger than buffer size!");
+_Static_assert(sizeof(autocorrected_str_raw) <= RPC_M2S_BUFFER_SIZE, "Autocorrect array larger than buffer size!");
 #endif
 /**
  * @brief Sycn Autoccetion string between halves of split keyboard
@@ -99,9 +101,11 @@ _Static_assert(sizeof(autocorrected_str) <= RPC_M2S_BUFFER_SIZE, "Autocorrect ar
 void autocorrect_string_sync(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
                              uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
 #if defined(AUTOCORRECT_ENABLE)
-    if (initiator2target_buffer_size == (sizeof(autocorrected_str))) {
-        if (memcmp(&autocorrected_str, initiator2target_buffer, initiator2target_buffer_size) != 0) {
-            memcpy(&autocorrected_str, initiator2target_buffer, sizeof(autocorrected_str));
+    if (initiator2target_buffer_size == (sizeof(autocorrected_str_raw))) {
+        if (memcmp(&autocorrected_str_raw, initiator2target_buffer, initiator2target_buffer_size) != 0) {
+            memcpy(&autocorrected_str_raw, initiator2target_buffer, sizeof(autocorrected_str_raw));
+            center_text(autocorrected_str_raw[0], autocorrected_str[0], sizeof(autocorrected_str[0]) - 1);
+            center_text(autocorrected_str_raw[1], autocorrected_str[1], sizeof(autocorrected_str[1]) - 1);
             autocorrect_str_has_changed = true;
         }
     }
@@ -450,15 +454,15 @@ void sync_keylogger_string(bool* needs_sync, uint32_t* last_sync, char* keylog_t
  * @param temp_autocorrected_str 2D array holding the autocorrect strings for both halves.
  */
 void sync_autocorrect_string(bool* needs_sync, uint32_t* last_sync, char temp_autocorrected_str[2][22]) {
-    if (memcmp(&autocorrected_str, temp_autocorrected_str, sizeof(autocorrected_str))) {
+    if (memcmp(&autocorrected_str_raw, temp_autocorrected_str, sizeof(autocorrected_str_raw))) {
         *needs_sync = true;
-        memcpy(temp_autocorrected_str, &autocorrected_str, sizeof(autocorrected_str));
+        memcpy(temp_autocorrected_str, &autocorrected_str_raw, sizeof(autocorrected_str_raw));
     }
     if (timer_elapsed32(last_sync[3]) > FORCED_SYNC_THROTTLE_MS) {
         *needs_sync = true;
     }
     if (*needs_sync) {
-        if (transaction_rpc_send(RPC_ID_USER_AUTOCORRECT_STR, sizeof(autocorrected_str), &autocorrected_str)) {
+        if (transaction_rpc_send(RPC_ID_USER_AUTOCORRECT_STR, sizeof(autocorrected_str_raw), &autocorrected_str_raw)) {
             last_sync[3] = timer_read32();
         }
         *needs_sync = false;
