@@ -373,13 +373,13 @@ void sync_userspace_runtime_state(bool* needs_sync, uint32_t* last_sync, user_ru
         *needs_sync = true;
         memcpy(last_user_state, &userspace_runtime_state, sizeof(userspace_runtime_state));
     }
-    if (timer_elapsed32(last_sync[0]) > FORCED_SYNC_THROTTLE_MS) {
+    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
         *needs_sync = true;
     }
     if (*needs_sync) {
         if (transaction_rpc_send(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, sizeof(userspace_runtime_state),
                                  &userspace_runtime_state)) {
-            last_sync[0] = timer_read32();
+            *last_sync = timer_read32();
         }
         *needs_sync = false;
     }
@@ -401,12 +401,12 @@ void sync_userspace_config(bool* needs_sync, uint32_t* last_sync, userspace_conf
         *needs_sync = true;
         memcpy(last_config, &userspace_config, sizeof(userspace_config));
     }
-    if (timer_elapsed32(last_sync[1]) > FORCED_SYNC_THROTTLE_MS) {
+    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
         *needs_sync = true;
     }
     if (*needs_sync) {
         if (transaction_rpc_send(RPC_ID_USER_CONFIG_SYNC, sizeof(userspace_config), &userspace_config)) {
-            last_sync[1] = timer_read32();
+            *last_sync = timer_read32();
         }
         *needs_sync = false;
     }
@@ -428,13 +428,13 @@ void sync_keylogger_string(bool* needs_sync, uint32_t* last_sync, char* keylog_t
         *needs_sync = true;
         memcpy(keylog_temp, &display_keylogger_string, (DISPLAY_KEYLOGGER_LENGTH + 1));
     }
-    if (timer_elapsed32(last_sync[2]) > FORCED_SYNC_THROTTLE_MS) {
+    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
         *needs_sync = true;
     }
     if (*needs_sync) {
         if (transaction_rpc_send(RPC_ID_USER_DISPLAY_KEYLOG_STR, (DISPLAY_KEYLOGGER_LENGTH + 1),
                                  &display_keylogger_string)) {
-            last_sync[2] = timer_read32();
+            *last_sync = timer_read32();
         }
         *needs_sync = false;
     }
@@ -458,12 +458,12 @@ void sync_autocorrect_string(bool* needs_sync, uint32_t* last_sync, char temp_au
         *needs_sync = true;
         memcpy(temp_autocorrected_str, &autocorrected_str_raw, sizeof(autocorrected_str_raw));
     }
-    if (timer_elapsed32(last_sync[3]) > FORCED_SYNC_THROTTLE_MS) {
+    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
         *needs_sync = true;
     }
     if (*needs_sync) {
         if (transaction_rpc_send(RPC_ID_USER_AUTOCORRECT_STR, sizeof(autocorrected_str_raw), &autocorrected_str_raw)) {
-            last_sync[3] = timer_read32();
+            *last_sync = timer_read32();
         }
         *needs_sync = false;
     }
@@ -490,13 +490,13 @@ void user_transport_sync(void) {
         static char temp_autocorrected_str[2][22] = {0};
 #endif // AUTOCORRECT_ENABLE
 
-        sync_userspace_runtime_state(&needs_sync, last_sync, &last_user_state);
-        sync_userspace_config(&needs_sync, last_sync, &last_config);
+        sync_userspace_runtime_state(&needs_sync, &last_sync[0], &last_user_state);
+        sync_userspace_config(&needs_sync, &last_sync[1], &last_config);
 #if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-        sync_keylogger_string(&needs_sync, last_sync, keylog_temp);
+        sync_keylogger_string(&needs_sync, &last_sync[2], keylog_temp);
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 #if defined(AUTOCORRECT_ENABLE)
-        sync_autocorrect_string(&needs_sync, last_sync, temp_autocorrected_str);
+        sync_autocorrect_string(&needs_sync, &last_sync[3], temp_autocorrected_str);
 #endif // AUTOCORRECT_ENABLE
     }
 }
