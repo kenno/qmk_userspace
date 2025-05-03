@@ -290,7 +290,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             // Device Config (Audio, Audio Clicky, Host Driver lock, Swap Hands)
 
             ypos += font_oled->line_height + 4;
-            static user_runtime_config_t last_user_state = {0};
+            static userspace_runtime_state_t last_user_state = {0};
             if (hue_redraw || memcmp(&userspace_runtime_state, &last_user_state, sizeof(userspace_runtime_state))) {
                 memcpy(&last_user_state, &userspace_runtime_state, sizeof(userspace_runtime_state));
                 xpos = 80 + 4 + windows_logo->width + 5;

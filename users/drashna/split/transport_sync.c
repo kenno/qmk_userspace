@@ -61,8 +61,8 @@ typedef struct PACKED extended_msg_t {
 _Static_assert(sizeof(extended_msg_t) <= RPC_M2S_BUFFER_SIZE, "extended_rpc_t is larger than split buffer size!");
 _Static_assert(sizeof(userspace_config_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
                "userspace_config_t is larger than split buffer size!");
-_Static_assert(sizeof(user_runtime_config_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
-               "user_runtime_config_t is larger than split buffer size!");
+_Static_assert(sizeof(userspace_runtime_state_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+               "userspace_runtime_state_t is larger than split buffer size!");
 
 typedef void (*handler_fn_t)(const uint8_t* data, size_t size);
 
@@ -312,7 +312,7 @@ void keyboard_post_init_transport_sync(void) {
 void sync_userspace_runtime_state(void) {
     bool                         needs_sync      = false;
     static uint16_t              last_sync       = 0;
-    static user_runtime_config_t last_user_state = {0};
+    static userspace_runtime_state_t last_user_state = {0};
 
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     userspace_runtime_state.internals.host_driver_disabled = get_keyboard_lock();
@@ -339,16 +339,16 @@ void sync_userspace_runtime_state(void) {
 #    endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #endif     // DISPLAY_DRIVER_ENABLE
 
-    if (memcmp(&userspace_runtime_state, &last_user_state, sizeof(user_runtime_config_t))) {
+    if (memcmp(&userspace_runtime_state, &last_user_state, sizeof(userspace_runtime_state_t))) {
         needs_sync = true;
-        memcpy(&last_user_state, &userspace_runtime_state, sizeof(user_runtime_config_t));
+        memcpy(&last_user_state, &userspace_runtime_state, sizeof(userspace_runtime_state_t));
     }
     if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
         needs_sync = true;
     }
     if (needs_sync) {
         if (send_extended_message_handler(RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE, &userspace_runtime_state,
-                                          sizeof(user_runtime_config_t))) {
+                                          sizeof(userspace_runtime_state_t))) {
             last_sync = timer_read32();
         }
         needs_sync = false;

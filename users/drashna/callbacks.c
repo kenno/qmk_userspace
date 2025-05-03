@@ -45,7 +45,7 @@ void keyboard_post_init_unicode(void);
 #    include "console_keylogging.h"
 #endif // COMMUNITY_MODULE_CONSOLE_KEYLOGGING_ENABLE
 
-user_runtime_config_t userspace_runtime_state;
+userspace_runtime_state_t userspace_runtime_state;
 
 /**
  * @brief Keyboard Pre-Initialization

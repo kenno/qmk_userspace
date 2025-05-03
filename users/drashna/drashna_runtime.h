@@ -141,6 +141,6 @@ typedef struct PACKED {
     wpm_sync_data_t wpm;
     uint16_t        last_keycode : 16;
     keyevent_t      last_key_event;
-} user_runtime_config_t;
+} userspace_runtime_state_t;
 
-extern user_runtime_config_t userspace_runtime_state;
+extern userspace_runtime_state_t userspace_runtime_state;
