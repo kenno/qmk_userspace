@@ -90,7 +90,7 @@ _Static_assert(sizeof(autocorrected_str_raw) <= RPC_EXTENDED_TRANSACTION_BUFFER_
 
 void recv_autocorrect_string(const uint8_t* data, uint8_t size) {
 #ifdef AUTOCORRECT_ENABLE
-    if (memcmp(data, &autocorrected_str_raw, size) != 0) {
+    if (memcmp(data, autocorrected_str_raw, size) != 0) {
         memcpy(autocorrected_str_raw, data, size);
         center_text(autocorrected_str_raw[0], autocorrected_str[0], sizeof(autocorrected_str[0]) - 1);
         center_text(autocorrected_str_raw[1], autocorrected_str[1], sizeof(autocorrected_str[1]) - 1);
@@ -171,7 +171,7 @@ void recv_userspace_runtime_state(const uint8_t* data, uint8_t size) {
 #    endif // MUSIC_ENABLE
         if (has_audio_changed) {
             static audio_config_t last_audio_config = {0};
-            last_audio_config.raw = eeconfig_read_audio();
+            last_audio_config.raw                   = eeconfig_read_audio();
             if (last_audio_config.raw != audio_config.raw) {
                 eeconfig_update_audio(audio_config.raw);
             }
@@ -239,6 +239,21 @@ static const handler_fn_t handlers[NUM_EXTENDED_IDS] = {
     [RPC_ID_EXTENDED_SUSPEND_STATE]           = recv_device_suspend_state,
 };
 
+/**
+ * @brief Handles extended messages received via the split keyboard transport mechanism.
+ *
+    if (((uintptr_t)initiator2target_buffer % _Alignof(extended_msg_t)) != 0) {
+        xprintf("Buffer is not properly aligned for extended_msg_t\n");
+        return;
+    }
+    memcpy(&msg, initiator2target_buffer, initiator2target_buffer_size);
+ * validating the message size, and invoking the appropriate handler function.
+ *
+ * @param initiator2target_buffer_size The size of the buffer containing the message from the initiator.
+ * @param initiator2target_buffer Pointer to the buffer containing the message data from the initiator.
+ * @param target2initiator_buffer_size The size of the buffer for the response message to the initiator.
+ * @param target2initiator_buffer Pointer to the buffer for the response message to the initiator.
+ */
 void extended_message_handler(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
                               uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
     extended_msg_t msg = {0};
@@ -249,9 +264,14 @@ void extended_message_handler(uint8_t initiator2target_buffer_size, const void* 
     }
     if (msg.size > RPC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
         xprintf("Invalid extended message size: %d (ID: %d)\n", msg.size, msg.id);
+        return;
     }
 
     handler_fn_t handler = handlers[msg.id];
+    if (handler == NULL) {
+        xprintf("Handler for message ID %d is NULL\n", msg.id);
+        return;
+    }
     // xprintf("Extended Transaction received:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
     // for (uint8_t i = 0; i < msg.size; ++i) {
     //     xprintf("%d ", msg.data[i]);
@@ -261,6 +281,18 @@ void extended_message_handler(uint8_t initiator2target_buffer_size, const void* 
     handler(msg.data, msg.size);
 }
 
+/**
+ * @brief Sends an extended message to the other half of the split keyboard.
+ *
+ * This function constructs an extended message with the given ID and data,
+ * and sends it using the transaction RPC mechanism. It ensures that the
+ * message size does not exceed the buffer size.
+ *
+ * @param id The ID of the extended message to send.
+ * @param data Pointer to the data to include in the message.
+ * @param size The size of the data in bytes.
+ * @return true if the message was successfully sent, false otherwise.
+ */
 bool send_extended_message_handler(enum extended_id_t id, const void* data, uint8_t size) {
     if (size > RPC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
         xprintf("Invalid extended message size: %d (ID: %d)\n", size, id);
@@ -271,7 +303,7 @@ bool send_extended_message_handler(enum extended_id_t id, const void* data, uint
         .size = size,
         .data = {0},
     };
-    memcpy(&msg.data, data, size);
+    memcpy(msg.data, data, size);
     // xprintf("Extended Transaction sent:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
     // for (uint8_t i = 0; i < size; ++i) {
     //     xprintf("%d ", msg.data[i]);
@@ -305,8 +337,8 @@ void send_device_suspend_state(bool status) {
  * @param last_user_state Pointer to the last known user runtime configuration.
  */
 void sync_userspace_runtime_state(void) {
-    bool                         needs_sync      = false;
-    static uint16_t              last_sync       = 0;
+    bool                             needs_sync      = false;
+    static uint16_t                  last_sync       = 0;
     static userspace_runtime_state_t last_user_state = {0};
 
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
@@ -344,7 +376,7 @@ void sync_userspace_runtime_state(void) {
     if (needs_sync) {
         if (send_extended_message_handler(RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE, &userspace_runtime_state,
                                           sizeof(userspace_runtime_state_t))) {
-            last_sync = timer_read32();
+            last_sync = timer_read();
         }
         needs_sync = false;
     }
@@ -376,9 +408,8 @@ void sync_userspace_config(void) {
     if (needs_sync) {
         if (send_extended_message_handler(RPC_ID_EXTENDED_USERSPACE_CONFIG, &userspace_config,
                                           sizeof(userspace_config_t))) {
-            last_sync = timer_read32();
+            last_sync = timer_read();
         }
-        needs_sync = false;
     }
 }
 
@@ -410,7 +441,6 @@ void sync_keylogger_string(void) {
                                           (DISPLAY_KEYLOGGER_LENGTH + 1))) {
             last_sync = timer_read();
         }
-        needs_sync = false;
     }
 }
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
@@ -445,7 +475,6 @@ void sync_autocorrect_string(void) {
                                           sizeof(autocorrected_str_raw))) {
             last_sync = timer_read();
         }
-        needs_sync = false;
     }
 }
 #endif // AUTOCORRECT_ENABLE
@@ -460,15 +489,14 @@ void sync_wpm_graph_data(void) {
         needs_sync = true;
         memcpy(local_wpm_graph_samples, wpm_graph_samples, sizeof(local_wpm_graph_samples));
     }
-    if (timer_elapsed(last_sync) > (FORCED_SYNC_THROTTLE_MS * 100)) {
+    if (timer_elapsed(last_sync) > 1000) {
         needs_sync = true;
     }
     if (needs_sync) {
-        if (send_extended_message_handler(RPC_ID_EXTENDED_WPM_GRAPH_DATA, local_wpm_graph_samples,
-                                          sizeof(local_wpm_graph_samples))) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_WPM_GRAPH_DATA, wpm_graph_samples,
+                                          sizeof(wpm_graph_samples))) {
             last_sync = timer_read32();
         }
-        needs_sync = false;
     }
 }
 #endif // WPM_ENABLE
@@ -489,7 +517,6 @@ void sync_keymap_config(void) {
         if (send_extended_message_handler(RPC_ID_EXTENDED_KEYMAP_CONFIG, &keymap_config, sizeof(keymap_config_t))) {
             last_sync = timer_read();
         }
-        needs_sync = false;
     }
 }
 
@@ -509,7 +536,6 @@ void sync_debug_config(void) {
         if (send_extended_message_handler(RPC_ID_EXTENDED_DEBUG_CONFIG, &debug_config, sizeof(debug_config_t))) {
             last_sync = timer_read();
         }
-        needs_sync = false;
     }
 }
 
@@ -554,7 +580,7 @@ void sync_layer_map(void) {
         memcpy(last_layer_map, layer_map, sizeof(last_layer_map));
         for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {
             layer_map_msg_t msg = {
-                .row = i,
+                .row       = i,
                 .layer_map = {0},
             };
             memcpy(msg.layer_map, layer_map[i], sizeof(msg.layer_map));
