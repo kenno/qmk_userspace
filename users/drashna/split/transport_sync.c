@@ -50,18 +50,18 @@ typedef enum extended_id_t {
 } extended_id_t;
 
 #define RPC_EXTENDED_TRANSACTION_OVERHEAD    (sizeof(extended_id_t) + sizeof(size_t))
-#define RTC_EXTENDED_TRANSACTION_BUFFER_SIZE (RPC_M2S_BUFFER_SIZE - RPC_EXTENDED_TRANSACTION_OVERHEAD)
+#define RPC_EXTENDED_TRANSACTION_BUFFER_SIZE (RPC_M2S_BUFFER_SIZE - RPC_EXTENDED_TRANSACTION_OVERHEAD)
 
 typedef struct PACKED extended_msg_t {
     extended_id_t id;
     size_t        size;
-    uint8_t       data[RTC_EXTENDED_TRANSACTION_BUFFER_SIZE];
+    uint8_t       data[RPC_EXTENDED_TRANSACTION_BUFFER_SIZE];
 } extended_msg_t;
 
-_Static_assert(sizeof(extended_msg_t) <= RPC_M2S_BUFFER_SIZE, "extended_rpc_t is larger than split buffer size!");
-_Static_assert(sizeof(userspace_config_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+_Static_assert(sizeof(extended_msg_t) == RPC_M2S_BUFFER_SIZE, "extended_rpc_t is larger than split buffer size!");
+_Static_assert(sizeof(userspace_config_t) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZE,
                "userspace_config_t is larger than split buffer size!");
-_Static_assert(sizeof(userspace_runtime_state_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+_Static_assert(sizeof(userspace_runtime_state_t) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZE,
                "userspace_runtime_state_t is larger than split buffer size!");
 
 typedef void (*handler_fn_t)(const uint8_t* data, size_t size);
@@ -78,9 +78,9 @@ void recv_wpm_graph_data(const uint8_t* data, size_t size) {
 extern char autocorrected_str[2][21];
 extern char autocorrected_str_raw[2][21];
 extern bool autocorrect_str_has_changed;
-_Static_assert(sizeof(autocorrected_str) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+_Static_assert(sizeof(autocorrected_str) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZE,
                "Autocorrect array larger than buffer size!");
-_Static_assert(sizeof(autocorrected_str_raw) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+_Static_assert(sizeof(autocorrected_str_raw) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZE,
                "Autocorrect array larger than buffer size!");
 #endif
 
@@ -243,7 +243,7 @@ void extended_message_handler(uint8_t initiator2target_buffer_size, const void* 
         xprintf("Invalid extended message ID: %d\n", msg.id);
         return;
     }
-    if (msg.size > RTC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
+    if (msg.size > RPC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
         xprintf("Invalid extended message size: %d (ID: %d)\n", msg.size, msg.id);
     }
 
@@ -258,7 +258,7 @@ void extended_message_handler(uint8_t initiator2target_buffer_size, const void* 
 }
 
 bool send_extended_message_handler(enum extended_id_t id, const void* data, size_t size) {
-    if (size > RTC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
+    if (size > RPC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
         xprintf("Invalid extended message size: %d (ID: %d)\n", size, id);
         return false;
     }
