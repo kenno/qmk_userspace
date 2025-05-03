@@ -513,6 +513,54 @@ void sync_debug_config(void) {
     }
 }
 
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#    include "layer_map.h"
+typedef struct PACKED layer_map_msg_t {
+    uint8_t  row;
+    uint16_t layer_map[LAYER_MAP_COLS];
+} layer_map_msg_t;
+
+_Static_assert(sizeof(layer_map_msg_t) <= RPC_M2S_BUFFER_SIZE, "Layer map message size exceeds buffer size!");
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+
+void layer_map_sync_handler(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
+                            uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+    layer_map_msg_t msg = {0};
+    memcpy(&msg, initiator2target_buffer, initiator2target_buffer_size);
+    if (msg.row >= LAYER_MAP_ROWS) {
+        xprintf("Layer Map row out of bounds: %d\n", msg.row);
+        return;
+    }
+    if (memcmp(msg.layer_map, layer_map[msg.row], sizeof(msg.layer_map)) != 0) {
+        memcpy(layer_map[msg.row], msg.layer_map, sizeof(msg.layer_map));
+        set_layer_map_dirty();
+    }
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+}
+
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+void sync_layer_map(void) {
+    bool            needs_sync                                     = false;
+    static uint16_t last_layer_map[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {0};
+
+    if (memcmp(&userspace_config, &last_layer_map, sizeof(last_layer_map))) {
+        needs_sync = true;
+    }
+    if (needs_sync) {
+        for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {
+            layer_map_msg_t msg = {0};
+            msg.row             = i;
+            memcpy(msg.layer_map, layer_map[i], sizeof(msg.layer_map));
+            if (transaction_rpc_send(RPC_ID_LAYER_MAP_SYNC, sizeof(layer_map_msg_t), &msg)) {
+                break;
+            }
+        }
+        needs_sync = false;
+    }
+}
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+
 /**
  * @brief Initialize the transport sync
  *
@@ -520,6 +568,7 @@ void sync_debug_config(void) {
 void keyboard_post_init_transport_sync(void) {
     // Register keyboard state sync split transaction
     transaction_register_rpc(RPC_ID_EXTENDED_SYNC_TRANSPORT, extended_message_handler);
+    transaction_register_rpc(RPC_ID_LAYER_MAP_SYNC, layer_map_sync_handler);
 }
 
 /**
@@ -557,5 +606,8 @@ void housekeeping_task_transport_sync(void) {
         sync_debug_config();
         sync_userspace_runtime_state();
         sync_userspace_config();
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+        sync_layer_map();
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
     }
 }
