@@ -529,7 +529,7 @@ void layer_map_sync_handler(uint8_t initiator2target_buffer_size, const void* in
     layer_map_msg_t msg = {0};
     memcpy(&msg, initiator2target_buffer, initiator2target_buffer_size);
     if (msg.row >= LAYER_MAP_ROWS) {
-        xprintf("Layer Map row out of bounds: %d\n", msg.row);
+        xprintf("Layer Map row out of bounds: %d (Valid range: 0-%d)\n", msg.row, LAYER_MAP_ROWS - 1);
         return;
     }
     if (memcmp(msg.layer_map, layer_map[msg.row], sizeof(msg.layer_map)) != 0) {
@@ -540,23 +540,28 @@ void layer_map_sync_handler(uint8_t initiator2target_buffer_size, const void* in
 }
 
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+/**
+ * @brief Synchronizes the layer map between split keyboard halves.
+ *
+ * This function ensures that the layer map is consistent across both halves of a split keyboard.
+ * It checks for differences between the current layer map and the last synchronized state.
+ * If differences are detected, it sends the updated layer map to the other half.
+ */
 void sync_layer_map(void) {
-    bool            needs_sync                                     = false;
     static uint16_t last_layer_map[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {0};
 
-    if (memcmp(&userspace_config, &last_layer_map, sizeof(last_layer_map))) {
-        needs_sync = true;
-    }
-    if (needs_sync) {
+    if (memcmp(layer_map, last_layer_map, sizeof(last_layer_map)) != 0) {
+        memcpy(last_layer_map, layer_map, sizeof(last_layer_map));
         for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {
-            layer_map_msg_t msg = {0};
-            msg.row             = i;
+            layer_map_msg_t msg = {
+                .row = i,
+                .layer_map = {0},
+            };
             memcpy(msg.layer_map, layer_map[i], sizeof(msg.layer_map));
             if (transaction_rpc_send(RPC_ID_LAYER_MAP_SYNC, sizeof(layer_map_msg_t), &msg)) {
                 break;
             }
         }
-        needs_sync = false;
     }
 }
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
