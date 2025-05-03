@@ -96,6 +96,16 @@ void housekeeping_task_display(void) {
 #ifdef CUSTOM_OLED_DRIVER
     housekeeping_task_oled();
 #endif // CUSTOM_OLED_DRIVER
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+    static matrix_row_t last_matrix[MATRIX_ROWS] = {0};
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        if (last_matrix[i] != matrix_get_row(i)) {
+            matrix_row_t row = matrix_get_row(i);
+            last_matrix[i]   = row;
+            set_layer_map_has_updated(true);
+        }
+    }
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #if !defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
     void housekeeping_task_display_menu_user(void);
     housekeeping_task_display_menu_user();
@@ -128,9 +138,6 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE
     keylogger_has_changed = true;
 #endif // DISPLAY_KEYLOGGER_ENABLE
-#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
-    set_layer_map_has_updated(true);
-#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 
     return keep_processing;
 }
