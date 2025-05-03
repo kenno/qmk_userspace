@@ -107,19 +107,6 @@ typedef struct PACKED {
 #endif // CUSTOM_QUANTUM_PAINTER_ENABLE
 
 typedef struct PACKED {
-    uint8_t mods;
-    uint8_t weak_mods;
-    uint8_t oneshot_mods;
-    uint8_t oneshot_locked_mods;
-} sync_mods_t;
-
-typedef struct PACKED {
-    layer_state_t layer_state;
-    layer_state_t default_layer_state;
-} sync_layer_t;
-
-typedef struct PACKED {
-    uint8_t wpm_count : 8;
     uint8_t wpm_peak  : 8;
     uint8_t wpm_avg   : 8;
 } wpm_sync_data_t;
@@ -137,7 +124,6 @@ typedef struct PACKED {
         bool swap_hands           : 1;
         bool host_driver_disabled : 1;
         bool is_caps_word         : 1;
-        bool is_device_suspended  : 1;
     } internals;
     struct {
         uint8_t mode        : 3;
@@ -147,11 +133,6 @@ typedef struct PACKED {
         menu_state_t         menu_state;
         menu_state_runtime_t menu_state_runtime;
     } display;
-    sync_mods_t     mods;
-    sync_layer_t    layers;
-    led_t           leds;
-    keymap_config_t keymap_config;
-    debug_config_t  debug_config;
     struct {
         struct {
             bool running : 1;

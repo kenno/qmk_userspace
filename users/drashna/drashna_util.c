@@ -11,6 +11,7 @@
 
 void tap_code16(uint16_t code);
 void tap_code16_delay(uint16_t code, uint16_t delay);
+static bool l_is_suspended = false;
 
 /**
  * @brief Handle registering a keycode, with optional modifer based on timed event
@@ -162,7 +163,7 @@ void center_text(const char *text, char *output, uint8_t width) {
  * @return false
  */
 bool is_device_suspended(void) {
-    return userspace_runtime_state.internals.is_device_suspended;
+    return l_is_suspended;
 }
 
 /**
@@ -175,6 +176,7 @@ void set_is_device_suspended(bool status) {
     void send_device_suspend_state(bool status);
 
     send_device_suspend_state(status);
+    l_is_suspended = status;
 #endif
 }
 

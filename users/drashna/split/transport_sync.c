@@ -37,41 +37,34 @@ extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
 #    define FORCED_SYNC_THROTTLE_MS 100
 #endif // FORCED_SYNC_THROTTLE_MS
 
-// Make sure that the structs are not larger than the buffer size for synchronization
-_Static_assert(sizeof(userspace_config_t) <= RPC_M2S_BUFFER_SIZE,
-               "userspace_config_t is larger than split buffer size!");
-_Static_assert(sizeof(user_runtime_config_t) <= RPC_M2S_BUFFER_SIZE,
-               "user_runtime_config_t is larger than split buffer size!");
-
 typedef enum extended_id_t {
     RPC_ID_EXTENDED_WPM_GRAPH_DATA = 0,
+    RPC_ID_EXTENDED_AUTOCORRECT_STR,
+    RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR,
+    RPC_ID_EXTENDED_KEYMAP_CONFIG,
+    RPC_ID_EXTENDED_DEBUG_CONFIG,
+    RPC_ID_EXTENDED_USERSPACE_CONFIG,
+    RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE,
+    RPC_ID_EXTENDED_SUSPEND_STATE,
     NUM_EXTENDED_IDS,
 } extended_id_t;
 
-typedef struct PACKED {
+#define RPC_EXTENDED_TRANSACTION_OVERHEAD    (sizeof(extended_id_t) + sizeof(size_t))
+#define RTC_EXTENDED_TRANSACTION_BUFFER_SIZE (RPC_M2S_BUFFER_SIZE - RPC_EXTENDED_TRANSACTION_OVERHEAD)
+
+typedef struct PACKED extended_msg_t {
     extended_id_t id;
-    uint8_t       data[RPC_M2S_BUFFER_SIZE - sizeof(extended_id_t) - sizeof(size_t)];
     size_t        size;
+    uint8_t       data[RTC_EXTENDED_TRANSACTION_BUFFER_SIZE];
 } extended_msg_t;
 
 _Static_assert(sizeof(extended_msg_t) <= RPC_M2S_BUFFER_SIZE, "extended_rpc_t is larger than split buffer size!");
+_Static_assert(sizeof(userspace_config_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+               "userspace_config_t is larger than split buffer size!");
+_Static_assert(sizeof(user_runtime_config_t) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+               "user_runtime_config_t is larger than split buffer size!");
 
 typedef void (*handler_fn_t)(const uint8_t* data, size_t size);
-
-void send_extended_message_handler(enum extended_id_t id, uint8_t* data, size_t size) {
-    extended_msg_t msg = {
-        .id   = id,
-        .data = {0},
-        .size = size,
-    };
-    memcpy(&msg.data, data, size);
-    transaction_rpc_send(RPC_ID_EXTENDED_SYNC_TRANSPORT, RPC_M2S_BUFFER_SIZE, &msg);
-    // xprintf("Extended Transaction sent:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
-    // for (uint8_t i = 0; i < size; ++i) {
-    //     xprintf("%d ", msg.data[i]);
-    // }
-    // xprintf("\n");
-}
 
 void recv_wpm_graph_data(const uint8_t* data, size_t size) {
 #ifdef WPM_ENABLE
@@ -81,8 +74,165 @@ void recv_wpm_graph_data(const uint8_t* data, size_t size) {
 #endif
 }
 
+#ifdef AUTOCORRECT_ENABLE
+extern char autocorrected_str[2][21];
+extern char autocorrected_str_raw[2][21];
+extern bool autocorrect_str_has_changed;
+_Static_assert(sizeof(autocorrected_str) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+               "Autocorrect array larger than buffer size!");
+_Static_assert(sizeof(autocorrected_str_raw) <= RTC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+               "Autocorrect array larger than buffer size!");
+#endif
+
+void recv_autocorrect_string(const uint8_t* data, size_t size) {
+#ifdef AUTOCORRECT_ENABLE
+    if (memcmp(data, &autocorrected_str_raw, size) != 0) {
+        memcpy(autocorrected_str_raw, data, size);
+        center_text(autocorrected_str_raw[0], autocorrected_str[0], sizeof(autocorrected_str[0]) - 1);
+        center_text(autocorrected_str_raw[1], autocorrected_str[1], sizeof(autocorrected_str[1]) - 1);
+        autocorrect_str_has_changed = true;
+    }
+#endif
+}
+
+void recv_keylogger_string_sync(const uint8_t* data, size_t size) {
+#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
+    if (memcmp(data, &display_keylogger_string, size) != 0) {
+        memcpy(&display_keylogger_string, data, size);
+        keylogger_has_changed = true;
+    }
+#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+}
+
+void recv_keymap_config(const uint8_t* data, size_t size) {
+    if (memcmp(data, &keymap_config, size) != 0) {
+        memcpy(&keymap_config, data, size);
+        eeconfig_update_keymap(keymap_config.raw);
+    }
+}
+
+void recv_debug_config(const uint8_t* data, size_t size) {
+    if (memcmp(data, &debug_config, size) != 0) {
+        memcpy(&debug_config, data, size);
+        eeconfig_update_debug(debug_config.raw);
+    }
+}
+
+void recv_userspace_config(const uint8_t* data, size_t size) {
+    if (memcmp(data, &userspace_config, size) != 0) {
+        memcpy(&userspace_config, data, size);
+        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+#if defined(DISPLAY_DRIVER_ENABLE)
+        static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
+        if (userspace_config.display.inverted != last_inverted || userspace_config.display.rotation != last_rotation) {
+            last_inverted = userspace_config.display.inverted;
+            last_rotation = userspace_config.display.rotation;
+#    if defined(QUANTUM_PAINTER_ILI9341_ENABLE)
+            void init_display_ili9341_rotation(void);
+            init_display_ili9341_rotation();
+#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#    if defined(OLED_ENABLE)
+            void oled_post_init(void);
+            oled_post_init();
+#    endif // OLED_ENABLE
+        }
+#endif // DISPLAY_DRIVER_ENABLE
+    }
+}
+
+void recv_userspace_runtime_state(const uint8_t* data, size_t size) {
+    if (memcmp(data, &userspace_runtime_state, size) != 0) {
+        memcpy(&userspace_runtime_state, data, size);
+
+#ifdef AUDIO_ENABLE
+        bool has_audio_changed = false;
+        if (userspace_runtime_state.audio.enable != is_audio_on()) {
+            audio_config.enable = userspace_runtime_state.audio.enable;
+            has_audio_changed   = true;
+        }
+#    ifdef AUDIO_CLICKY
+        if (userspace_runtime_state.audio.clicky_enable != is_clicky_on()) {
+            audio_config.clicky_enable = userspace_runtime_state.audio.clicky_enable;
+            has_audio_changed          = true;
+        }
+        extern float clicky_freq;
+        extern float clicky_rand;
+        clicky_freq = userspace_runtime_state.audio.clicky_freq;
+        clicky_rand = userspace_runtime_state.audio.clicky_rand;
+#    endif // AUDIO_CLICK
+#    ifdef MUSIC_ENABLE
+        if (userspace_runtime_state.audio.music_enable != is_music_on()) {
+            userspace_runtime_state.audio.music_enable ? music_on() : music_off();
+        }
+#    endif // MUSIC_ENABLE
+        if (has_audio_changed) {
+            static audio_config_t last_audio_config = {0};
+            last_audio_config.raw = eeconfig_read_audio();
+            if (last_audio_config.raw != audio_config.raw) {
+                eeconfig_update_audio(audio_config.raw);
+            }
+        }
+#endif // AUDIO_ENABLE
+
+#ifdef UNICODE_COMMON_ENABLE
+        if (get_unicode_input_mode() != userspace_runtime_state.unicode.mode) {
+            unicode_config.input_mode = userspace_runtime_state.unicode.mode;
+            eeprom_update_byte(EECONFIG_UNICODEMODE, unicode_config.input_mode);
+        }
+#endif // UNICODE_COMMON_ENABLE
+#if defined(POINTING_DEVICE_ENABLE) && defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
+        if (get_auto_mouse_toggle() != userspace_runtime_state.internals.tap_toggling) {
+            auto_mouse_toggle();
+        }
+#endif // POINTING_DEVICE_ENABLE && POINTING_DEVICE_AUTO_MOUSE_ENABLE
+#ifdef SWAP_HANDS_ENABLE
+        swap_hands = userspace_runtime_state.internals.swap_hands;
+#endif // SWAP_HANDS_ENABLE
+#ifdef CAPS_WORD_ENABLE
+        if (is_caps_word_on() != userspace_runtime_state.internals.is_caps_word) {
+            caps_word_toggle();
+        }
+#endif // CAPS_WORD_ENABLE
+#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+        set_keyboard_lock(userspace_runtime_state.internals.host_driver_disabled);
+#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#if defined(DISPLAY_DRIVER_ENABLE)
+#    if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
+        extern menu_state_t menu_state;
+        if (!userspace_runtime_state.display.menu_state_runtime.has_rendered &&
+            userspace_runtime_state.display.menu_state_runtime.dirty) {
+            userspace_runtime_state.display.menu_state_runtime.has_rendered = true;
+            userspace_runtime_state.display.menu_state_runtime.dirty        = false;
+        }
+
+        if (memcmp(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t)) != 0) {
+            memcpy(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t));
+        }
+        if (userspace_runtime_state.display.menu_state_runtime.dirty) {
+            display_menu_set_dirty(true);
+        }
+#    endif
+#endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
+    }
+}
+
+void recv_device_suspend_state(const uint8_t* data, size_t size) {
+    static bool is_device_suspended = false;
+    if (memcmp(data, &is_device_suspended, size) != 0) {
+        memcpy(&is_device_suspended, data, size);
+        set_is_device_suspended(is_device_suspended);
+    }
+}
+
 static const handler_fn_t handlers[NUM_EXTENDED_IDS] = {
-    [RPC_ID_EXTENDED_WPM_GRAPH_DATA] = recv_wpm_graph_data,
+    [RPC_ID_EXTENDED_WPM_GRAPH_DATA]          = recv_wpm_graph_data,
+    [RPC_ID_EXTENDED_AUTOCORRECT_STR]         = recv_autocorrect_string,
+    [RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR]      = recv_keylogger_string_sync,
+    [RPC_ID_EXTENDED_KEYMAP_CONFIG]           = recv_keymap_config,
+    [RPC_ID_EXTENDED_DEBUG_CONFIG]            = recv_debug_config,
+    [RPC_ID_EXTENDED_USERSPACE_CONFIG]        = recv_userspace_config,
+    [RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE] = recv_userspace_runtime_state,
+    [RPC_ID_EXTENDED_SUSPEND_STATE]           = recv_device_suspend_state,
 };
 
 void extended_message_handler(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
@@ -93,107 +243,37 @@ void extended_message_handler(uint8_t initiator2target_buffer_size, const void* 
         xprintf("Invalid extended message ID: %d\n", msg.id);
         return;
     }
+    if (msg.size > RTC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
+        xprintf("Invalid extended message size: %d (ID: %d)\n", msg.size, msg.id);
+    }
 
     handler_fn_t handler = handlers[msg.id];
-    xprintf("Extended Transaction received:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
-    for (uint8_t i = 0; i < msg.size; ++i) {
-        xprintf("%d ", msg.data[i]);
-    }
-    xprintf("\n");
+    // xprintf("Extended Transaction received:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
+    // for (uint8_t i = 0; i < msg.size; ++i) {
+    //     xprintf("%d ", msg.data[i]);
+    // }
+    // xprintf("\n");
 
     handler(msg.data, msg.size);
 }
 
-/**
- * @brief Syncs user state between halves of split keyboard
- *
- * @param initiator2target_buffer_size
- * @param initiator2target_buffer
- * @param target2initiator_buffer_size
- * @param target2initiator_buffer
- */
-void userspace_runtime_state_sync(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
-                                  uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
-    if (initiator2target_buffer_size == sizeof(userspace_runtime_state)) {
-        memcpy(&userspace_runtime_state, initiator2target_buffer, initiator2target_buffer_size);
-        static bool suspend_state = false;
-        if (userspace_runtime_state.internals.is_device_suspended != suspend_state) {
-            suspend_state = userspace_runtime_state.internals.is_device_suspended;
-            set_is_device_suspended(suspend_state);
-        }
-        if (!userspace_runtime_state.display.menu_state_runtime.has_rendered &&
-            userspace_runtime_state.display.menu_state_runtime.dirty) {
-            userspace_runtime_state.display.menu_state_runtime.has_rendered = true;
-            userspace_runtime_state.display.menu_state_runtime.dirty        = false;
-        }
+bool send_extended_message_handler(enum extended_id_t id, const void* data, size_t size) {
+    if (size > RTC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
+        xprintf("Invalid extended message size: %d (ID: %d)\n", size, id);
+        return false;
     }
-}
-
-/**
- * @brief Syncs userspace_config between halves of split keyboard
- *
- * @param initiator2target_buffer_size
- * @param initiator2target_buffer
- * @param target2initiator_buffer_size
- * @param target2initiator_buffer
- */
-void user_config_sync(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
-                      uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
-    if (initiator2target_buffer_size == sizeof(userspace_config)) {
-        if (memcmp(&userspace_config, initiator2target_buffer, initiator2target_buffer_size) != 0) {
-            memcpy(&userspace_config, initiator2target_buffer, initiator2target_buffer_size);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
-        }
-    }
-}
-
-#if defined(AUTOCORRECT_ENABLE)
-extern char autocorrected_str[2][21];
-extern char autocorrected_str_raw[2][21];
-extern bool autocorrect_str_has_changed;
-_Static_assert(sizeof(autocorrected_str) <= RPC_M2S_BUFFER_SIZE, "Autocorrect array larger than buffer size!");
-_Static_assert(sizeof(autocorrected_str_raw) <= RPC_M2S_BUFFER_SIZE, "Autocorrect array larger than buffer size!");
-#endif
-/**
- * @brief Sycn Autoccetion string between halves of split keyboard
- *
- * @param initiator2target_buffer_size
- * @param initiator2target_buffer
- * @param target2initiator_buffer_size
- * @param target2initiator_buffer
- */
-void autocorrect_string_sync(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
-                             uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
-#if defined(AUTOCORRECT_ENABLE)
-    if (initiator2target_buffer_size == (sizeof(autocorrected_str_raw))) {
-        if (memcmp(&autocorrected_str_raw, initiator2target_buffer, initiator2target_buffer_size) != 0) {
-            memcpy(&autocorrected_str_raw, initiator2target_buffer, sizeof(autocorrected_str_raw));
-            center_text(autocorrected_str_raw[0], autocorrected_str[0], sizeof(autocorrected_str[0]) - 1);
-            center_text(autocorrected_str_raw[1], autocorrected_str[1], sizeof(autocorrected_str[1]) - 1);
-            autocorrect_str_has_changed = true;
-        }
-    }
-#endif
-}
-
-/**
- * @brief Sync keylogger string between halves of split keyboard
- *
- * @param initiator2target_buffer_size
- * @param initiator2target_buffer
- * @param target2initiator_buffer_size
- * @param target2initiator_buffer
- */
-void keylogger_string_sync(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer,
-                           uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
-#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-    if (initiator2target_buffer_size == (DISPLAY_KEYLOGGER_LENGTH + 1)) {
-        if (memcmp(&display_keylogger_string, initiator2target_buffer, initiator2target_buffer_size) != 0) {
-            memcpy(&display_keylogger_string, initiator2target_buffer, initiator2target_buffer_size);
-            keylogger_has_changed = true;
-        }
-    }
-#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+    extended_msg_t msg = {
+        .id   = id,
+        .data = {0},
+        .size = size,
+    };
+    memcpy(&msg.data, data, size);
+    // xprintf("Extended Transaction sent:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
+    // for (uint8_t i = 0; i < size; ++i) {
+    //     xprintf("%d ", msg.data[i]);
+    // }
+    // xprintf("\n");
+    return transaction_rpc_send(RPC_ID_EXTENDED_SYNC_TRANSPORT, RPC_M2S_BUFFER_SIZE, &msg);
 }
 
 /**
@@ -203,10 +283,9 @@ void keylogger_string_sync(uint8_t initiator2target_buffer_size, const void* ini
  */
 void send_device_suspend_state(bool status) {
     if (is_device_suspended() != status && is_keyboard_master()) {
-        userspace_runtime_state.internals.is_device_suspended = status;
-        transaction_rpc_send(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, sizeof(userspace_runtime_state),
-                             &userspace_runtime_state);
-        wait_ms(5);
+        if (send_extended_message_handler(RPC_ID_EXTENDED_SUSPEND_STATE, &status, sizeof(bool))) {
+            wait_ms(5);
+        }
     }
 }
 
@@ -216,21 +295,25 @@ void send_device_suspend_state(bool status) {
  */
 void keyboard_post_init_transport_sync(void) {
     // Register keyboard state sync split transaction
-    transaction_register_rpc(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, userspace_runtime_state_sync);
-    transaction_register_rpc(RPC_ID_USER_CONFIG_SYNC, user_config_sync);
-    transaction_register_rpc(RPC_ID_USER_AUTOCORRECT_STR, autocorrect_string_sync);
-    transaction_register_rpc(RPC_ID_USER_DISPLAY_KEYLOG_STR, keylogger_string_sync);
     transaction_register_rpc(RPC_ID_EXTENDED_SYNC_TRANSPORT, extended_message_handler);
 }
 
 /**
- * @brief Updates the state of the master device.
+ * @brief Synchronizes the userspace runtime state.
  *
- * This function is responsible for synchronizing the state of the master
- * device with the current system state. It ensures that any changes or
- * updates are properly reflected and propagated as needed.
+ * This function checks if the userspace runtime state needs to be synchronized
+ * and performs the synchronization if necessary. It updates the last synchronization
+ * time and the last known user runtime state.
+ *
+ * @param needs_sync Pointer to a boolean indicating if synchronization is needed.
+ * @param last_sync Pointer to the timestamp of the last synchronization.
+ * @param last_user_state Pointer to the last known user runtime configuration.
  */
-void update_master_state(void) {
+void sync_userspace_runtime_state(void) {
+    bool                         needs_sync      = false;
+    static uint16_t              last_sync       = 0;
+    static user_runtime_config_t last_user_state = {0};
+
 #ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
     userspace_runtime_state.internals.host_driver_disabled = get_keyboard_lock();
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
@@ -246,24 +329,6 @@ void update_master_state(void) {
 #ifdef CAPS_WORD_ENABLE
     userspace_runtime_state.internals.is_caps_word = is_caps_word_on();
 #endif // CAPS_WORD_ENABLE
-    userspace_runtime_state.mods = (sync_mods_t){
-        .mods      = get_mods(),
-        .weak_mods = get_weak_mods(),
-#ifndef NO_ACTION_ONESHOT
-        .oneshot_mods        = get_oneshot_mods(),
-        .oneshot_locked_mods = get_oneshot_locked_mods(),
-#endif // NO_ACTION_ONESHOT
-    };
-    userspace_runtime_state.layers = (sync_layer_t){
-        .layer_state         = layer_state,
-        .default_layer_state = default_layer_state,
-    };
-    userspace_runtime_state.leds = host_keyboard_led_state();
-#ifdef WPM_ENABLE
-    userspace_runtime_state.wpm.wpm_count = get_current_wpm();
-#endif // WPM_ENABLE
-    userspace_runtime_state.keymap_config = keymap_config;
-    userspace_runtime_state.debug_config  = debug_config;
 
 #ifdef DISPLAY_DRIVER_ENABLE
 #    ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
@@ -273,180 +338,20 @@ void update_master_state(void) {
     }
 #    endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #endif     // DISPLAY_DRIVER_ENABLE
-}
 
-/**
- * @brief Updates the state of the slave device.
- *
- * This function is responsible for synchronizing the state of the slave device
- * with the master device. It ensures that the slave device's state is up-to-date
- * and consistent with the master device.
- */
-void update_slave_state(void) {
-#ifdef AUDIO_ENABLE
-    bool has_audio_changed = false;
-    if (userspace_runtime_state.audio.enable != is_audio_on()) {
-        audio_config.enable = userspace_runtime_state.audio.enable;
-        has_audio_changed   = true;
+    if (memcmp(&userspace_runtime_state, &last_user_state, sizeof(user_runtime_config_t))) {
+        needs_sync = true;
+        memcpy(&last_user_state, &userspace_runtime_state, sizeof(user_runtime_config_t));
     }
-#    ifdef AUDIO_CLICKY
-    if (userspace_runtime_state.audio.clicky_enable != is_clicky_on()) {
-        audio_config.clicky_enable = userspace_runtime_state.audio.clicky_enable;
-        has_audio_changed          = true;
+    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        needs_sync = true;
     }
-    extern float clicky_freq;
-    extern float clicky_rand;
-    clicky_freq = userspace_runtime_state.audio.clicky_freq;
-    clicky_rand = userspace_runtime_state.audio.clicky_rand;
-#    endif // AUDIO_CLICK
-#    ifdef MUSIC_ENABLE
-    if (userspace_runtime_state.audio.music_enable != is_music_on()) {
-        userspace_runtime_state.audio.music_enable ? music_on() : music_off();
-    }
-#    endif // MUSIC_ENABLE
-    if (has_audio_changed) {
-        if (eeconfig_read_audio() != audio_config.raw) {
-            eeconfig_update_audio(audio_config.raw);
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE, &userspace_runtime_state,
+                                          sizeof(user_runtime_config_t))) {
+            last_sync = timer_read32();
         }
-    }
-#endif // AUDIO_ENABLE
-
-#ifdef UNICODE_COMMON_ENABLE
-    if (get_unicode_input_mode() != userspace_runtime_state.unicode.mode) {
-        unicode_config.input_mode = userspace_runtime_state.unicode.mode;
-        eeprom_update_byte(EECONFIG_UNICODEMODE, unicode_config.input_mode);
-    }
-#endif // UNICODE_COMMON_ENABLE
-#if defined(POINTING_DEVICE_ENABLE) && defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
-    if (get_auto_mouse_toggle() != userspace_runtime_state.internals.tap_toggling) {
-        auto_mouse_toggle();
-    }
-#endif // POINTING_DEVICE_ENABLE && POINTING_DEVICE_AUTO_MOUSE_ENABLE
-#ifdef SWAP_HANDS_ENABLE
-    swap_hands = userspace_runtime_state.internals.swap_hands;
-#endif // SWAP_HANDS_ENABLE
-#ifdef CAPS_WORD_ENABLE
-    if (is_caps_word_on() != userspace_runtime_state.internals.is_caps_word) {
-        caps_word_toggle();
-    }
-#endif // CAPS_WORD_ENABLE
-#ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
-    set_keyboard_lock(userspace_runtime_state.internals.host_driver_disabled);
-#endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
-
-    if (get_mods() != userspace_runtime_state.mods.mods) {
-        set_mods(userspace_runtime_state.mods.mods);
-    }
-    if (get_weak_mods() != userspace_runtime_state.mods.weak_mods) {
-        set_weak_mods(userspace_runtime_state.mods.weak_mods);
-    }
-#ifndef NO_ACTION_ONESHOT
-    if (get_oneshot_mods() != userspace_runtime_state.mods.oneshot_mods) {
-        set_oneshot_mods(userspace_runtime_state.mods.oneshot_mods);
-    }
-    if (get_oneshot_locked_mods() != userspace_runtime_state.mods.oneshot_locked_mods) {
-        set_oneshot_locked_mods(userspace_runtime_state.mods.oneshot_locked_mods);
-    }
-#endif // NO_ACTION_ONESHOT
-
-    if (layer_state != userspace_runtime_state.layers.layer_state) {
-        layer_state = userspace_runtime_state.layers.layer_state;
-    }
-    if (default_layer_state != userspace_runtime_state.layers.default_layer_state) {
-        default_layer_state = userspace_runtime_state.layers.default_layer_state;
-        if (eeconfig_read_default_layer() != default_layer_state) {
-            eeconfig_update_default_layer(default_layer_state & 0xFF);
-        }
-    }
-
-    void set_split_host_keyboard_leds(uint8_t led_state);
-    if (host_keyboard_led_state().raw != userspace_runtime_state.leds.raw) {
-        set_split_host_keyboard_leds(userspace_runtime_state.leds.raw);
-    }
-#ifdef WPM_ENABLE
-    if (get_current_wpm() != userspace_runtime_state.wpm.wpm_count) {
-        set_current_wpm(userspace_runtime_state.wpm.wpm_count);
-    }
-#endif // WPM_ENABLE
-    if (keymap_config.raw != userspace_runtime_state.keymap_config.raw) {
-        keymap_config = userspace_runtime_state.keymap_config;
-        if (eeconfig_read_keymap() != keymap_config.raw) {
-            eeconfig_update_keymap(keymap_config.raw);
-        }
-    }
-    if (debug_config.raw != userspace_runtime_state.debug_config.raw) {
-        debug_config = userspace_runtime_state.debug_config;
-        if (eeconfig_read_debug() != debug_config.raw) {
-            eeconfig_update_debug(debug_config.raw);
-        }
-    }
-#if defined(DISPLAY_DRIVER_ENABLE)
-#    if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
-    extern menu_state_t menu_state;
-    if (memcmp(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t)) != 0) {
-        memcpy(&menu_state, &userspace_runtime_state.display.menu_state, sizeof(menu_state_t));
-    }
-    if (userspace_runtime_state.display.menu_state_runtime.dirty) {
-        display_menu_set_dirty(true);
-    }
-#    endif
-
-    static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
-    if (userspace_config.display.inverted != last_inverted || userspace_config.display.rotation != last_rotation) {
-        last_inverted = userspace_config.display.inverted;
-        last_rotation = userspace_config.display.rotation;
-#    if defined(QUANTUM_PAINTER_ILI9341_ENABLE)
-        void init_display_ili9341_rotation(void);
-        init_display_ili9341_rotation();
-#    endif // QUANTUM_PAINTER_ILI9341_ENABLE
-#    if defined(OLED_ENABLE)
-        void oled_post_init(void);
-        oled_post_init();
-#    endif // OLED_ENABLE
-    }
-#endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
-}
-
-/**
- * @brief Updates the user transport layer.
- *
- * This function is responsible for handling the updates required for the
- * user transport layer in a split keyboard setup. It ensures that the
- * necessary data is synchronized between the two halves of the keyboard.
- */
-void user_transport_update(void) {
-    if (is_keyboard_master()) {
-        update_master_state();
-    } else {
-        update_slave_state();
-    }
-}
-
-/**
- * @brief Synchronizes the userspace runtime state.
- *
- * This function checks if the userspace runtime state needs to be synchronized
- * and performs the synchronization if necessary. It updates the last synchronization
- * time and the last known user runtime state.
- *
- * @param needs_sync Pointer to a boolean indicating if synchronization is needed.
- * @param last_sync Pointer to the timestamp of the last synchronization.
- * @param last_user_state Pointer to the last known user runtime configuration.
- */
-void sync_userspace_runtime_state(bool* needs_sync, uint32_t* last_sync, user_runtime_config_t* last_user_state) {
-    if (memcmp(&userspace_runtime_state, last_user_state, sizeof(userspace_runtime_state))) {
-        *needs_sync = true;
-        memcpy(last_user_state, &userspace_runtime_state, sizeof(userspace_runtime_state));
-    }
-    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
-        *needs_sync = true;
-    }
-    if (*needs_sync) {
-        if (transaction_rpc_send(RPC_ID_USERSPACE_RUNTIME_STATE_SYNC, sizeof(userspace_runtime_state),
-                                 &userspace_runtime_state)) {
-            *last_sync = timer_read32();
-        }
-        *needs_sync = false;
+        needs_sync = false;
     }
 }
 
@@ -461,19 +366,24 @@ void sync_userspace_runtime_state(bool* needs_sync, uint32_t* last_sync, user_ru
  * @param last_sync Pointer to the last synchronization timestamp.
  * @param last_config Pointer to the last known userspace configuration.
  */
-void sync_userspace_config(bool* needs_sync, uint32_t* last_sync, userspace_config_t* last_config) {
-    if (memcmp(&userspace_config, last_config, sizeof(userspace_config))) {
-        *needs_sync = true;
-        memcpy(last_config, &userspace_config, sizeof(userspace_config));
+void sync_userspace_config(void) {
+    bool                      needs_sync  = false;
+    static uint16_t           last_sync   = 0;
+    static userspace_config_t last_config = {0};
+
+    if (memcmp(&userspace_config, &last_config, sizeof(userspace_config_t))) {
+        needs_sync = true;
+        memcpy(&last_config, &userspace_config, sizeof(userspace_config_t));
     }
-    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
-        *needs_sync = true;
+    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        needs_sync = true;
     }
-    if (*needs_sync) {
-        if (transaction_rpc_send(RPC_ID_USER_CONFIG_SYNC, sizeof(userspace_config), &userspace_config)) {
-            *last_sync = timer_read32();
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_USERSPACE_CONFIG, &userspace_config,
+                                          sizeof(userspace_config_t))) {
+            last_sync = timer_read32();
         }
-        *needs_sync = false;
+        needs_sync = false;
     }
 }
 
@@ -488,20 +398,24 @@ void sync_userspace_config(bool* needs_sync, uint32_t* last_sync, userspace_conf
  * @param last_sync Pointer to a timestamp of the last synchronization.
  * @param keylog_temp Pointer to the temporary keylogger string to be synchronized.
  */
-void sync_keylogger_string(bool* needs_sync, uint32_t* last_sync, char* keylog_temp) {
+void sync_keylogger_string(void) {
+    bool            needs_sync                                = false;
+    static uint16_t last_sync                                 = 0;
+    static char     keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
+
     if (memcmp(&display_keylogger_string, keylog_temp, (DISPLAY_KEYLOGGER_LENGTH + 1))) {
-        *needs_sync = true;
+        needs_sync = true;
         memcpy(keylog_temp, &display_keylogger_string, (DISPLAY_KEYLOGGER_LENGTH + 1));
     }
-    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
-        *needs_sync = true;
+    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        needs_sync = true;
     }
-    if (*needs_sync) {
-        if (transaction_rpc_send(RPC_ID_USER_DISPLAY_KEYLOG_STR, (DISPLAY_KEYLOGGER_LENGTH + 1),
-                                 &display_keylogger_string)) {
-            *last_sync = timer_read32();
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR, display_keylogger_string,
+                                          (DISPLAY_KEYLOGGER_LENGTH + 1))) {
+            last_sync = timer_read();
         }
-        *needs_sync = false;
+        needs_sync = false;
     }
 }
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
@@ -521,71 +435,86 @@ _Static_assert(sizeof(temp_autocorrected_str) == sizeof(autocorrected_str_raw),
  * @param last_sync Pointer to the timestamp of the last synchronization.
  * @param temp_autocorrected_str 2D array holding the autocorrect strings for both halves.
  */
-void sync_autocorrect_string(bool* needs_sync, uint32_t* last_sync) {
+void sync_autocorrect_string(void) {
+    bool            needs_sync = false;
+    static uint16_t last_sync  = 0;
     if (memcmp(&autocorrected_str_raw, temp_autocorrected_str, sizeof(autocorrected_str_raw))) {
-        *needs_sync = true;
+        needs_sync = true;
         memcpy(temp_autocorrected_str, &autocorrected_str_raw, sizeof(autocorrected_str_raw));
     }
-    if (timer_elapsed32(*last_sync) > FORCED_SYNC_THROTTLE_MS) {
-        *needs_sync = true;
+    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        needs_sync = true;
     }
-    if (*needs_sync) {
-        if (transaction_rpc_send(RPC_ID_USER_AUTOCORRECT_STR, sizeof(autocorrected_str_raw), &autocorrected_str_raw)) {
-            *last_sync = timer_read32();
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_AUTOCORRECT_STR, autocorrected_str_raw,
+                                          sizeof(autocorrected_str_raw))) {
+            last_sync = timer_read();
         }
-        *needs_sync = false;
+        needs_sync = false;
     }
 }
 #endif // AUTOCORRECT_ENABLE
 
 #ifdef WPM_ENABLE
-void sync_wpm_graph_data(bool* needs_sync, uint32_t* last_sync) {
-    static uint8_t local_wpm_graph_samples[WPM_GRAPH_SAMPLES] = {0};
+void sync_wpm_graph_data(void) {
+    bool            needs_sync                                 = false;
+    static uint16_t last_sync                                  = 0;
+    static uint8_t  local_wpm_graph_samples[WPM_GRAPH_SAMPLES] = {0};
 
     if (memcmp(wpm_graph_samples, local_wpm_graph_samples, sizeof(local_wpm_graph_samples))) {
-        *needs_sync = true;
+        needs_sync = true;
         memcpy(local_wpm_graph_samples, wpm_graph_samples, sizeof(local_wpm_graph_samples));
     }
-    if (timer_elapsed32(*last_sync) > (FORCED_SYNC_THROTTLE_MS * 100)) {
-        *needs_sync = true;
+    if (timer_elapsed(last_sync) > (FORCED_SYNC_THROTTLE_MS * 100)) {
+        needs_sync = true;
     }
-    if (*needs_sync) {
-        send_extended_message_handler(RPC_ID_EXTENDED_WPM_GRAPH_DATA, local_wpm_graph_samples,
-                                      sizeof(local_wpm_graph_samples));
-        *last_sync  = timer_read32();
-        *needs_sync = false;
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_WPM_GRAPH_DATA, local_wpm_graph_samples,
+                                          sizeof(local_wpm_graph_samples))) {
+            last_sync = timer_read32();
+        }
+        needs_sync = false;
     }
 }
 #endif // WPM_ENABLE
 
-/**
- * @brief Synchronizes user-specific transport settings.
- *
- * This function is responsible for synchronizing transport settings
- * across different parts of the user's setup. It ensures that all
- * necessary configurations are properly aligned and updated.
- */
-void user_transport_sync(void) {
-    if (is_keyboard_master()) {
-        bool                         needs_sync      = false;
-        static uint32_t              last_sync[4]    = {0};
-        static user_runtime_config_t last_user_state = {0};
-        static userspace_config_t    last_config     = {0};
-#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-        static char keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
-#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+void sync_keymap_config(void) {
+    bool                   needs_sync         = false;
+    static uint16_t        last_sync          = 0;
+    static keymap_config_t last_keymap_config = {0};
 
-        sync_userspace_runtime_state(&needs_sync, &last_sync[0], &last_user_state);
-        sync_userspace_config(&needs_sync, &last_sync[1], &last_config);
-#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-        sync_keylogger_string(&needs_sync, &last_sync[2], keylog_temp);
-#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
-#if defined(AUTOCORRECT_ENABLE)
-        sync_autocorrect_string(&needs_sync, &last_sync[3]);
-#endif // AUTOCORRECT_ENABLE
-#ifdef WPM_ENABLE
-        sync_wpm_graph_data(&needs_sync, &last_sync[4]);
-#endif // WPM_ENABLE
+    if (memcmp(&keymap_config, &last_keymap_config, sizeof(keymap_config_t))) {
+        needs_sync = true;
+        memcpy(&last_keymap_config, &keymap_config, sizeof(keymap_config_t));
+    }
+    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        needs_sync = true;
+    }
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_KEYMAP_CONFIG, &keymap_config, sizeof(keymap_config_t))) {
+            last_sync = timer_read();
+        }
+        needs_sync = false;
+    }
+}
+
+void sync_debug_config(void) {
+    bool                  needs_sync        = false;
+    static uint16_t       last_sync         = 0;
+    static debug_config_t last_debug_config = {0};
+
+    if (memcmp(&debug_config, &last_debug_config, sizeof(debug_config_t))) {
+        needs_sync = true;
+        memcpy(&last_debug_config, &debug_config, sizeof(debug_config_t));
+    }
+    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        needs_sync = true;
+    }
+    if (needs_sync) {
+        if (send_extended_message_handler(RPC_ID_EXTENDED_DEBUG_CONFIG, &debug_config, sizeof(debug_config_t))) {
+            last_sync = timer_read();
+        }
+        needs_sync = false;
     }
 }
 
@@ -600,11 +529,23 @@ void housekeeping_task_transport_sync(void) {
     if (!is_transport_connected()) {
         return;
     }
-    // Update kb_state so we can send to slave
-    user_transport_update();
 
     // Data sync from master to slave
-    user_transport_sync();
+    if (is_keyboard_master()) {
+        sync_userspace_runtime_state();
+        sync_userspace_config();
+#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
+        sync_keylogger_string();
+#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+#if defined(AUTOCORRECT_ENABLE)
+        sync_autocorrect_string();
+#endif // AUTOCORRECT_ENABLE
+#ifdef WPM_ENABLE
+        sync_wpm_graph_data();
+#endif // WPM_ENABLE
+        sync_keymap_config();
+        sync_debug_config();
+    }
 
     if (!is_keyboard_master()) {
 #if 0
