@@ -39,7 +39,7 @@ extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
 
 bool has_first_run = false;
 
-typedef enum extended_id_t {
+typedef enum PACKED extended_id_t {
     RPC_ID_EXTENDED_WPM_GRAPH_DATA = 0,
     RPC_ID_EXTENDED_AUTOCORRECT_STR,
     RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR,
