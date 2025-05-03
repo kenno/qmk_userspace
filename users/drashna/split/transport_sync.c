@@ -37,6 +37,8 @@ extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
 #    define FORCED_SYNC_THROTTLE_MS 100
 #endif // FORCED_SYNC_THROTTLE_MS
 
+bool has_first_run = false;
+
 typedef enum extended_id_t {
     RPC_ID_EXTENDED_WPM_GRAPH_DATA = 0,
     RPC_ID_EXTENDED_AUTOCORRECT_STR,
@@ -49,12 +51,14 @@ typedef enum extended_id_t {
     NUM_EXTENDED_IDS,
 } extended_id_t;
 
-#define RPC_EXTENDED_TRANSACTION_OVERHEAD    (sizeof(extended_id_t) + sizeof(size_t))
+_Static_assert(sizeof(extended_id_t) == 1, "extended_id_t is not 1 byte!");
+
+#define RPC_EXTENDED_TRANSACTION_OVERHEAD    (sizeof(extended_id_t) + sizeof(uint8_t))
 #define RPC_EXTENDED_TRANSACTION_BUFFER_SIZE (RPC_M2S_BUFFER_SIZE - RPC_EXTENDED_TRANSACTION_OVERHEAD)
 
 typedef struct PACKED extended_msg_t {
     extended_id_t id;
-    size_t        size;
+    uint8_t       size;
     uint8_t       data[RPC_EXTENDED_TRANSACTION_BUFFER_SIZE];
 } extended_msg_t;
 
@@ -64,9 +68,9 @@ _Static_assert(sizeof(userspace_config_t) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZ
 _Static_assert(sizeof(userspace_runtime_state_t) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZE,
                "userspace_runtime_state_t is larger than split buffer size!");
 
-typedef void (*handler_fn_t)(const uint8_t* data, size_t size);
+typedef void (*handler_fn_t)(const uint8_t* data, uint8_t size);
 
-void recv_wpm_graph_data(const uint8_t* data, size_t size) {
+void recv_wpm_graph_data(const uint8_t* data, uint8_t size) {
 #ifdef WPM_ENABLE
     if (memcmp(data, wpm_graph_samples, size) != 0) {
         memcpy(wpm_graph_samples, data, size);
@@ -84,7 +88,7 @@ _Static_assert(sizeof(autocorrected_str_raw) <= RPC_EXTENDED_TRANSACTION_BUFFER_
                "Autocorrect array larger than buffer size!");
 #endif
 
-void recv_autocorrect_string(const uint8_t* data, size_t size) {
+void recv_autocorrect_string(const uint8_t* data, uint8_t size) {
 #ifdef AUTOCORRECT_ENABLE
     if (memcmp(data, &autocorrected_str_raw, size) != 0) {
         memcpy(autocorrected_str_raw, data, size);
@@ -95,7 +99,7 @@ void recv_autocorrect_string(const uint8_t* data, size_t size) {
 #endif
 }
 
-void recv_keylogger_string_sync(const uint8_t* data, size_t size) {
+void recv_keylogger_string_sync(const uint8_t* data, uint8_t size) {
 #if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
     if (memcmp(data, &display_keylogger_string, size) != 0) {
         memcpy(&display_keylogger_string, data, size);
@@ -104,21 +108,21 @@ void recv_keylogger_string_sync(const uint8_t* data, size_t size) {
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 }
 
-void recv_keymap_config(const uint8_t* data, size_t size) {
+void recv_keymap_config(const uint8_t* data, uint8_t size) {
     if (memcmp(data, &keymap_config, size) != 0) {
         memcpy(&keymap_config, data, size);
         eeconfig_update_keymap(keymap_config.raw);
     }
 }
 
-void recv_debug_config(const uint8_t* data, size_t size) {
+void recv_debug_config(const uint8_t* data, uint8_t size) {
     if (memcmp(data, &debug_config, size) != 0) {
         memcpy(&debug_config, data, size);
         eeconfig_update_debug(debug_config.raw);
     }
 }
 
-void recv_userspace_config(const uint8_t* data, size_t size) {
+void recv_userspace_config(const uint8_t* data, uint8_t size) {
     if (memcmp(data, &userspace_config, size) != 0) {
         memcpy(&userspace_config, data, size);
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
@@ -140,7 +144,7 @@ void recv_userspace_config(const uint8_t* data, size_t size) {
     }
 }
 
-void recv_userspace_runtime_state(const uint8_t* data, size_t size) {
+void recv_userspace_runtime_state(const uint8_t* data, uint8_t size) {
     if (memcmp(data, &userspace_runtime_state, size) != 0) {
         memcpy(&userspace_runtime_state, data, size);
 
@@ -216,7 +220,7 @@ void recv_userspace_runtime_state(const uint8_t* data, size_t size) {
     }
 }
 
-void recv_device_suspend_state(const uint8_t* data, size_t size) {
+void recv_device_suspend_state(const uint8_t* data, uint8_t size) {
     static bool is_device_suspended = false;
     if (memcmp(data, &is_device_suspended, size) != 0) {
         memcpy(&is_device_suspended, data, size);
@@ -257,15 +261,15 @@ void extended_message_handler(uint8_t initiator2target_buffer_size, const void* 
     handler(msg.data, msg.size);
 }
 
-bool send_extended_message_handler(enum extended_id_t id, const void* data, size_t size) {
+bool send_extended_message_handler(enum extended_id_t id, const void* data, uint8_t size) {
     if (size > RPC_EXTENDED_TRANSACTION_BUFFER_SIZE) {
         xprintf("Invalid extended message size: %d (ID: %d)\n", size, id);
         return false;
     }
     extended_msg_t msg = {
         .id   = id,
-        .data = {0},
         .size = size,
+        .data = {0},
     };
     memcpy(&msg.data, data, size);
     // xprintf("Extended Transaction sent:\nID: %d, Size: %d, data:\n  ", msg.id, msg.size);
@@ -273,7 +277,7 @@ bool send_extended_message_handler(enum extended_id_t id, const void* data, size
     //     xprintf("%d ", msg.data[i]);
     // }
     // xprintf("\n");
-    return transaction_rpc_send(RPC_ID_EXTENDED_SYNC_TRANSPORT, RPC_M2S_BUFFER_SIZE, &msg);
+    return transaction_rpc_send(RPC_ID_EXTENDED_SYNC_TRANSPORT, sizeof(extended_msg_t), &msg);
 }
 
 /**
@@ -287,15 +291,6 @@ void send_device_suspend_state(bool status) {
             wait_ms(5);
         }
     }
-}
-
-/**
- * @brief Initialize the transport sync
- *
- */
-void keyboard_post_init_transport_sync(void) {
-    // Register keyboard state sync split transaction
-    transaction_register_rpc(RPC_ID_EXTENDED_SYNC_TRANSPORT, extended_message_handler);
 }
 
 /**
@@ -519,6 +514,15 @@ void sync_debug_config(void) {
 }
 
 /**
+ * @brief Initialize the transport sync
+ *
+ */
+void keyboard_post_init_transport_sync(void) {
+    // Register keyboard state sync split transaction
+    transaction_register_rpc(RPC_ID_EXTENDED_SYNC_TRANSPORT, extended_message_handler);
+}
+
+/**
  * @brief Performs housekeeping tasks related to transport synchronization.
  *
  * This function is responsible for managing and executing any necessary
@@ -530,21 +534,29 @@ void housekeeping_task_transport_sync(void) {
         return;
     }
 
+    if (!has_first_run) {
+        if (timer_elapsed(0) > 1500) {
+            has_first_run = true;
+        } else {
+            return;
+        }
+    }
+
     // Data sync from master to slave
     if (is_keyboard_master()) {
-        sync_userspace_runtime_state();
-        sync_userspace_config();
-#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-        sync_keylogger_string();
-#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
-#if defined(AUTOCORRECT_ENABLE)
-        sync_autocorrect_string();
-#endif // AUTOCORRECT_ENABLE
 #ifdef WPM_ENABLE
         sync_wpm_graph_data();
 #endif // WPM_ENABLE
+#ifdef AUTOCORRECT_ENABLE
+        sync_autocorrect_string();
+#endif // AUTOCORRECT_ENABLE
+#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
+        sync_keylogger_string();
+#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
         sync_keymap_config();
         sync_debug_config();
+        sync_userspace_runtime_state();
+        sync_userspace_config();
     }
 
     if (!is_keyboard_master()) {
