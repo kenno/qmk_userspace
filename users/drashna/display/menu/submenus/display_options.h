@@ -84,19 +84,19 @@ __attribute__((weak)) void display_handler_display_rotation(char *text_buffer, s
 }
 
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
-    void init_display_ili9341_inversion(void);
+void init_display_ili9341_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 #ifdef QUANTUM_PAINTER_ILI9488_ENABLE
-    void init_display_ili9488_inversion(void);
+void init_display_ili9488_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 
-    bool menu_handler_display_inverted(menu_input_t input) {
-        switch (input) {
-            case menu_input_left:
-            case menu_input_right:
-            case menu_input_enter:
-                userspace_config.display.inverted = !userspace_config.display.inverted;
-                eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+bool menu_handler_display_inverted(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+        case menu_input_enter:
+            userspace_config.display.inverted = !userspace_config.display.inverted;
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
             init_display_ili9341_inversion();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -111,7 +111,7 @@ __attribute__((weak)) void display_handler_display_rotation(char *text_buffer, s
         default:
             return true;
     }
-    }
+}
 
 __attribute__((weak)) void display_handler_display_inverted(char *text_buffer, size_t buffer_len) {
     strncpy(text_buffer, userspace_config.display.inverted ? "Inverted" : "Normal", buffer_len - 1);
@@ -279,99 +279,77 @@ __attribute__((weak)) void display_handler_oled_pet_mati_speed(char *text_buffer
 extern painter_image_array_t screen_saver_image[];
 extern const uint8_t         screensaver_image_size;
 
-bool menu_handler_display_mode_master(menu_input_t input) {
-    switch (input) {
-        case menu_input_left:
-            userspace_config.display.painter.display_mode_master =
-                (userspace_config.display.painter.display_mode_master - 1) % 6;
-            if (userspace_config.display.painter.display_mode_master > 5) {
-                userspace_config.display.painter.display_mode_master = 5;
-            }
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
-            return false;
-        case menu_input_right:
-        case menu_input_enter:
-            userspace_config.display.painter.display_mode_master =
-                (userspace_config.display.painter.display_mode_master + 1) % 6;
-            if (userspace_config.display.painter.display_mode_master > 5) {
-                userspace_config.display.painter.display_mode_master = 0;
-            }
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
-            return false;
+#    define MAX_MODES 6
+
+static char *display_handler_display_mode(uint8_t mode) {
+    switch (mode) {
+        case 0:
+            return "Console";
+        case 1:
+            return "Fonts";
+        case 2:
+            return "QMK Info";
+        case 3:
+            return "Nyan Cat";
+        case 4:
+            return "Game of Life";
+        case 5:
+            return "Layer Map";
         default:
-            return true;
+            return "Unknown";
     }
 }
 
 __attribute__((weak)) void display_handler_display_mode_master(char *text_buffer, size_t buffer_len) {
-    switch (userspace_config.display.painter.display_mode_master) {
-        case 0:
-            strncpy(text_buffer, "Console", buffer_len - 1);
-            return;
-        case 1:
-            strncpy(text_buffer, "Fonts", buffer_len - 1);
-            return;
-        case 2:
-            strncpy(text_buffer, "QMK Info", buffer_len - 1);
-            return;
-        case 3:
-            strncpy(text_buffer, "Nyan Cat", buffer_len - 1);
-            return;
-        case 4:
-            strncpy(text_buffer, "Game of Life", buffer_len - 1);
-            return;
-        case 5:
-            strncpy(text_buffer, "Layer Map", buffer_len - 1);
-            return;
-    }
-
-    strncpy(text_buffer, "Unknown", buffer_len);
+    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_master),
+            buffer_len - 1);
 }
 
-bool menu_handler_display_mode_slave(menu_input_t input) {
+__attribute__((weak)) void display_handler_display_mode_slave(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_slave),
+            buffer_len - 1);
+}
+
+static bool menu_handler_display_mode(menu_input_t input, uint8_t *mode, uint8_t max_modes) {
+    if (max_modes == 0) {
+        return true;
+    }
+
     switch (input) {
         case menu_input_left:
-            userspace_config.display.painter.display_mode_slave =
-                (userspace_config.display.painter.display_mode_slave - 1) % 5;
-            if (userspace_config.display.painter.display_mode_slave > 4) {
-                userspace_config.display.painter.display_mode_slave = 4;
-            }
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            *mode = (*mode + max_modes - 1) % max_modes;
             return false;
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.painter.display_mode_slave =
-                (userspace_config.display.painter.display_mode_slave + 1) % 5;
-            if (userspace_config.display.painter.display_mode_slave > 4) {
-                userspace_config.display.painter.display_mode_slave = 0;
+            *mode = (*mode + 1) % max_modes;
+            if (*mode > (max_modes - 1)) {
+                *mode = 0;
+                *mode = (*mode + 1) % max_modes;
             }
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;
     }
 }
 
-__attribute__((weak)) void display_handler_display_mode_slave(char *text_buffer, size_t buffer_len) {
-    switch (userspace_config.display.painter.display_mode_slave) {
-        case 0:
-            strncpy(text_buffer, "Console", buffer_len - 1);
-            return;
-        case 1:
-            strncpy(text_buffer, "Fonts", buffer_len - 1);
-            return;
-        case 2:
-            strncpy(text_buffer, "QMK Info", buffer_len - 1);
-            return;
-        case 3:
-            strncpy(text_buffer, "Nyan Cat", buffer_len - 1);
-            return;
-        case 4:
-            strncpy(text_buffer, "Game of Life", buffer_len - 1);
-            return;
+bool menu_handler_display_mode_master(menu_input_t input) {
+    uint8_t temp       = userspace_config.display.painter.display_mode_master;
+    bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
+    if (userspace_config.display.painter.display_mode_master != temp) {
+        userspace_config.display.painter.display_mode_master = temp;
+        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
+    return pass_along;
+}
 
-    strncpy(text_buffer, "Unknown", buffer_len);
+bool menu_handler_display_mode_slave(menu_input_t input) {
+    uint8_t temp       = userspace_config.display.painter.display_mode_slave;
+    bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
+    if (userspace_config.display.painter.display_mode_slave != temp) {
+        userspace_config.display.painter.display_mode_slave = temp;
+        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    }
+    return pass_along;
 }
 
 bool menu_handler_display_image(menu_input_t input) {

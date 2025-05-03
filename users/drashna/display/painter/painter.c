@@ -648,12 +648,10 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
             case 5:
                 //  Layer Map render
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if (is_left) {
-                    painter_render_layer_map(device, font, x, y, width, force_redraw || block_redraw, curr_hsv);
-                } else {
-                    painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv,
-                                        true);
-                }
+                painter_render_layer_map(device, font, x, y, width, force_redraw || block_redraw, curr_hsv);
+                break;
+            case 6:
+                painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv, true);
                 break;
             default:
                 break;
