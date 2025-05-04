@@ -560,7 +560,7 @@ void layer_map_sync_handler(uint8_t initiator2target_buffer_size, const void* in
     }
     if (memcmp(msg.layer_map, layer_map[msg.row], sizeof(msg.layer_map)) != 0) {
         memcpy(layer_map[msg.row], msg.layer_map, sizeof(msg.layer_map));
-        set_layer_map_dirty();
+        set_layer_map_has_updated(true);
     }
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 }
