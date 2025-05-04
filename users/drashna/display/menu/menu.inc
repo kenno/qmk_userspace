@@ -52,7 +52,7 @@
 
 menu_entry_t root_entries[] = {
 #ifdef QUANTUM_PAINTER_ENABLE
-    MENU_ENTRY_MULTI("Display Option", "Display", display_option_entries, display_mode_master),
+    MENU_ENTRY_PARENT("Display Option", "Display", display_option_entries),
 #else // QUANTUM_PAINTER_ENABLE
     MENU_ENTRY_PARENT("Display Options", "Display", display_option_entries),
 #endif // QUANTUM_PAINTER_ENABLE

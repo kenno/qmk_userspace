@@ -178,7 +178,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         if (!screen_saver_redraw) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
-        static uint8_t display_mode = 0xFF;
         if (screen_saver_redraw == false) {
             screen_saver_redraw = true;
             screen_saver = qp_load_image_mem(screen_saver_image[userspace_config.display.painter.display_logo].data);
