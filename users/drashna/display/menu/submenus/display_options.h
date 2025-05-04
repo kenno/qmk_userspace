@@ -335,18 +335,18 @@ static bool menu_handler_display_mode(menu_input_t input, uint8_t *mode, uint8_t
 bool menu_handler_display_mode_left(menu_input_t input) {
     uint8_t temp       = userspace_config.display.painter.display_mode_left;
     bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
-    if (userspace_config.display.painter.display_mode_right != temp) {
-        userspace_config.display.painter.display_mode_right = temp;
+    if (userspace_config.display.painter.display_mode_left != temp) {
+        userspace_config.display.painter.display_mode_left = temp;
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
     return pass_along;
 }
 
 bool menu_handler_display_mode_right(menu_input_t input) {
-    uint8_t temp       = userspace_config.display.painter.display_mode_left;
+    uint8_t temp       = userspace_config.display.painter.display_mode_right;
     bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
-    if (userspace_config.display.painter.display_mode_left != temp) {
-        userspace_config.display.painter.display_mode_left = temp;
+    if (userspace_config.display.painter.display_mode_right != temp) {
+        userspace_config.display.painter.display_mode_right = temp;
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
     return pass_along;
