@@ -585,7 +585,7 @@ void sync_layer_map(void) {
             };
             memcpy(msg.layer_map, layer_map[i], sizeof(msg.layer_map));
             if (transaction_rpc_send(RPC_ID_LAYER_MAP_SYNC, sizeof(layer_map_msg_t), &msg)) {
-                break;
+                continue;
             }
         }
     }
