@@ -596,8 +596,8 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
         bool     block_redraw = false;
         uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
 
-        uint8_t current_display_mode = is_left ? userspace_config.display.painter.display_mode_master
-                                               : userspace_config.display.painter.display_mode_slave;
+        uint8_t current_display_mode = is_left ? userspace_config.display.painter.display_mode_left
+                                               : userspace_config.display.painter.display_mode_right;
 
         static uint8_t last_display_mode[2] = {0xFF};
         if (last_display_mode[is_left] != current_display_mode) {

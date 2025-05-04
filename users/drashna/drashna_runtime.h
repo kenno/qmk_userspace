@@ -46,9 +46,9 @@ typedef union PACKED {
             } oled;
             struct {
                 // 3 bits gets 8 modes, 4 bits gets 16, etc
-                uint8_t    display_mode_master : 3;
-                uint8_t    display_mode_slave  : 3;
-                uint8_t    display_logo        : 4;
+                uint8_t    display_mode_left  : 3;
+                uint8_t    display_mode_right : 3;
+                uint8_t    display_logo       : 4;
                 dual_hsv_t hsv;
             } painter;
         } display;
@@ -107,8 +107,8 @@ typedef struct PACKED {
 #endif // CUSTOM_QUANTUM_PAINTER_ENABLE
 
 typedef struct PACKED {
-    uint8_t wpm_peak  : 8;
-    uint8_t wpm_avg   : 8;
+    uint8_t wpm_peak : 8;
+    uint8_t wpm_avg  : 8;
 } wpm_sync_data_t;
 
 typedef struct PACKED {

@@ -300,13 +300,13 @@ static char *display_handler_display_mode(uint8_t mode) {
     }
 }
 
-__attribute__((weak)) void display_handler_display_mode_master(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_master),
+__attribute__((weak)) void display_handler_display_mode_left(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_left),
             buffer_len - 1);
 }
 
-__attribute__((weak)) void display_handler_display_mode_slave(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_slave),
+__attribute__((weak)) void display_handler_display_mode_right(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_right),
             buffer_len - 1);
 }
 
@@ -332,21 +332,21 @@ static bool menu_handler_display_mode(menu_input_t input, uint8_t *mode, uint8_t
     }
 }
 
-bool menu_handler_display_mode_master(menu_input_t input) {
-    uint8_t temp       = userspace_config.display.painter.display_mode_master;
+bool menu_handler_display_mode_left(menu_input_t input) {
+    uint8_t temp       = userspace_config.display.painter.display_mode_left;
     bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
-    if (userspace_config.display.painter.display_mode_master != temp) {
-        userspace_config.display.painter.display_mode_master = temp;
+    if (userspace_config.display.painter.display_mode_right != temp) {
+        userspace_config.display.painter.display_mode_right = temp;
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
     return pass_along;
 }
 
-bool menu_handler_display_mode_slave(menu_input_t input) {
-    uint8_t temp       = userspace_config.display.painter.display_mode_slave;
+bool menu_handler_display_mode_right(menu_input_t input) {
+    uint8_t temp       = userspace_config.display.painter.display_mode_left;
     bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
-    if (userspace_config.display.painter.display_mode_slave != temp) {
-        userspace_config.display.painter.display_mode_slave = temp;
+    if (userspace_config.display.painter.display_mode_left != temp) {
+        userspace_config.display.painter.display_mode_left = temp;
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
     return pass_along;
@@ -512,8 +512,8 @@ menu_entry_t display_option_entries[] = {
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
 #    ifdef SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Display (Master)", "Master", display_mode_master),
-    MENU_ENTRY_CHILD("Display (Slave)", "Slave", display_mode_slave),
+    MENU_ENTRY_CHILD("Display (Left)", "Left", display_mode_left),
+    MENU_ENTRY_CHILD("Display (Right)", "Right", display_mode_right),
 #    else  // SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Display", "Displayn", display_mode_master),
 #    endif // SPLIT_KEYBOARD
