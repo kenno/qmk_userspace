@@ -179,13 +179,14 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
         static uint8_t display_mode = 0xFF;
-        if (display_mode != userspace_config.display.painter.display_mode_master || screen_saver_redraw == false) {
-            display_mode        = userspace_config.display.painter.display_mode_master;
+        if (screen_saver_redraw == false) {
             screen_saver_redraw = true;
             screen_saver = qp_load_image_mem(screen_saver_image[userspace_config.display.painter.display_logo].data);
             if (screen_saver != NULL) {
                 qp_drawimage(display, 0, 0, screen_saver);
                 qp_close_image(screen_saver);
+            } else {
+                qp_rect(display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
             }
         }
     } else {
