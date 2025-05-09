@@ -575,8 +575,9 @@ void layer_map_sync_handler(uint8_t initiator2target_buffer_size, const void* in
  */
 void sync_layer_map(void) {
     static uint16_t last_layer_map[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {0};
+    static uint16_t last_sync_time                                 = 0;
 
-    if (memcmp(layer_map, last_layer_map, sizeof(last_layer_map)) != 0) {
+    if (memcmp(layer_map, last_layer_map, sizeof(last_layer_map)) != 0 || timer_elapsed(last_sync_time) >= 1000) {
         memcpy(last_layer_map, layer_map, sizeof(last_layer_map));
         for (uint8_t i = 0; i < LAYER_MAP_ROWS; i++) {
             layer_map_msg_t msg = {
@@ -588,6 +589,7 @@ void sync_layer_map(void) {
                 continue;
             }
         }
+        last_sync_time = timer_read();
     }
 }
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
