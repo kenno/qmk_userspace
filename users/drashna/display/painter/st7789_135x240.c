@@ -8,6 +8,9 @@
 #include "qp_st77xx_opcodes.h"
 #include "display/painter/painter.h"
 #include "display/painter/st7789_135x240.h"
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+#    include "qp_render_menu.h"
+#endif
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 #    include "qp_surface.h"
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
@@ -66,6 +69,11 @@ void init_display_st7789_135x240_rotation(void) {
     qp_clear(st7789_135x240_display);
     qp_rect(st7789_135x240_display, 0, 0, 170 - 1, 320 - 1, 0, 0, 0, true);
 
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    extern menu_state_t menu_state;
+    menu_state.is_in_menu = true;
+    menu_state.selected_child = 0;
+#endif
     // if needs inversion, run it only afetr the clear and rect functions or otherwise it won't work
     init_display_st7789_135x240_inversion();
 
@@ -108,7 +116,11 @@ __attribute__((weak)) void st7789_135x240_draw_user(void) {
     uint16_t height = 240;
     qp_get_geometry(st7789_135x240_surface_display, &width, &height, NULL, NULL, NULL);
 
-    painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, width, height, false);
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, width, height, false,
+                        userspace_config.display.painter.hsv.primary, userspace_config.display.painter.hsv.secondary);
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
     qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 0, 0, 0);
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE

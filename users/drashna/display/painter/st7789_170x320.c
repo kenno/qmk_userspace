@@ -11,6 +11,9 @@
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
 #    include "qp_surface.h"
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_170X320_SURFACE
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+#    include "qp_render_menu.h"
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 
 #ifndef ST7789_CS_PIN
 #    define ST7789_CS_PIN DISPLAY_CS_PIN
@@ -112,10 +115,14 @@ __attribute__((weak)) void st7789_170x320_draw_user(void) {
     qp_get_geometry(st7789_display, &width, &height, NULL, NULL, NULL);
 
     static bool force_redraw = false;
-
-    if (painter_render_menu(st7789_170x320_surface_display, font_oled, 35, 0, 240 - 1, height, false)) {
+#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    if (painter_render_menu(st7789_170x320_surface_display, font_oled, 0, 0, width, height, false,
+                            userspace_config.display.painter.hsv.primary,
+                            userspace_config.display.painter.hsv.secondary)) {
         force_redraw = true;
-    } else {
+    } else
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    {
         static uint8_t display_logo = 0xFF;
         if (display_logo != (userspace_config.display.painter.display_logo)) {
             display_logo = userspace_config.display.painter.display_logo;
