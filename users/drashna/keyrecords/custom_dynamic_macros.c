@@ -176,7 +176,7 @@ bool process_record_dynamic_macro(uint16_t keycode, keyrecord_t* record) {
         return true;
     } else if (STATE_RECORD_KEY_PRESSED == recording_state) {
         /* Program key pressed again before a macro selector key, cancel macro recording.
-           Blink leds to indicate cancelation. */
+           Blink leds to indicate cancellation. */
         if (keycode == DYN_MACRO_PROG && record->event.pressed) {
             // dynamic_macro_led_blink();
 

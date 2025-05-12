@@ -20,7 +20,7 @@
 
 #ifdef RGB_MATRIX_ENABLE
 #    define RGB_MATRIX_KEYPRESSES // reacts to keypresses (will slow down matrix scan by a lot)
-// #define RGB_MATRIX_KEYRELEASES // reacts to keyreleases (not recommened)
+// #define RGB_MATRIX_KEYRELEASES // reacts to keyreleases (not recommended)
 #    define RGB_MATRIX_FRAMEBUFFER_EFFECTS
 // #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 200 // limits maximum brightness of LEDs to 200 out of 255. If not defined
 // maximum brightness is set to 255

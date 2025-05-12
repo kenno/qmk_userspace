@@ -15,9 +15,9 @@ diablo_timer_t diablo_timer[NUM_OF_DIABLO_KEYS];
 uint8_t diablo_times[] = {0, 1, 3, 5, 10, 30};
 
 /**
- * @brief Main function for handling diable related tap dances.
+ * @brief Main function for handling disable related tap dances.
  *
- * @param state Main data struction contining information about events
+ * @param state Main data struction containing information about events
  * @param user_data Local data for the dance. Allows customization to be passed on to function
  */
 void diablo_tapdance_master(tap_dance_state_t *state, void *user_data) {

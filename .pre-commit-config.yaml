@@ -33,6 +33,17 @@ repos:
         # Workaround for https://github.com/pre-commit/mirrors-prettier/issues/29
         additional_dependencies:
           - prettier@v4.0.0-alpha.12
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        exclude: |
+          (?x)^(
+              (.*)/autocorrect_data.h|
+              .gitattributes|
+              svds/.*.svd
+          )$
+        args: ["-I", ".codespell_ignore", "-w"]
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.19.1
     hooks:

@@ -260,7 +260,7 @@ void                       led_set_user(uint8_t usb_led) {
 }
 
 /**
- * @brief EEPROM comfiguration initialization
+ * @brief EEPROM configuration initialization
  *
  */
 __attribute__((weak)) void eeconfig_init_keymap(void) {}

@@ -57,7 +57,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     if (autocorrect_is_enabled()) {
         RGB_MATRIX_INDICATOR_SET_COLOR(50, 0x00, 0x00, 0xFF);
     }
-    // this led is damaged and flickers.  Disabling seems to help and dosen't require fixing
+    // this led is damaged and flickers.  Disabling seems to help and doesn't require fixing
     RGB_MATRIX_INDICATOR_SET_COLOR(38, 0x00, 0x00, 0x00);
 
     return true;
