@@ -41,10 +41,7 @@
         },
         {
             "label": "Create terminals on startup",
-            "dependsOn": [
-                "userspace-terminal",
-                "firmware-terminal"
-            ],
+            "dependsOn": ["userspace-terminal", "firmware-terminal"],
             "group": {
                 "kind": "none"
             },
