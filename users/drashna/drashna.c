@@ -17,7 +17,7 @@ userspace_config_t userspace_config;
 #    if defined(AUDIO_ENABLE)
 #        ifdef USER_SONG_LIST
 float autocorrect_song[][2] = SONG(MARIO_GAMEOVER);
-#        else // USER_SONG_LIST
+#        else  // USER_SONG_LIST
 float autocorrect_song[][2] = SONG(PLOVER_GOODBYE_SOUND);
 #        endif // USER_SONG_LISTq
 #    endif
@@ -83,11 +83,11 @@ void oneshot_locked_mods_changed_user(uint8_t mods) {
     }
 }
 #    endif // !NO_ACTION_ONESHOT
-#endif // CAPS_WORD_ENABLE
+#endif     // CAPS_WORD_ENABLE
 
 #if defined(OS_DETECTION_ENABLE)
 typedef struct {
-    bool    swap_ctl_gui;
+    bool swap_ctl_gui;
 #    ifdef UNICODE_COMMON_ENABLE
     uint8_t unicode_input_mode;
 #    endif // UNICODE_COMMON_ENABLE
@@ -200,7 +200,7 @@ void matrix_scan_rate_task(void) {
 }
 
 #ifdef AUDIO_ENABLE
-float doom_song[][2] = SONG(E1M1_DOOM);
+float                 doom_song[][2] = SONG(E1M1_DOOM);
 extern audio_config_t audio_config;
 
 void set_doom_song(layer_state_t state) {

@@ -541,7 +541,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             painter_render_wpm(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
 #    endif
 
-            ypos = 84;
+            ypos                         = 84;
             static uint16_t last_keycode = 0xFFFF;
             if (hue_redraw || last_keycode != userspace_runtime_state.last_keycode) {
                 last_keycode = userspace_runtime_state.last_keycode;

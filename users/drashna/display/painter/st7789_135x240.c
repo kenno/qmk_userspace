@@ -71,7 +71,7 @@ void init_display_st7789_135x240_rotation(void) {
 
 #ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
     extern menu_state_t menu_state;
-    menu_state.is_in_menu = true;
+    menu_state.is_in_menu     = true;
     menu_state.selected_child = 0;
 #endif
     // if needs inversion, run it only afetr the clear and rect functions or otherwise it won't work

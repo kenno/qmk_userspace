@@ -183,7 +183,7 @@ void keyboard_post_init_display_driver(void) {
 }
 
 bool           console_log_needs_redraw = false, console_has_redrawn = false;
-static uint8_t log_write_idx            = 0;
+static uint8_t log_write_idx = 0;
 static char    loglines[DISPLAY_CONSOLE_LOG_LINE_NUM + 1][DISPLAY_CONSOLE_LOG_LINE_LENGTH + 2];
 char*          logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM + 1];
 

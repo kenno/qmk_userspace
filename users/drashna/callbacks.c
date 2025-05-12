@@ -189,7 +189,7 @@ void layer_state_set_gaming(layer_state_t state) {
     if (l_is_gaming_layer_active != is_gaming_layer_active(state)) {
         l_is_gaming_layer_active = is_gaming_layer_active(state);
         if (l_is_gaming_layer_active) {
-            is_swap_active = keymap_config.swap_lctl_lgui;
+            is_swap_active               = keymap_config.swap_lctl_lgui;
             keymap_config.swap_lctl_lgui = false;
         } else {
             if (is_swap_active) {
@@ -276,10 +276,10 @@ void                       eeconfig_init_user(void) {
     userspace_config.display.oled.pet.kaki_speed  = 40;
     userspace_config.display.oled.pet.mati_speed  = 60;
     userspace_config.display.oled.pet.sleep_speed = 10;
-    userspace_config.display.painter.hsv.primary = (HSV){
-        .h = 128,
-        .s = 255,
-        .v = 255,
+    userspace_config.display.painter.hsv.primary  = (HSV){
+         .h = 128,
+         .s = 255,
+         .v = 255,
     };
     userspace_config.display.painter.hsv.secondary = (HSV){
         .h = 48,
@@ -333,7 +333,7 @@ void                       matrix_slave_scan_user(void) {
 #                define SPLIT_WATCHDOG_TIMEOUT 3000
 #            endif
 #        endif
-    if (!is_keyboard_master()) {
+                          if (!is_keyboard_master()) {
         static bool     delayed_tasks_run  = false;
         static uint16_t delayed_task_timer = 0;
         if (!delayed_tasks_run) {
@@ -344,7 +344,7 @@ void                       matrix_slave_scan_user(void) {
                 delayed_tasks_run = true;
             }
         }
-    }
+                          }
 #    endif // AUDIO_ENABLE && AUDIO_INIT_DELAY
     matrix_slave_scan_keymap();
 }

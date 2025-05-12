@@ -32,8 +32,8 @@ void update_wpm_avg(void) {
 }
 
 void keyboard_post_init_wpm(void) {
-    userspace_runtime_state.wpm.wpm_avg   = 0;
-    userspace_runtime_state.wpm.wpm_peak  = 0;
+    userspace_runtime_state.wpm.wpm_avg  = 0;
+    userspace_runtime_state.wpm.wpm_peak = 0;
 }
 
 void housekeeping_task_wpm(void) {

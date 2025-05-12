@@ -61,7 +61,7 @@
             }                         \
         }
 
-#    define ENCODER_RESOLUTION 2
+#    define ENCODER_RESOLUTION  2
 // faster i2c? 1MHz, maybe?
 #    define I2C1_TIMINGR_PRESC  0U
 #    define I2C1_TIMINGR_SCLDEL 10U

@@ -23,7 +23,7 @@ uint8_t jsf8_min_max(uint8_t min, uint8_t max) {
 #ifdef RGB_MATRIX_KEYREACTIVE_ENABLED
 
 RGB_MATRIX_EFFECT(CANDY_TAP)
-#ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+#    ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 static bool CANDY_TAP(effect_params_t* params) {
     HSV CANDY_TAP_math(HSV hsv, uint16_t offset) {
         hsv.h = scale16by8(g_rgb_timer, qadd8(rgb_matrix_config.speed, 8) >> 4);
@@ -32,10 +32,10 @@ static bool CANDY_TAP(effect_params_t* params) {
     }
     return effect_runner_reactive(params, &CANDY_TAP_math);
 }
-#endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+#    endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
 RGB_MATRIX_EFFECT(CANDY_SPLASH)
-#ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+#    ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 static bool CANDY_SPLASH(effect_params_t* params) {
     HSV CANDY_WIDE_math(HSV hsv, int16_t dx, int16_t dy, uint8_t dist, uint16_t tick) {
         uint16_t effect = tick + dist * 5;
@@ -46,7 +46,7 @@ static bool CANDY_SPLASH(effect_params_t* params) {
     }
     return effect_runner_reactive_splash(0, params, &CANDY_WIDE_math);
 }
-#endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+#    endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 #endif
 
 RGB_MATRIX_EFFECT(CANDY_RAIN)

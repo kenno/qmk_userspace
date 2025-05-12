@@ -9,8 +9,8 @@
 #include "action_util.h"
 #include "quantum_keycodes.h"
 
-void tap_code16(uint16_t code);
-void tap_code16_delay(uint16_t code, uint16_t delay);
+void        tap_code16(uint16_t code);
+void        tap_code16_delay(uint16_t code, uint16_t delay);
 static bool l_is_suspended = false;
 
 /**
@@ -74,7 +74,7 @@ bool hasAllBitsInMask(uint8_t value, uint8_t mask) {
  *  and will remove or replace mods, based on that.
  */
 
- __attribute__((weak)) uint8_t mod_config_8bit(uint8_t mod) {
+__attribute__((weak)) uint8_t mod_config_8bit(uint8_t mod) {
     /**
      * Note: This function is for the full 8-bit mods, NOT the 5-bit packed mods.
      * More info about the mods can be seen in modifiers.h.
@@ -113,7 +113,6 @@ bool hasAllBitsInMask(uint8_t value, uint8_t mask) {
 
     return mod;
 }
-
 
 /**
  * @brief Tap keycode, with no mods
