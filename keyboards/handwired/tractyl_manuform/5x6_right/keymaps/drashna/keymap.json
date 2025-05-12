@@ -11,6 +11,7 @@
         "drashna/unicode_typing",
         "drashna/watchdog",
         "getreuer/sentence_case",
+        "getreuer/lumino",
         "tzarc/konami_code"
     ]
 }

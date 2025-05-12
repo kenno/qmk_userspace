@@ -255,7 +255,13 @@ NOTE: These are all the same length.  If you do a search/replace
 
 
 #ifdef RGB_MATRIX_ENABLE
-#    define _________________ADJUST_L1_________________       RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, RM_TOGG
+#ifdef COMMUNITY_MODULE_LUMINO_ENABLE
+#define LT_TOGG LUMINO
+#else // COMMUNITY_MODULE_LUMINO_ENABLE
+#define LT_TOGG RM_TOGG
+#endif // COMMUNITY_MODULE_LUMINO_ENABLE
+
+#    define _________________ADJUST_L1_________________       RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, LT_TOGG
 #    define _________________ADJUST_L3_________________       RM_PREV, RM_HUED, RM_SATD, RM_VALD, KC_RGB_T
 #else
 #    define _________________ADJUST_L1_________________       UG_NEXT, UG_HUEU, UG_SATU, UG_VALU, UG_TOGG
