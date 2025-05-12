@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - develop
+      - develop
 
 jobs:
   develop_update:
@@ -19,39 +19,39 @@ jobs:
     strategy:
       matrix:
         branch:
-        - custom_drashna
+          - custom_drashna
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GH_BOT_SECRET }}
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BOT_SECRET }}
+          fetch-depth: 0
 
-    - name: Disable automatic eol conversion
-      run: |
-        echo "* -text" > .git/info/attributes
+      - name: Disable automatic eol conversion
+        run: |
+          echo "* -text" > .git/info/attributes
 
-    - name: Checkout branch
-      run: |
-        git fetch origin develop ${{ matrix.branch }}
-        git checkout ${{ matrix.branch }}
+      - name: Checkout branch
+        run: |
+          git fetch origin develop ${{ matrix.branch }}
+          git checkout ${{ matrix.branch }}
 
-    - name: Update develop from master
-      id: update
-      run: |
-        git config --global user.name "Drashna Bot"
-        git config user.email drashna@live.com
-        git rebase origin/develop
+      - name: Update develop from master
+        id: update
+        run: |
+          git config --global user.name "Drashna Bot"
+          git config user.email drashna@live.com
+          git rebase origin/develop
 
-#    - name: Create Pull Request
-#      if: always() && steps.update.conclusion == 'failure'
-#      run: |
-#        git rebase --abort
-#        gh pr create -B ${{ matrix.branch }} -H develop --title 'Manually update ${{ matrix.branch }} branch after develop merge' --body 'Created by Github action'
-#      env:
-#          GITHUB_TOKEN: ${{ secrets.GH_BOT_SECRET }}
+      #    - name: Create Pull Request
+      #      if: always() && steps.update.conclusion == 'failure'
+      #      run: |
+      #        git rebase --abort
+      #        gh pr create -B ${{ matrix.branch }} -H develop --title 'Manually update ${{ matrix.branch }} branch after develop merge' --body 'Created by Github action'
+      #      env:
+      #          GITHUB_TOKEN: ${{ secrets.GH_BOT_SECRET }}
 
-    - name: Push updates to feature branch
-      if: steps.update.conclusion != 'failure'
-      run: |
-        git push origin ${{ matrix.branch }} --force-with-lease
+      - name: Push updates to feature branch
+        if: steps.update.conclusion != 'failure'
+        run: |
+          git push origin ${{ matrix.branch }} --force-with-lease

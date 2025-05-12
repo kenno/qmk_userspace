@@ -5,7 +5,7 @@ on:
     inputs:
       release_name:
         description: "allow setting the release name"
-        default: 'latest_${{ github.ref_name }}'
+        default: "latest_${{ github.ref_name }}"
         required: false
         type: string
 

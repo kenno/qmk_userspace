@@ -7,15 +7,15 @@ permissions:
 
 jobs:
   build:
-    name: 'QMK Userspace Build'
+    name: "QMK Userspace Build"
     uses: drashna/qmk_userspace/.github/workflows/qmk_userspace_build.yml@master
     with:
       qmk_ref: ${{ github.ref_name }}
 
   publish:
-    name: 'QMK Userspace Publish'
+    name: "QMK Userspace Publish"
     uses: drashna/qmk_userspace/.github/workflows/qmk_userspace_publish.yml@master
     if: always() && !cancelled()
     needs: [build]
     # with:
-      # release_name: 'latest_${{ github.ref_name }}'
+    # release_name: 'latest_${{ github.ref_name }}'
