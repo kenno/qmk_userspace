@@ -72,7 +72,7 @@ void init_display_st7789_170x320_rotation(void) {
     qp_clear(st7789_display);
     qp_rect(st7789_display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
 
-    // if needs inversion, run it only afetr the clear and rect functions or otherwise it won't work
+    // if needs inversion, run it only after the clear and rect functions or otherwise it won't work
     init_display_st7789_170x320_inversion();
 
     qp_power(st7789_display, true);

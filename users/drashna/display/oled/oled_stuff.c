@@ -509,7 +509,7 @@ void render_wpm(uint8_t padding, uint8_t col, uint8_t line) {
  * @param start_offset horizontal pixel location (from left side of screen) to start rendering graph
  * @param cutoff horizontal pixel location (from left side of screen) to stop rendering graph
  * @param max_lines_graph vertical pixel height of graph
- * @param vertical_offset vertial pixel location (from top) to start rendering graph
+ * @param vertical_offset vertical pixel location (from top) to start rendering graph
  */
 void render_wpm_graph(uint8_t start_offset, uint8_t cutoff, uint8_t max_lines_graph, uint8_t vertical_offset) {
 #ifdef WPM_ENABLE

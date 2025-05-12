@@ -12,7 +12,7 @@ This allows for keyboard specific configuration while maintaining the ability to
 
 My [Ergodox EZ Keymap](https://github.com/qmk/qmk_firmware/blob/master/layouts/community/ergodox/drashna/keymap.c) is a good example of this, as it uses the LEDs as modifier indicators.
 
-You can see a list of these files in [callbacks.c](callbacks.c), or a shortend list here
+You can see a list of these files in [callbacks.c](callbacks.c), or a shortened list here
 
 ```c
 __attribute__((weak)) void keyboard_post_init_keymap(void) {}

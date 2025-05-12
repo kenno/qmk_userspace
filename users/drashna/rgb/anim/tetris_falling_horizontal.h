@@ -382,7 +382,7 @@ static bool tetris_falling_horizontal(effect_params_t* params) {
         //                 MATRIX_PHYSICAL_COL once implemented if (h_active_t_col+check_col > MATRIX_COLS) { // TODO:
         //                 REPLACE MATRIX_ROWS AND MATRIX_COLS WITH NEW CONCEPT CALLED MATRIX_PHYSICAL_ROWS AND
         //                 MATRIX_PHYSICAL_COLS
-        //                     // we went off screen at the bottom, so we sutract 1 from the row and do another drop
+        //                     // we went off screen at the bottom, so we subtract 1 from the row and do another drop
         //                     h_active_t_row -= 1;
         //                     h_drop_active = false;
         //                 }

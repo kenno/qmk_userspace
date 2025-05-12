@@ -83,7 +83,7 @@ bool oled_task_keymap(void) {
     oled_write_P(cat_mode, get_keyboard_lock());
 #endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
 
-#ifdef RGB_MATIRX_ENABLE
+#ifdef RGB_MATRIX_ENABLE
     static const char PROGMEM rgb_layer_status[2][3] = {{0xEE, 0xEF, 0}, {0xF0, 0xF1, 0}};
     oled_write_P(rgb_layer_status[rgb_matrix_is_enabled()], false);
 #endif

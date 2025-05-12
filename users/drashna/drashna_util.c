@@ -14,7 +14,7 @@ void        tap_code16_delay(uint16_t code, uint16_t delay);
 static bool l_is_suspended = false;
 
 /**
- * @brief Handle registering a keycode, with optional modifer based on timed event
+ * @brief Handle registering a keycode, with optional modifier based on timed event
  *
  * @param code keycode to send to host
  * @param mod_code modifier to send with code, if held for tapping term or longer
@@ -29,7 +29,7 @@ bool mod_key_press_timer(uint16_t code, uint16_t mod_code, bool pressed) {
 }
 
 /**
- * @brief Handle registation of keycode, with optional modifier based on custom timer
+ * @brief Handle registration of keycode, with optional modifier based on custom timer
  *
  * @param code keycode to send to host
  * @param mod_code modifier keycode to send with code, if held for tapping term or longer
@@ -213,7 +213,7 @@ uint16_t extract_basic_keycode(uint16_t keycode, keyrecord_t *record, bool check
  * @brief shim to work with different versions of the function until PR is merged and lands in master
  *
  * @param data data to be written
- * @param offset offest to write to
+ * @param offset offset to write to
  * @param size size of data to be written
  * @return uint32_t
  */

@@ -74,7 +74,7 @@ void init_display_st7789_135x240_rotation(void) {
     menu_state.is_in_menu     = true;
     menu_state.selected_child = 0;
 #endif
-    // if needs inversion, run it only afetr the clear and rect functions or otherwise it won't work
+    // if needs inversion, run it only after the clear and rect functions or otherwise it won't work
     init_display_st7789_135x240_inversion();
 
     qp_power(st7789_135x240_display, true);

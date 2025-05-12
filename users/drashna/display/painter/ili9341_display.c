@@ -97,7 +97,7 @@ void init_display_ili9341_rotation(void) {
     qp_clear(display);
     qp_rect(display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
 
-    // if needs inversion, run it only afetr the clear and rect functions or otherwise it won't work
+    // if needs inversion, run it only after the clear and rect functions or otherwise it won't work
     init_display_ili9341_inversion();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Initial render of frame/logo

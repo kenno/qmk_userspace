@@ -189,7 +189,7 @@ char*          logline_ptrs[DISPLAY_CONSOLE_LOG_LINE_NUM + 1];
 
 #if defined(OLED_ENABLE) && !defined(QUANTUM_PAINTER_ENABLE)
 _Static_assert(DISPLAY_CONSOLE_LOG_LINE_LENGTH <= (OLED_DISPLAY_WIDTH / OLED_FONT_WIDTH),
-               "DISPLAY_CONSOLE_LOG_LINE_LENGTH must be lower than oled chararcter limit");
+               "DISPLAY_CONSOLE_LOG_LINE_LENGTH must be lower than oled character limit");
 #endif
 
 /**
