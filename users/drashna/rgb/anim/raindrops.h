@@ -15,7 +15,7 @@ static bool SINGLE_COLOR_RAINDROPS(effect_params_t* params) {
         return 500 / scale16by8(qadd8(rgb_matrix_config.speed, 16), 16);
     }
 
-    void single_color_raindrops_set_color(uint8_t i, effect_params_t * params) {
+    void single_color_raindrops_set_color(uint8_t i, effect_params_t* params) {
         if (!HAS_ANY_FLAGS(g_led_config.flags[i], params->flags)) {
             return;
         }

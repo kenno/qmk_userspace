@@ -54,12 +54,7 @@
 #    define BOOTMAGIC_EEPROM_COLUMN       6
 #    define BOOTMAGIC_EEPROM_ROW_RIGHT    5
 #    define BOOTMAGIC_EEPROM_COLUMN_RIGHT 6
-#    define SECURE_UNLOCK_SEQUENCE    \
-        {                             \
-            {1, 5}, {1, 4}, {1, 3}, { \
-                1, 2                  \
-            }                         \
-        }
+#    define SECURE_UNLOCK_SEQUENCE        {{1, 5}, {1, 4}, {1, 3}, {1, 2}}
 
 #    define ENCODER_RESOLUTION  2
 // faster i2c? 1MHz, maybe?
