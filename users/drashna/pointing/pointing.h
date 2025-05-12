@@ -1,6 +1,6 @@
-// Copyright 2021 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
 // Copyright 2024 burkfers (@burkfers)
 // Copyright 2024 Wimads (@wimads)
+// Copyright 2021 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once

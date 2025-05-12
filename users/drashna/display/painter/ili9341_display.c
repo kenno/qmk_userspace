@@ -1,5 +1,5 @@
-// Copyright 2024 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
 // Copyright 2018-2024 Nick Brassel (@tzarc)
+// Copyright 2025 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drashna_runtime.h"

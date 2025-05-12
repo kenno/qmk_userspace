@@ -1,5 +1,5 @@
-// Copyright 2025 QMK
-// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright 2025 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 

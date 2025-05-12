@@ -1,3 +1,6 @@
+// Copyright 2025 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #ifdef RGB_MATRIX_FRAMEBUFFER_EFFECTS
 // Step 1.
 // Declare custom effects using the RGB_MATRIX_EFFECT macro

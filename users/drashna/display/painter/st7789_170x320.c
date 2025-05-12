@@ -1,5 +1,5 @@
-// Copyright 2024 splitkb.com (support@splitkb.com)
-// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright 2025 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drashna_runtime.h"
 
