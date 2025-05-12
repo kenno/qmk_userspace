@@ -5,6 +5,15 @@ repos:
     hooks:
       - id: remove-tabs
         exclude: "vendor-prefixes\\.txt$|.git/COMMIT_EDITMSG"
+      - id: insert-license
+        args:
+          [
+            "--allow-past-years",
+            "--use-current-year",
+            "--license-filepath=.lic",
+            "--comment-style=//",
+          ]
+        types_or: [c, c++]
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v20.1.4
     hooks:
