@@ -32,7 +32,7 @@ repos:
         exclude_types: [inc]
         # Workaround for https://github.com/pre-commit/mirrors-prettier/issues/29
         additional_dependencies:
-          - prettier@2.8.7
+          - prettier@v4.0.0-alpha.12
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.19.1
     hooks:

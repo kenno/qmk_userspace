@@ -10,10 +10,10 @@ make orthodox/rev1:drashna:teensy
 
 ## Layers
 
--   QWERTY/DVORAK/COLEMAK/WORKMAN: basic layout, default set like the OLKB boards. Default is set and persists on power cycle.
--   RAISE: Contains function keys and unshifted symbols
--   LOWER: Contains function keys and shifted symbols
--   ADJUST: contains special codes (layout defaults, RGB codes, Audio codes, and volume control)
+- QWERTY/DVORAK/COLEMAK/WORKMAN: basic layout, default set like the OLKB boards. Default is set and persists on power cycle.
+- RAISE: Contains function keys and unshifted symbols
+- LOWER: Contains function keys and shifted symbols
+- ADJUST: contains special codes (layout defaults, RGB codes, Audio codes, and volume control)
 
 All layers have RGB specific indicators, so you can see what layer you're on by the underglow.
 
