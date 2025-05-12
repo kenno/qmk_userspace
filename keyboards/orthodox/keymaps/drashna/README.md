@@ -5,7 +5,7 @@ This is my personal Orthodox configuration, and my daily driver.
 
 Most of the code resides in my userspace, rather than here, as I have multiple keyboards.
 
-How to build 
+How to build
 ------------
 make orthodox/rev1:drashna:teensy
 
