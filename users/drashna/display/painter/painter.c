@@ -41,6 +41,9 @@
 #else
 void display_menu_set_dirty(bool state) {}
 #endif
+#ifdef COMMUNITY_MODULE_QP_HELPERS_ENABLE
+#    include "qp_helpers.h"
+#endif
 #ifdef MULTITHREADED_PAINTER_ENABLE
 thread_t*     painter_thread         = NULL;
 volatile bool painter_thread_running = true;
@@ -317,7 +320,12 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
 
         const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
 
-        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments, 120);
+#    ifdef COMMUNITY_MODULE_QP_HELPERS_ENABLE
+        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv->primary, curr_hsv->secondary, (hsv_t){0, 0, 0},
+                      wpm_graph_samples, graph_segments, 120);
+#    else
+        qp_draw_graph_l(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments, 120);
+#    endif
     }
 #endif // WPM_ENABLE
 }
@@ -1216,9 +1224,9 @@ static inline uint8_t scale_value(uint8_t value, uint8_t from, uint8_t to) {
     return (value * from / to);
 }
 
-bool qp_draw_graph(painter_device_t device, uint16_t graph_x, uint16_t graph_y, uint16_t graph_width,
-                   uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t* graph_data, uint8_t graph_segments,
-                   uint8_t scale_to) {
+bool qp_draw_graph_l(painter_device_t device, uint16_t graph_x, uint16_t graph_y, uint16_t graph_width,
+                     uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t* graph_data, uint8_t graph_segments,
+                     uint8_t scale_to) {
     uint8_t graph_starting_index = 0;
     // if there are more segments than the graph width is wide in pixels, then set up things to only render the last
     // graph_width segments of the array.
