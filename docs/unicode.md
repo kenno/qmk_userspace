@@ -1,10 +1,10 @@
 # Custom Unicode
 
-To disable, add `CUSTOM_UNICODE_ENABLE = no` to the keymap's `rules.mk`.  
+To disable, add `CUSTOM_UNICODE_ENABLE = no` to the keymap's `rules.mk`.
 
-This disables all of the various implementations of unicode, enables the common unicode core, and allows usage. 
+This disables all of the various implementations of unicode, enables the common unicode core, and allows usage.
 
-In addition to a number of unicode keycodes: 
+In addition to a number of unicode keycodes:
 
 * `UC_FLIP` - `(ノಠ痊ಠ)ノ彡┻━┻`
 * `UC_TABL` - `┬─┬ノ( º _ ºノ)`
@@ -13,7 +13,7 @@ In addition to a number of unicode keycodes:
 * `UC_IRNY` - `⸮`
 * `UC_CLUE` - `‽`
 
-There are a number of unicode typing modes. This replaces the normal alpha keys with special unicodes. 
+There are a number of unicode typing modes. This replaces the normal alpha keys with special unicodes.
 
 * `KC_WIDE` - ｔｈｉｓ ｉｓ ｗｉｄｅ ｍｏｄｅ
 * `KC_SCRIPT` - 𝓽𝓱𝓲𝓼 𝓲𝓼 𝓼𝓬𝓻𝓲𝓹𝓽 𝓶𝓸𝓭𝓮

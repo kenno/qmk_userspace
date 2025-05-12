@@ -5,9 +5,9 @@ To disable the pre genrated oled display, add `CUSTOM_OLED_DRIVER = no` to your 
 <!-- to do: add all the stuff -->
 ## OLED Font
 
-My font file has multiple fonts and multiple logs integrated into the one file.  And it uses the full 255 possible characters. 
+My font file has multiple fonts and multiple logs integrated into the one file.  And it uses the full 255 possible characters.
 
-In addition to the default font and logos: 
+In addition to the default font and logos:
 
 ```c
 #    define OLED_FONT_5X5
@@ -31,11 +31,11 @@ In addition to the default font and logos:
 #    define OLED_LOGO_SKEEB
 ```
 
-Additionally, the font file allows for external oled font files, instead.  This allows for additional files that cannot be hosted in the QMK Repo. 
+Additionally, the font file allows for external oled font files, instead.  This allows for additional files that cannot be hosted in the QMK Repo.
 
 ## Display
 
-A picture is worth a thousand words.  So here are two: 
+A picture is worth a thousand words.  So here are two:
 
 ![Right](https://i.imgur.com/4XFOVKBl.jpg)
 

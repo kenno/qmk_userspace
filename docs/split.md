@@ -2,11 +2,11 @@
 
 To disable the customized split transport, add `CUSTOM_SPLIT_TRANSPORT_SYNC = no` to your `rules.mk`.
 
-This syncs a number of additional settings, such as the keymap_config (magic settings), user eeprom configs, and misc firmware settings. 
+This syncs a number of additional settings, such as the keymap_config (magic settings), user eeprom configs, and misc firmware settings.
 
-Additionally, this supports a watchdog timer reset for the secondary split side. 
+Additionally, this supports a watchdog timer reset for the secondary split side.
 
-## User State Config 
+## User State Config
 
 The User states that it sync are:
 

@@ -1,10 +1,10 @@
 # Custom Userspace Callback Functions
 
-Specifically QMK works by using customized callback functions for everything. This allows for multiple levels of customization. 
+Specifically QMK works by using customized callback functions for everything. This allows for multiple levels of customization.
 
-`matrix_scan` calls `matrix_scan_kb`, which calls `matrix_scan_user`. 
+`matrix_scan` calls `matrix_scan_kb`, which calls `matrix_scan_user`.
 `process_record` calls a bunch of stuff, but eventually calls `process_record_kb` which calls `process_record_user`
-The same goes for `matrix_init`, `layer_state_set`, `led_set`, and a few other functions.  
+The same goes for `matrix_init`, `layer_state_set`, `led_set`, and a few other functions.
 
 All (most) `_user` functions are handled here, in the userspace instead.  To allow keyboard specific configuration, I've created `_keymap` functions that can be called by the keymap.c files instead.
 
@@ -12,7 +12,7 @@ This allows for keyboard specific configuration while maintaining the ability to
 
 My [Ergodox EZ Keymap](https://github.com/qmk/qmk_firmware/blob/master/layouts/community/ergodox/drashna/keymap.c) is a good example of this, as it uses the LEDs as modifier indicators.
 
-You can see a list of these files in [callbacks.c](callbacks.c), or a shortend list here 
+You can see a list of these files in [callbacks.c](callbacks.c), or a shortend list here
 
 ```c
 __attribute__((weak)) void keyboard_post_init_keymap(void) {}
