@@ -84,6 +84,10 @@ void housekeeping_task_rgb_matrix(void) {
         rgb_matrix_mode_noeeprom(RGB_MATRIX_REST_MODE);
     }
 #endif // RGB_MATRIX_FRAMEBUFFER_EFFECTS
+#if defined(COMMUNITY_MODULE_LUMINO_ENABLE) && defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)
+    void housekeeping_task_lumino_user(void);
+    housekeeping_task_lumino_user();
+#endif // COMMUNITY_MODULE_LUMINO_ENABLE && RGBLIGHT_ENABLE && RGBLIGHT_CUSTOM
 }
 
 void keyboard_post_init_rgb_matrix(void) {
@@ -349,3 +353,24 @@ void rgb_matrix_idle_anim_toggle(void) {
     }
 #endif // RGB_MATRIX_ENABLE && RGB_MATRIX_FRAMEBUFFER_EFFECTS
 }
+
+#if defined(COMMUNITY_MODULE_LUMINO_ENABLE) && defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)
+void housekeeping_task_lumino_user(void) {
+    static uint8_t old  = {0};
+    const uint8_t  temp = rgb_matrix_get_val();
+    if (old != temp) {
+        old = temp;
+        rgblight_sethsv_noeeprom(rgblight_get_hue(), rgblight_get_sat(), old);
+    }
+}
+#    ifdef COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#        include "lumino.h"
+#        include "keyboard_lock.h"
+bool process_record_keyboard_lock_user(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == CM_KEYBOARD_LOCK_TOGGLE && record->event.pressed && !get_keyboard_lock()) {
+        lumino_sleep_soon();
+    }
+    return true;
+}
+#    endif // COMMUNITY_MODULE_KEYBOARD_LOCK_ENABLE
+#endif

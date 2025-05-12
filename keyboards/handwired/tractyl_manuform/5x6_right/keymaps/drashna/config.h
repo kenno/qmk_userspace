@@ -55,7 +55,7 @@
 #endif
 #ifdef COMMUNITY_MODULE_LUMINO_ENABLE
 #    define LUMINO_LONG_TIMEOUT 1000 * 60 * 10 // = 10 minutes.
-#    define LUMINO_SOON_TIMEOUT 1000 * 12      // = 12 seconds.
+#    define LUMINO_SOON_TIMEOUT 1000 * 5       // = 5 seconds.
 #    define LUMINO_TRANSITION   1500           // = 1.5s/1500 ms.
 #else
 #    define RGB_MATRIX_TIMEOUT 600000
