@@ -261,7 +261,7 @@ bool rgb_matrix_indicators_advanced_keymap(uint8_t led_min, uint8_t led_max) {
 
         RGB_MATRIX_INDICATOR_SET_COLOR((userspace_config.gaming.swapped_numbers ? 26 : 27), 0xFF, 0xFF, 0xFF); // 1
         RGB_MATRIX_INDICATOR_SET_COLOR((userspace_config.gaming.swapped_numbers ? 27 : 26), 0x00, 0xFF, 0x00); // 2
-        RGB_MATRIX_INDICATOR_SET_COLOR(25, 0x7A, 0x00, 0xFF);                                           // 3
+        RGB_MATRIX_INDICATOR_SET_COLOR(25, 0x7A, 0x00, 0xFF);                                                  // 3
     }
     return true;
 }
