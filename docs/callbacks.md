@@ -6,7 +6,7 @@ Specifically QMK works by using customized callback functions for everything. Th
 `process_record` calls a bunch of stuff, but eventually calls `process_record_kb` which calls `process_record_user`
 The same goes for `matrix_init`, `layer_state_set`, `led_set`, and a few other functions.
 
-All (most) `_user` functions are handled here, in the userspace instead.  To allow keyboard specific configuration, I've created `_keymap` functions that can be called by the keymap.c files instead.
+All (most) `_user` functions are handled here, in the userspace instead. To allow keyboard specific configuration, I've created `_keymap` functions that can be called by the keymap.c files instead.
 
 This allows for keyboard specific configuration while maintaining the ability to customize the board.
 

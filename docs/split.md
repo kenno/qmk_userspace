@@ -10,26 +10,26 @@ Additionally, this supports a watchdog timer reset for the secondary split side.
 
 The User states that it sync are:
 
-* Audio Enable status
-* Audio Clicky states
-* Unicode mode
-* Unicode typing mode
-* Pointing Device tap toggle status
-* Swap Hands status
-* Host Driver status
-* Caps Word status
+-   Audio Enable status
+-   Audio Clicky states
+-   Unicode mode
+-   Unicode typing mode
+-   Pointing Device tap toggle status
+-   Swap Hands status
+-   Host Driver status
+-   Caps Word status
 
 ## Userspace Config
 
 The userspace config states that are synced are:
 
-* RGB layer indication
-* "is overwatch" status
-* nuke switch
-* Swapped numbers
-* RGB Matrix idle animation
-* Autocorrect status (original and corrected strings)
-* matrix scan rate printing
-* oled brightness
-* oled display lock on status
-* pointing device acceleration
+-   RGB layer indication
+-   "is overwatch" status
+-   nuke switch
+-   Swapped numbers
+-   RGB Matrix idle animation
+-   Autocorrect status (original and corrected strings)
+-   matrix scan rate printing
+-   oled brightness
+-   oled display lock on status
+-   pointing device acceleration

@@ -2,15 +2,15 @@
 
 With help from gitter and Colinta, this adds the ability to add hidden macros from other users.
 
-First, I have several files that are hidden/excluded from Git/GitHub.  These contain everything needed for the macros. To hide these files, open `.git/info/exclude` and add `secrets.c` and `secrets.h` to that file, below the comments.
+First, I have several files that are hidden/excluded from Git/GitHub. These contain everything needed for the macros. To hide these files, open `.git/info/exclude` and add `secrets.c` and `secrets.h` to that file, below the comments.
 
 And this requires `KC_SECRET_1` through `KC_SECRET_5` to be added in your keycode enum (usually in your `<name>.h` file) the keycodes for the new macros.
 
 ## Git Exclusion
 
-To prevent `git` from seeing, or committing the secret files, you can exclude them.   What's the point of having secrets if they're posted on GitHub for everyone to see!?!
+To prevent `git` from seeing, or committing the secret files, you can exclude them. What's the point of having secrets if they're posted on GitHub for everyone to see!?!
 
-You can do this with the `.git/info/exclude` file, so that it's only ignored locally.  Unfortunately, that means it's not consistently handled on each system.
+You can do this with the `.git/info/exclude` file, so that it's only ignored locally. Unfortunately, that means it's not consistently handled on each system.
 
 However, if you create a `.gitignore` file in the same folder, you keep things consistent between every system that the code is checked out on.
 
@@ -61,7 +61,7 @@ bool process_record_secrets(uint16_t keycode, keyrecord_t *record) {
 
 ## secrets.h
 
-Now, for the actual secrets!  The file needs to look like
+Now, for the actual secrets! The file needs to look like
 
 ```c
 const char secret_0[] PROGMEM = "secret1";
@@ -86,7 +86,7 @@ bool process_record_secrets(uint16_t keycode, keyrecord_t *record) {
 
 This is so that the function can be called here, and replaced in the `secrets.c` file, and so it won't error out if it doesn't exist.
 
-And then, in the `process_record_user` function, assuming you have `return process_record_keymap(keycode, record)` here,  you'll want to replace the "final" return with the following. Otherwise, you want to replace the `return true;` with `return process_record_secrets(keycode, record);`
+And then, in the `process_record_user` function, assuming you have `return process_record_keymap(keycode, record)` here, you'll want to replace the "final" return with the following. Otherwise, you want to replace the `return true;` with `return process_record_secrets(keycode, record);`
 
 ```c
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {

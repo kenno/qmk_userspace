@@ -4,7 +4,7 @@ To disable the customized pointing device code and implement it at the keymap, a
 
 ## Automatic Mouse Layer
 
-***Deprecated*** - Functionality moved to core
+**_Deprecated_** - Functionality moved to core
 
 ## Gaming
 
@@ -12,4 +12,4 @@ When the gamepad or diablo layers are enabled, the mouse layer is locked on, as 
 
 ## Keycodes
 
-The only custom keycode for Pointing devices here is `KC_ACCEL`.  This allow the mouse report to have an acceleration curve (exponential).
+The only custom keycode for Pointing devices here is `KC_ACCEL`. This allow the mouse report to have an acceleration curve (exponential).

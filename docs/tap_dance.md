@@ -6,12 +6,12 @@ To disable, add `CUSTOM_TAP_DANCE = no` to your `rules.mk`.
 
 This is used for making Diablo 3 much easier to plan, especially at high rift levels.
 
-This works by using Tap Dances.  The taps don't actually "do anything". Instead, it sets up the interval for how often to send specific keypresses.  As you can tell, this makes automating things very easy.
+This works by using Tap Dances. The taps don't actually "do anything". Instead, it sets up the interval for how often to send specific keypresses. As you can tell, this makes automating things very easy.
 
-For critics that think this is cheating, just search "[diablo 3 num lock auto cast](http://lmgtfy.com/?q=diablo+3+numlock+autocast)".  This is just a simpler method, that doesn't require a numpad.
-
+For critics that think this is cheating, just search "[diablo 3 num lock auto cast](http://lmgtfy.com/?q=diablo+3+numlock+autocast)". This is just a simpler method, that doesn't require a numpad.
 
 ## Custom Tap Dance Type
+
 The real fun here is that the tap dances use a custom defined Tap Dance type:
 
 ```c
@@ -20,13 +20,14 @@ The real fun here is that the tap dances use a custom defined Tap Dance type:
     .user_data = (void *)&((diable_keys_t) { index, keycode }),  \
   }
 ```
-This lets me set an index and keycode for the tap dance.  This isn't the cool part yet, but this allows for the really cool stuff.
+
+This lets me set an index and keycode for the tap dance. This isn't the cool part yet, but this allows for the really cool stuff.
 
 The Index is needed because I don't know how to handle it otherwise.
 
 ## The Actual Dances
 
-These are the custom defined dances that I'm using.  It sets up everything for later, using the above custom dance type.
+These are the custom defined dances that I'm using. It sets up everything for later, using the above custom dance type.
 
 ```c
 //Tap Dance Definitions, sets the index and the keycode.
@@ -41,7 +42,7 @@ tap_dance_action_t tap_dance_actions[] = {
 
 ## Custom Data Structures
 
-First, to get this all working, there are a couple of things that need to be set up.  In a header file (or you could put it into the keymap), you need to create a couple of custom structures:
+First, to get this all working, there are a couple of things that need to be set up. In a header file (or you could put it into the keymap), you need to create a couple of custom structures:
 
 ```c
 typedef struct {
@@ -58,7 +59,6 @@ typedef struct {
 
 The first structure is for tracking each key that is being used. The second is to pass data from the Tap Dance action array to the actual function that we will need.
 
-
 ## Custom Arrays
 
 To facilitate things, you will need a couple of arrays in your `c` file.
@@ -72,13 +72,13 @@ diablo_timer_t diablo_timer[4];
 uint8_t diablo_times[] = { 0, 1, 3, 5, 10, 30 };
 ```
 
-The first one (`diablo_timer`) is what keeps track of the timer used for the keys, the interval that it uses, and the actual keycode.  This makes managing it a lot easier.
+The first one (`diablo_timer`) is what keeps track of the timer used for the keys, the interval that it uses, and the actual keycode. This makes managing it a lot easier.
 
-The second array is a list of predefined intervals, in seconds.  You can add more here, or remove entries.  It doesn't matter how long the array is, as this is computed automatically.
+The second array is a list of predefined intervals, in seconds. You can add more here, or remove entries. It doesn't matter how long the array is, as this is computed automatically.
 
 ## The Magic - Part 1: Master function
 
-The first part of the magic here is the `diablo_tapdance_master` function.  The Tap Dance feature calls this function, directly, and passes some data to the function.  Namely, it passes the array of the index and the keycode (`diablo_keys_t` from above).  This sets the keycode and the interval for the specific index of `diabolo_timer` based on the number of taps. If you hit it more than the number of items in the array, then it zeroes out the interval, disabling it.
+The first part of the magic here is the `diablo_tapdance_master` function. The Tap Dance feature calls this function, directly, and passes some data to the function. Namely, it passes the array of the index and the keycode (`diablo_keys_t` from above). This sets the keycode and the interval for the specific index of `diabolo_timer` based on the number of taps. If you hit it more than the number of items in the array, then it zeroes out the interval, disabling it.
 
 ```c
 // Cycle through the times for the macro, starting at 0, for disabled.
@@ -99,9 +99,9 @@ void diablo_tapdance_master(tap_dance_state_t *state, void *user_data) {
 
 ## The Magic - Part 2: The Coup de Grace
 
-The real core here is the `run_diablo_macro_check()` function.  You need to call this from `matrix_scan_user`, as this handles the timer check.
+The real core here is the `run_diablo_macro_check()` function. You need to call this from `matrix_scan_user`, as this handles the timer check.
 
-Specifically, it runs a check for each index of the timer.  It checks to see if it's enabled, and if enough time has passed. If enough time has passed, it resets the timer, and will tap the keycode that you set for that index, but only if the Diablo layer is enabled.
+Specifically, it runs a check for each index of the timer. It checks to see if it's enabled, and if enough time has passed. If enough time has passed, it resets the timer, and will tap the keycode that you set for that index, but only if the Diablo layer is enabled.
 
 ```c
 // Checks each of the 4 timers/keys to see if enough time has elapsed
