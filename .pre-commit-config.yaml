@@ -9,7 +9,6 @@ repos:
         args:
           [
             "--allow-past-years",
-            "--use-current-year",
             "--license-filepath=.lic",
             "--comment-style=//",
           ]
