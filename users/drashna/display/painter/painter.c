@@ -314,8 +314,8 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
 
     if (force_redraw || timer_elapsed(wpm_timer) > 1000) {
         wpm_timer = timer_read();
-        extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
-        graph_line_t   lines[] = {
+        extern uint8_t     wpm_graph_samples[WPM_GRAPH_SAMPLES];
+        const graph_line_t lines[] = {
             {.line_data = wpm_graph_samples, .line_color = curr_hsv->secondary},
         };
 
