@@ -314,15 +314,15 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
 
     if (force_redraw || timer_elapsed(wpm_timer) > 1000) {
         wpm_timer = timer_read();
-
-        // Example: Render a simple graph using qp_line
         extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
+        graph_line_t   lines[] = {
+            {.line_data = wpm_graph_samples, .line_color = curr_hsv->secondary},
+        };
 
         const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
 
 #    ifdef COMMUNITY_MODULE_QP_HELPERS_ENABLE
-        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv->primary, curr_hsv->secondary, (hsv_t){0, 0, 0},
-                      wpm_graph_samples, graph_segments, 120);
+        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv->primary, (hsv_t){0, 0, 0}, lines, 1, graph_segments, 120);
 #    else
         qp_draw_graph_l(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments, 120);
 #    endif
