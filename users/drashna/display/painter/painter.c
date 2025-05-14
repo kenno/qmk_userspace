@@ -316,7 +316,7 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
         wpm_timer = timer_read();
         extern uint8_t     wpm_graph_samples[WPM_GRAPH_SAMPLES];
         const graph_line_t lines[] = {
-            {.line_data = wpm_graph_samples, .line_color = curr_hsv->secondary},
+            {.line_data = wpm_graph_samples, .line_color = curr_hsv->secondary, .mode = LINE},
         };
 
         const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
