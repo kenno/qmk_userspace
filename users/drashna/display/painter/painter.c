@@ -49,6 +49,20 @@ thread_t*     painter_thread         = NULL;
 volatile bool painter_thread_running = true;
 #endif
 
+#ifndef WPM_PAINTER_GRAPH_HEIGHT
+#    define WPM_PAINTER_GRAPH_HEIGHT 49
+#endif // WPM_PAINTER_GRAPH_HEIGHT
+#ifndef WPM_PAINTER_GRAPH_WIDTH
+#    define WPM_PAINTER_GRAPH_WIDTH 57
+#endif // WPM_PAINTER_GRAPH_WIDTH
+
+#if defined(QUANTUM_PAINTER_SURFACE_ENABLE) && defined(WPM_ENABLE) && !defined(WPM_NO_SURFACE)
+#    include "qp_surface.h"
+static uint8_t
+    wpm_graph_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, 16)] = {0};
+static painter_device_t wpm_graph_surface;
+#endif
+
 painter_font_handle_t font_thintel, font_mono, font_oled;
 
 painter_image_handle_t lock_caps_on, lock_caps_off;
@@ -113,6 +127,10 @@ void painter_init_assets(void) {
     akira_explosion = qp_load_image_mem(gfx_akira_explosion);
 
     nyan_cat = qp_load_image_mem(gfx_large_nyan_cat);
+#if defined(QUANTUM_PAINTER_SURFACE_ENABLE) && defined(WPM_ENABLE) && !defined(WPM_NO_SURFACE)
+    wpm_graph_surface = qp_make_rgb565_surface(WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, wpm_graph_buffer);
+    qp_init(wpm_graph_surface, QP_ROTATION_0);
+#endif // QUANTUM_PAINTER_SURFACE_ENABLE && WPM_ENABLE && !WPM_NO_SURFACE
 }
 
 /**
@@ -308,8 +326,22 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
         qp_drawtext_recolor(device, temp_x, temp_y, font, buf, curr_hsv->secondary.h, curr_hsv->secondary.s,
                             curr_hsv->secondary.v, 0, 0, 0);
     }
-    temp_y += font->line_height + 4;
+#endif // WPM_ENABLE
+}
 
+/**
+ * @brief Render wpm graph to the display
+ *
+ * @param device device to render to
+ * @param font font to render with
+ * @param x x position to start rendering
+ * @param y y position to start rendering
+ * @param force_redraw do we forcibly redraw the keylogger
+ * @param curr_hsv painter colors
+ */
+void painter_render_wpm_graph(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                              bool force_redraw, dual_hsv_t* curr_hsv) {
+#if defined(WPM_ENABLE) && defined(COMMUNITY_MODULE_QP_HELPERS_ENABLE)
     static uint16_t wpm_timer = 0;
 
     if (force_redraw || timer_elapsed(wpm_timer) > 1000) {
@@ -321,10 +353,13 @@ void painter_render_wpm(painter_device_t device, painter_font_handle_t font, uin
 
         const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
 
-#    ifdef COMMUNITY_MODULE_QP_HELPERS_ENABLE
-        qp_draw_graph(device, x, temp_y, 57, 49, curr_hsv->primary, (hsv_t){0, 0, 0}, lines, 1, graph_segments, 120);
+#    if defined(QUANTUM_PAINTER_SURFACE_ENABLE) && !defined(WPM_NO_SURFACE)
+        qp_draw_graph(wpm_graph_surface, 0, 0, WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, curr_hsv->primary,
+                      (hsv_t){0, 0, 0}, lines, 1, graph_segments, 120);
+        qp_surface_draw(wpm_graph_surface, device, x, y, force_redraw);
 #    else
-        qp_draw_graph_l(device, x, temp_y, 57, 49, curr_hsv, wpm_graph_samples, graph_segments, 120);
+        qp_draw_graph(device, x, y, WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, curr_hsv->primary,
+                      (hsv_t){0, 0, 0}, lines, 1, graph_segments, 120);
 #    endif
     }
 #endif // WPM_ENABLE

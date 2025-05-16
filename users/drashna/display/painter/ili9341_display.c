@@ -539,6 +539,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             xpos = 80;
 #    ifdef WPM_ENABLE
             painter_render_wpm(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
+            ypos += font_oled->line_height + 2 * 4;
+            painter_render_wpm_graph(display, font_oled, xpos, ypos, hue_redraw, &curr_hsv);
 #    endif
 
             ypos                         = 84;
