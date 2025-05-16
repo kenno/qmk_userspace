@@ -59,7 +59,7 @@ __attribute__((unused)) static void add_keylog(uint16_t keycode, keyrecord_t* re
     keycode = extract_basic_keycode(keycode, record, true);
 
     if ((keycode == KC_BSPC) && mod_config(get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL) {
-        memset(str, ' ', length);
+        memset(str, '_', length);
         str[length - 1] = 0x00;
         return;
     }
@@ -150,15 +150,11 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
 void keyboard_post_init_display_driver(void) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE
     if (is_keyboard_master()) {
-#    if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
         memset(display_keylogger_string, '_', DISPLAY_KEYLOGGER_LENGTH);
-#    else  // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
-        memset(display_keylogger_string, ' ', DISPLAY_KEYLOGGER_LENGTH);
-#    endif // QUANTUM_PAINTER_ENABLE && CUSTOM_QUANTUM_PAINTER_ENABLE
         display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH] = '\0';
     }
 #endif // DISPLAY_KEYLOGGER_ENABLE
-#if defined(QUANTUM_PAINTER_ENABLE) || defined(OLED_ENABLE)
+#if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
     userspace_runtime_state.display.menu_state = (menu_state_t){
 #    ifdef DISPLAY_MENU_ENABLED_DEFAULT
         .is_in_menu     = true,
@@ -172,7 +168,7 @@ void keyboard_post_init_display_driver(void) {
     if (userspace_config.display.menu_render_side == 0) {
         userspace_config.display.menu_render_side = 3;
     }
-#endif // QUANTUM_PAINTER_ENABLE
+#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
     keyboard_post_init_oled();
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
