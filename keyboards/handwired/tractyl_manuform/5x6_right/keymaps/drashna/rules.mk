@@ -19,6 +19,8 @@ ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f411)
     HAPTIC_DRIVER     = drv2605l
     OLED_ENABLE       = yes
     RTC_DRIVER        = ds3231
+    # This is stupid, and you shouldn't do this
+    KEYMAP_JSON       = $(MAIN_KEYMAP_PATH_5)/keymap_f411.json
 endif
 ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f405)
     BOOTLOADER                            = tinyuf2
