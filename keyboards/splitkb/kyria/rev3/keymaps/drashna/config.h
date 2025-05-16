@@ -21,7 +21,6 @@
 #    define RGBLIGHT_SAT_STEP  8
 #    define RGBLIGHT_VAL_STEP  8
 #    define RGBLIGHT_SPLIT
-#    define RGBLIGHT_LAYERS
 #endif
 
 #define QMK_ESC_INPUT  D4
@@ -79,8 +78,8 @@
 #define SERIAL_USART_SPEED 921600
 
 #if defined(KEYBOARD_splitkb_kyria_rev1_proton_c) || defined(KEYBOARD_splitkb_kyria_rev3)
-#    define WEAR_LEVELING_BACKING_SIZE 16384
-#    define WEAR_LEVELING_LOGICAL_SIZE 8192
+#    define WEAR_LEVELING_BACKING_SIZE 2048
+#    define WEAR_LEVELING_LOGICAL_SIZE 1024
 #endif
 
 #define LAYER_MAP_REMAPPING
