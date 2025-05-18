@@ -127,7 +127,7 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
 
     if (record->event.pressed) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE
-        add_keylog(keycode, record, display_keylogger_string, (DISPLAY_KEYLOGGER_LENGTH + 1));
+        add_keylog(keycode, record, display_keylogger_string, ARRAY_SIZE(display_keylogger_string));
 #endif // DISPLAY_KEYLOGGER_ENABLE
 #ifdef OLED_ENABLE
         if (!process_record_user_oled(keycode, record)) {

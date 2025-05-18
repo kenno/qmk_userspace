@@ -726,8 +726,8 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
         qp_drawtext_recolor(device, x, y, font, "Keylogger: ", curr_hsv->primary.h, curr_hsv->primary.s,
                             curr_hsv->primary.v, 0, 0, 0);
         y += font->line_height + 4;
-        qp_drawtext_recolor(device, x, y, font, display_keylogger_string, curr_hsv->primary.h, curr_hsv->primary.s,
-                            curr_hsv->primary.v, 0, 255, 0);
+        qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0,
+                            255, 0);
 
         keylogger_has_changed = false;
     }
@@ -1123,8 +1123,8 @@ static const char* test_text[] = {
     // did intentionally skip PROGMEM here :)
     "abcdefghijklmnopqrstuvwxyz",
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    "01234567890 !@#$%%^&*()",
-    "__+-=[]{}\\|;:'\",.<>/?",
+    "01234567890 !@#$%^&*()",
+    "__+-=[]{}\\|;:'\",.<>/?¶‽⸮",
 };
 
 void render_character_set(painter_device_t display, uint16_t* x_offset, uint16_t* max_pos, uint16_t* ypos,
