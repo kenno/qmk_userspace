@@ -78,18 +78,19 @@ painter_image_handle_t nyan_cat;
 deferred_token         nyan_token = INVALID_DEFERRED_TOKEN;
 
 painter_image_array_t screen_saver_image[] = {
-    [__COUNTER__] = {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
-    [__COUNTER__] = {gfx_anime_girl_jacket_240x320, "Anime Girl"},
-    [__COUNTER__] = {gfx_asuka_240x320, "Asuka"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_00_240x320, "Eva Unit 00"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_01_240x320, "Eva Unit 01"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_02_240x320, "Eva Unit 02"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_03_240x320, "Eva Unit 03"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_04_240x320, "Eva Unit 04"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_05_240x320, "Eva Unit 05"},
-    [__COUNTER__] = {gfx_neon_genesis_evangelion_initial_machine_06_240x320, "Eva Unit 06"},
+    {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
+    {gfx_anime_girl_jacket_240x320, "Anime Girl"},
+    {gfx_asuka_240x320, "Asuka"},
+    {gfx_neon_genesis_evangelion_initial_machine_00_240x320, "Eva Unit 00"},
+    {gfx_neon_genesis_evangelion_initial_machine_01_240x320, "Eva Unit 01"},
+    {gfx_neon_genesis_evangelion_initial_machine_02_240x320, "Eva Unit 02"},
+    {gfx_neon_genesis_evangelion_initial_machine_03_240x320, "Eva Unit 03"},
+    {gfx_neon_genesis_evangelion_initial_machine_04_240x320, "Eva Unit 04"},
+    {gfx_neon_genesis_evangelion_initial_machine_05_240x320, "Eva Unit 05"},
+    {gfx_neon_genesis_evangelion_initial_machine_06_240x320, "Eva Unit 06"},
 };
-const uint8_t screensaver_image_size = __COUNTER__;
+
+const uint8_t screensaver_image_size = ARRAY_SIZE(screen_saver_image);
 
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
 bool rgb_redraw = false;
