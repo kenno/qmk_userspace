@@ -8,6 +8,7 @@
 #include "drashna_util.h"
 #include "version.h"
 #include "hardware_id_string.h"
+#include "keyrecords/process_records.h"
 
 #ifdef SPLIT_KEYBOARD
 #    include "split_util.h"
@@ -992,23 +993,28 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
             xpos = x + 20;
             for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
                 uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
-                wchar_t  code[2] = {0};
+                char     code[5] = {0};
 
-                // if (keycode == UC_IRNY) {
-                //     code[0] = L'⸮';
-                // } else if (keycode == UC_CLUE) {
-                //     code[0] = L'‽'
-                // } else
-                if (keycode > 0xFF) {
-                    keycode = KC_SPC;
+                if (keycode == UC_IRNY) {
+                    strcpy(code, "⸮");
+                } else if (keycode == UC_CLUE) {
+                    strcpy(code, "‽");
+                } else if (keycode == KC_ENTER) {
+                    strcpy(code, "¶");
+                } else {
+                    if (keycode > 0xFF) {
+                        keycode = KC_SPC;
+                    }
+                    if (keycode < ARRAY_SIZE(code_to_name)) {
+                        code[0] = pgm_read_byte(&code_to_name[keycode]);
+                        code[1] = '\0';
+                    }
                 }
-                if (keycode < ARRAY_SIZE(code_to_name)) {
-                    code[0] = pgm_read_byte(&code_to_name[keycode]);
-                }
-                xpos += qp_drawtext_recolor(
-                    device, xpos, ypos, font, (char*)code, curr_hsv->primary.h, curr_hsv->primary.s,
-                    peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v, curr_hsv->secondary.h,
-                    curr_hsv->secondary.s, peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0);
+                xpos += MAX(qp_drawtext_recolor(
+                                device, xpos, ypos, font_mono, code, curr_hsv->primary.h, curr_hsv->primary.s,
+                                peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v, curr_hsv->secondary.h,
+                                curr_hsv->secondary.s, peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0),
+                            6);
                 xpos += qp_drawtext_recolor(device, xpos, ypos, font, " ", 0, 0, 0, 0, 0, 0);
             }
             ypos += font->line_height + 4;
