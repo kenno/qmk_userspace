@@ -53,7 +53,7 @@ volatile bool painter_thread_running = true;
 #    define WPM_PAINTER_GRAPH_HEIGHT 49
 #endif // WPM_PAINTER_GRAPH_HEIGHT
 #ifndef WPM_PAINTER_GRAPH_WIDTH
-#    define WPM_PAINTER_GRAPH_WIDTH 57
+#    define WPM_PAINTER_GRAPH_WIDTH 58
 #endif // WPM_PAINTER_GRAPH_WIDTH
 
 #if defined(QUANTUM_PAINTER_SURFACE_ENABLE) && defined(WPM_ENABLE) && !defined(WPM_NO_SURFACE)
@@ -62,6 +62,9 @@ static uint8_t
     wpm_graph_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, 16)] = {0};
 static painter_device_t wpm_graph_surface;
 #endif
+#ifdef COMMUNITY_MODULE_QP_HELPERS_ENABLE
+#    include "qp_helpers.h"
+#endif // COMMUNITY_MODULE_QP_HELPERS_ENABLE
 
 painter_font_handle_t font_thintel, font_mono, font_oled;
 
@@ -349,18 +352,32 @@ void painter_render_wpm_graph(painter_device_t device, painter_font_handle_t fon
         wpm_timer = timer_read();
         extern uint8_t     wpm_graph_samples[WPM_GRAPH_SAMPLES];
         const graph_line_t lines[] = {
-            {.line_data = wpm_graph_samples, .line_color = curr_hsv->secondary, .mode = LINE},
+            {
+                .data      = wpm_graph_samples,
+                .color     = curr_hsv->secondary,
+                .mode      = LINE,
+                .max_value = 120,
+            },
+            GRAPHS_END,
         };
 
-        const uint8_t graph_segments = ARRAY_SIZE(wpm_graph_samples) - 1;
-
+        const graph_config_t config = {
 #    if defined(QUANTUM_PAINTER_SURFACE_ENABLE) && !defined(WPM_NO_SURFACE)
-        qp_draw_graph(wpm_graph_surface, 0, 0, WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, curr_hsv->primary,
-                      (hsv_t){0, 0, 0}, lines, 1, graph_segments, 120);
-        qp_surface_draw(wpm_graph_surface, device, x, y, force_redraw);
+            .device = wpm_graph_surface,
+            .start  = {.x = 0, .y = 0},
 #    else
-        qp_draw_graph(device, x, y, WPM_PAINTER_GRAPH_WIDTH, WPM_PAINTER_GRAPH_HEIGHT, curr_hsv->primary,
-                      (hsv_t){0, 0, 0}, lines, 1, graph_segments, 120);
+            .device = device,
+            .start  = {.x = x, .y = y},
+#    endif // QUANTUM_PAINTER_SURFACE_ENABLE
+            .size        = {.x = WPM_PAINTER_GRAPH_WIDTH, .y = WPM_PAINTER_GRAPH_HEIGHT},
+            .axis        = curr_hsv->primary,
+            .background  = {.h = 0, .s = 0, .v = 0},
+            .data_points = WPM_GRAPH_SAMPLES,
+        };
+
+        qp_draw_graph(&config, lines);
+#    if defined(QUANTUM_PAINTER_SURFACE_ENABLE) && !defined(WPM_NO_SURFACE)
+        qp_surface_draw(wpm_graph_surface, device, x, y, force_redraw);
 #    endif
     }
 #endif // WPM_ENABLE
