@@ -49,8 +49,15 @@ deferred_token         kittoken;
 extern uint8_t         oled_buffer[OLED_MATRIX_SIZE];
 extern OLED_BLOCK_TYPE oled_dirty;
 
-#ifndef CUSTOM_QUANTUM_PAINTER_ENABLE
-const char PROGMEM code_to_name[256] = {
+#ifdef DISPLAY_KEYLOGGER_ENABLE
+static bool keylogger_has_changed                               = true;
+static char display_keylogger_string[OLED_KEYLOGGER_LENGTH + 1] = {
+    [0 ... OLED_KEYLOGGER_LENGTH - 1] = '_',
+    [OLED_KEYLOGGER_LENGTH]           = '\0',
+};
+#endif // DISPLAY_KEYLOGGER_ENABLE
+
+static const char PROGMEM code_to_name[256] = {
     // clang-format off
 //   0    1    2    3    4    5    6    7    8    9    A    B    c    D    E    F
     ' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',  // 0x
@@ -71,7 +78,48 @@ const char PROGMEM code_to_name[256] = {
      25, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  24,  25,  27,  26, ' ', ' ', ' '   // Fx
     // clang-format on
 };
-#endif // CUSTOM_QUANTUM_PAINTER_ENABLE
+
+#ifdef DISPLAY_KEYLOGGER_ENABLE
+/**
+ * @brief parses pressed keycodes and saves to buffer
+ *
+ * @param keycode Keycode pressed from switch matrix
+ * @param record keyrecord_t data structure
+ */
+__attribute__((unused)) static void add_keylog(uint16_t keycode, keyrecord_t *record, char *str, uint8_t length) {
+    userspace_runtime_state.last_keycode = keycode;
+    memcpy(&userspace_runtime_state.last_key_event, &record->event, sizeof(keyevent_t));
+    keycode = extract_basic_keycode(keycode, record, true);
+
+    if ((keycode == KC_BSPC) && mod_config(get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL) {
+        memset(str, '_', length);
+        str[length - 1] = 0x00;
+        return;
+    }
+    if (record->tap.count) {
+        keycode &= 0xFF;
+    } else if (keycode > 0xFF) {
+        return;
+    }
+
+    memmove(str, str + 1, length - 2);
+
+    if (keycode < ARRAY_SIZE(code_to_name)) {
+        str[(length - 2)] = pgm_read_byte(&code_to_name[keycode]);
+    }
+}
+
+const char *get_oled_keylogger_str(void) {
+    return display_keylogger_string;
+}
+
+void split_sync_oled_keylogger_str(const uint8_t *data, uint8_t size) {
+    if (memcmp(data, display_keylogger_string, size) != 0) {
+        memcpy(display_keylogger_string, data, size);
+        keylogger_has_changed = true;
+    }
+}
+#endif // DISPLAY_KEYLOGGER_ENABLE
 
 void oled_pan_section(bool left, uint16_t y_start, uint16_t y_end, uint16_t x_start, uint16_t x_end) {
     uint16_t i = 0;
@@ -103,7 +151,15 @@ void oled_pan_section(bool left, uint16_t y_start, uint16_t y_end, uint16_t x_st
  * @return false
  */
 bool process_record_user_oled(uint16_t keycode, keyrecord_t *record) {
+#ifdef DISPLAY_KEYLOGGER_ENABLE
+    keylogger_has_changed = true;
+#endif // DISPLAY_KEYLOGGER_ENABLE
+
     if (record->event.pressed) {
+#ifdef DISPLAY_KEYLOGGER_ENABLE
+        add_keylog(keycode, record, display_keylogger_string, ARRAY_SIZE(display_keylogger_string));
+#endif // DISPLAY_KEYLOGGER_ENABLE
+
         switch (keycode) {
             case OLED_BRIGHTNESS_INC:
                 oled_brightness_increase_step();

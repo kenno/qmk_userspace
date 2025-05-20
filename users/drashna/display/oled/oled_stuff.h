@@ -58,8 +58,10 @@ void oled_post_init(void);
 void oled_brightness_increase_step(void);
 void oled_brightness_decrease_step(void);
 
-void render_wpm_graph(uint8_t start_offset, uint8_t cutoff, uint8_t max_lines_graph, uint8_t vertical_offset);
-void oled_pan_section(bool left, uint16_t y_start, uint16_t y_end, uint16_t x_start, uint16_t x_end);
+void        render_wpm_graph(uint8_t start_offset, uint8_t cutoff, uint8_t max_lines_graph, uint8_t vertical_offset);
+void        oled_pan_section(bool left, uint16_t y_start, uint16_t y_end, uint16_t x_start, uint16_t x_end);
+const char* get_oled_keylogger_str(void);
+void        split_sync_oled_keylogger_str(const uint8_t* data, uint8_t size);
 
 #if defined(OLED_DISPLAY_128X128) || defined(OLED_DISPLAY_128X64)
 #    define OLED_DISPLAY_VERBOSE

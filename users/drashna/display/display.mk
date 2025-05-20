@@ -75,6 +75,10 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
         ifeq ($(strip $(MULTITHREADED_PAINTER_ENABLE)), yes)
             OPT_DEFS += -DMULTITHREADED_PAINTER_ENABLE
         endif
+        ifeq ($(strip $(DISPLAY_KEYLOGGER_ENABLE)), yes)
+            OPT_DEFS += -DDISPLAY_KEYLOGGER_ENABLE
+            SRC += $(USER_PATH)/display/painter/keylogger.c
+        endif
     endif
 endif
 
@@ -89,6 +93,9 @@ ifeq ($(strip $(OLED_ENABLE)), yes)
     ifeq ($(strip $(OLED_DISPLAY_TEST)), yes)
         OPT_DEFS += -DOLED_DISPLAY_TEST
     endif
+    ifeq ($(strip $(DISPLAY_KEYLOGGER_ENABLE)), yes)
+        OPT_DEFS += -DDISPLAY_KEYLOGGER_ENABLE
+    endif
 endif
 
 ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)
@@ -99,8 +106,5 @@ ifeq ($(strip $(DISPLAY_DRIVER_REQUIRED)), yes)
 
     ifeq ($(strip $(DISPLAY_MENU_ENABLED_DEFAULT)), yes)
         OPT_DEFS += -DDISPLAY_MENU_ENABLED_DEFAULT
-    endif
-    ifeq ($(strip $(DISPLAY_KEYLOGGER_ENABLE)), yes)
-        OPT_DEFS += -DDISPLAY_KEYLOGGER_ENABLE
     endif
 endif

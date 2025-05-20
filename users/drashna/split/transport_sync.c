@@ -32,7 +32,13 @@ extern uint8_t wpm_graph_samples[WPM_GRAPH_SAMPLES];
 #endif // WPM_ENABLE
 #ifdef DISPLAY_DRIVER_ENABLE
 #    include "display/display.h"
-#endif // DISPLAY_DRIVER_ENABLEj
+#    ifdef CUSTOM_QUANTUM_PAINTER_ENABLE
+#        include "display/painter/keylogger.h"
+#    endif // CUSTOM_QUANTUM_PAINTER_ENABLE
+#    ifdef OLED_ENABLE
+#        include "display/oled/oled_stuff.h"
+#    endif // OLED_ENABLE
+#endif     // DISPLAY_DRIVER_ENABLE
 #ifndef FORCED_SYNC_THROTTLE_MS
 #    define FORCED_SYNC_THROTTLE_MS 100
 #endif // FORCED_SYNC_THROTTLE_MS
@@ -48,6 +54,7 @@ typedef enum PACKED extended_id_t {
     RPC_ID_EXTENDED_USERSPACE_CONFIG,
     RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE,
     RPC_ID_EXTENDED_SUSPEND_STATE,
+    RPC_ID_EXTENDED_OLED_KEYLOGGER_STR,
     NUM_EXTENDED_IDS,
 } extended_id_t;
 
@@ -101,11 +108,13 @@ void recv_autocorrect_string(const uint8_t* data, uint8_t size) {
 
 void recv_keylogger_string_sync(const uint8_t* data, uint8_t size) {
 #if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-    if (memcmp(data, &display_keylogger_string, size) != 0) {
-        memcpy(&display_keylogger_string, data, size);
-        keylogger_has_changed = true;
-    }
-#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+#    ifdef CUSTOM_QUANTUM_PAINTER_ENABLE
+    split_sync_keylogger_str(data, size);
+#    endif // CUSTOM_QUANTUM_PAINTER_ENABLE
+#    ifdef OLED_ENABLE
+    split_sync_oled_keylogger_str(data, size);
+#    endif // OLED_ENABLE
+#endif     // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 }
 
 void recv_keymap_config(const uint8_t* data, uint8_t size) {
@@ -425,23 +434,48 @@ void sync_userspace_config(void) {
  * @param keylog_temp Pointer to the temporary keylogger string to be synchronized.
  */
 void sync_keylogger_string(void) {
-    bool            needs_sync                                = false;
-    static uint16_t last_sync                                 = 0;
-    static char     keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
-
-    if (memcmp(&display_keylogger_string, keylog_temp, (DISPLAY_KEYLOGGER_LENGTH + 1))) {
-        needs_sync = true;
-        memcpy(keylog_temp, &display_keylogger_string, (DISPLAY_KEYLOGGER_LENGTH + 1));
-    }
-    if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
-        needs_sync = true;
-    }
-    if (needs_sync) {
-        if (send_extended_message_handler(RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR, display_keylogger_string,
-                                          (DISPLAY_KEYLOGGER_LENGTH + 1))) {
-            last_sync = timer_read();
+#    if defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
+    {
+        bool            needs_sync                                = false;
+        static uint16_t last_sync                                 = 0;
+        static char     keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
+        const char*     keylogger_str                             = get_keylogger_str();
+        if (memcmp(keylogger_str, keylog_temp, (DISPLAY_KEYLOGGER_LENGTH + 1))) {
+            needs_sync = true;
+            memcpy(keylog_temp, keylogger_str, (DISPLAY_KEYLOGGER_LENGTH + 1));
+        }
+        if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+            needs_sync = true;
+        }
+        if (needs_sync) {
+            if (send_extended_message_handler(RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR, keylogger_str,
+                                              (DISPLAY_KEYLOGGER_LENGTH + 1))) {
+                last_sync = timer_read();
+            }
         }
     }
+#    endif // CUSTOM_QUANTUM_PAINTER_ENABLE
+#    ifdef OLED_ENABLE
+    {
+        bool            needs_sync                             = false;
+        static uint16_t last_sync                              = 0;
+        static char     keylog_temp[OLED_KEYLOGGER_LENGTH + 1] = {0};
+        const char*     keylogger_str                          = get_oled_keylogger_str();
+        if (memcmp(keylogger_str, keylog_temp, (OLED_KEYLOGGER_LENGTH + 1))) {
+            needs_sync = true;
+            memcpy(keylog_temp, keylogger_str, (OLED_KEYLOGGER_LENGTH + 1));
+        }
+        if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+            needs_sync = true;
+        }
+        if (needs_sync) {
+            if (send_extended_message_handler(RPC_ID_EXTENDED_OLED_KEYLOGGER_STR, keylogger_str,
+                                              (OLED_KEYLOGGER_LENGTH + 1))) {
+                last_sync = timer_read();
+            }
+        }
+    }
+#    endif // OLED_ENABLE
 }
 #endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 

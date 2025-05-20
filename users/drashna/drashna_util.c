@@ -209,6 +209,29 @@ uint16_t extract_basic_keycode(uint16_t keycode, keyrecord_t *record, bool check
     return keycode;
 }
 
+uint16_t extract_non_basic_keycode(uint16_t keycode, keyrecord_t *record, bool check_hold) {
+    if (IS_QK_MOD_TAP(keycode)) {
+        if (record->tap.count || !check_hold) {
+            keycode = keycode_config(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+        } else {
+            keycode = keycode_config(0xE0 + biton(QK_MOD_TAP_GET_MODS(keycode) & 0xF) +
+                                     biton(QK_MOD_TAP_GET_MODS(keycode) & 0x10));
+        }
+    } else if (IS_QK_LAYER_TAP(keycode) && (record->tap.count || !check_hold)) {
+        keycode = keycode_config(QK_LAYER_TAP_GET_TAP_KEYCODE(keycode));
+    } else if (IS_QK_MODS(keycode)) {
+        keycode =
+            (mod_config(QK_MODS_GET_MODS(keycode)) & 0x1F) << 8 | (keycode_config(QK_MODS_GET_BASIC_KEYCODE(keycode)));
+    } else if (IS_QK_ONE_SHOT_MOD(keycode)) {
+        keycode = keycode_config(0xE0 + biton(QK_ONE_SHOT_MOD_GET_MODS(keycode) & 0xF) +
+                                 biton(QK_ONE_SHOT_MOD_GET_MODS(keycode) & 0x10));
+    } else if (IS_QK_BASIC(keycode)) {
+        keycode = keycode_config(keycode);
+    }
+
+    return keycode;
+}
+
 /**
  * @brief shim to work with different versions of the function until PR is merged and lands in master
  *

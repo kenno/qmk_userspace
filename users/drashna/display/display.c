@@ -9,6 +9,9 @@
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
 #    include "qp.h"
+#    if defined(DISPLAY_KEYLOGGER_ENABLE)
+#        include "display/painter/keylogger.h"
+#    endif
 #    ifdef CUSTOM_QUANTUM_PAINTER_ILI9341
 #        include "display/painter/ili9341_display.h"
 #    endif // CUSTOM_QUANTUM_PAINTER_ILI9341
@@ -19,62 +22,6 @@
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #    include "layer_map.h"
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
-
-#ifdef DISPLAY_KEYLOGGER_ENABLE
-bool keylogger_has_changed                                  = true;
-char display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
-#endif // DISPLAY_KEYLOGGER_ENABLE
-
-// clang-format off
-__attribute__((weak)) const char PROGMEM code_to_name[256] = {
-//   0    1    2    3    4    5    6    7    8    9    A    B    c    D    E    F
-    ' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',  // 0x
-    'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2',  // 1x
-    '3', '4', '5', '6', '7', '8', '9', '0', 'E', 'E', 'B', 'T', '_', '-', '=', '[',  // 2x
-    ']','\\', '#', ';','\'', '`', ',', '.', '/', 'C', 'F', 'F', 'F', 'F', 'F', 'F',  // 3x
-    'F', 'F', 'F', 'F', 'F', 'F', 'P', 'S',  19, ' ', ' ', ' ', 'D', ' ', ' ', 'R',  // 4x
-    'L', 'D', 'U', 'N', '/', '*', '-', '+',  23, '1', '2', '3', '4', '5', '6', '7',  // 5x
-    '8', '9', '0', '.','\\', 'A',   0, '=', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  // 6x
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  // 7x
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  // 8x
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  // 9x
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'M', 'V', 'V', ' ', ' ', ' ', ' ', ' ',  // Ax
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  // Bx
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'M', 'M', 'M',  // Cx
-    'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M',  // Dx
-    'C', 'S', 'A', 'G', 'C', 'S', 'A', 'G', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  // Ex
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '   // Fx
-};
-// clang-format on
-
-/**
- * @brief parses pressed keycodes and saves to buffer
- *
- * @param keycode Keycode pressed from switch matrix
- * @param record keyrecord_t data structure
- */
-__attribute__((unused)) static void add_keylog(uint16_t keycode, keyrecord_t* record, char* str, uint8_t length) {
-    userspace_runtime_state.last_keycode = keycode;
-    memcpy(&userspace_runtime_state.last_key_event, &record->event, sizeof(keyevent_t));
-    keycode = extract_basic_keycode(keycode, record, true);
-
-    if ((keycode == KC_BSPC) && mod_config(get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL) {
-        memset(str, '_', length);
-        str[length - 1] = 0x00;
-        return;
-    }
-    if (record->tap.count) {
-        keycode &= 0xFF;
-    } else if (keycode > 0xFF) {
-        return;
-    }
-
-    memmove(str, str + 1, length - 2);
-
-    if (keycode < ARRAY_SIZE(code_to_name)) {
-        str[(length - 2)] = pgm_read_byte(&code_to_name[keycode]);
-    }
-}
 
 void housekeeping_task_display(void) {
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE) && defined(SPLIT_KEYBOARD)
@@ -123,23 +70,20 @@ void housekeeping_task_display(void) {
  * @return false
  */
 bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
-    bool keep_processing = true;
-
+    userspace_runtime_state.last_keycode   = keycode;
+    userspace_runtime_state.last_key_event = record->event;
+#if defined(CUSTOM_QUANTUM_PAINTER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
+    keylogger_process(keycode, record);
+#endif // CUSTOM_QUANTUM_PAINTER_ENABLE
     if (record->event.pressed) {
-#ifdef DISPLAY_KEYLOGGER_ENABLE
-        add_keylog(keycode, record, display_keylogger_string, ARRAY_SIZE(display_keylogger_string));
-#endif // DISPLAY_KEYLOGGER_ENABLE
 #ifdef OLED_ENABLE
         if (!process_record_user_oled(keycode, record)) {
-            keep_processing = false;
+            return false;
         }
 #endif // OLED_ENABLE
     }
-#ifdef DISPLAY_KEYLOGGER_ENABLE
-    keylogger_has_changed = true;
-#endif // DISPLAY_KEYLOGGER_ENABLE
 
-    return keep_processing;
+    return true;
 }
 
 /**
@@ -148,12 +92,6 @@ bool process_record_display_driver(uint16_t keycode, keyrecord_t* record) {
  */
 
 void keyboard_post_init_display_driver(void) {
-#ifdef DISPLAY_KEYLOGGER_ENABLE
-    if (is_keyboard_master()) {
-        memset(display_keylogger_string, '_', DISPLAY_KEYLOGGER_LENGTH);
-        display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH] = '\0';
-    }
-#endif // DISPLAY_KEYLOGGER_ENABLE
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
     userspace_runtime_state.display.menu_state = (menu_state_t){
 #    ifdef DISPLAY_MENU_ENABLED_DEFAULT

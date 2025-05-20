@@ -31,6 +31,9 @@
 #if defined(RGBLIGHT_ENABLE)
 #    include "rgb/rgb_stuff.h"
 #endif // defined(RGBLIGHT_ENABLE)
+#if defined(DISPLAY_KEYLOGGER_ENABLE)
+#    include "display/painter/keylogger.h"
+#endif // DISPLAY_KEYLOGGER_ENABLE
 #ifdef COMMUNITY_MODULE_RTC_ENABLE
 #    include "rtc.h"
 #endif // COMMUNITY_MODULE_RTC_ENABLE
@@ -740,15 +743,13 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
 #ifdef DISPLAY_KEYLOGGER_ENABLE
     char buf[50] = {0};
 
-    if (keylogger_has_changed || force_redraw) {
-        snprintf(buf, sizeof(buf), "%s", display_keylogger_string);
+    if (is_keylogger_dirty() || force_redraw) {
+        snprintf(buf, sizeof(buf), "%s", get_keylogger_str());
         qp_drawtext_recolor(device, x, y, font, "Keylogger: ", curr_hsv->primary.h, curr_hsv->primary.s,
                             curr_hsv->primary.v, 0, 0, 0);
         y += font->line_height + 4;
         qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0,
                             255, 0);
-
-        keylogger_has_changed = false;
     }
 #endif
 }
@@ -992,28 +993,18 @@ void painter_render_layer_map(painter_device_t device, painter_font_handle_t fon
         for (uint8_t lm_y = 0; lm_y < LAYER_MAP_ROWS; lm_y++) {
             xpos = x + 20;
             for (uint8_t lm_x = 0; lm_x < LAYER_MAP_COLS; lm_x++) {
-                uint16_t keycode = extract_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
-                char     code[5] = {0};
+                uint16_t keycode = extract_non_basic_keycode(layer_map[lm_y][lm_x], NULL, false);
+#    ifdef LAYER_MAP_REMAPPING
+                keypos_t key = layer_remap[lm_y][lm_x];
+#    else  // LAYER_MAP_REMAPPING
+                keypos_t key = {.row = lm_y, .col = lm_x};
+#    endif // LAYER_MAP_REMAPPING
 
-                if (keycode == UC_IRNY) {
-                    strcpy(code, "⸮");
-                } else if (keycode == UC_CLUE) {
-                    strcpy(code, "‽");
-                } else if (keycode == KC_ENTER) {
-                    strcpy(code, "¶");
-                } else {
-                    if (keycode > 0xFF) {
-                        keycode = KC_SPC;
-                    }
-                    if (keycode < ARRAY_SIZE(code_to_name)) {
-                        code[0] = pgm_read_byte(&code_to_name[keycode]);
-                        code[1] = '\0';
-                    }
-                }
-                xpos += MAX(qp_drawtext_recolor(
-                                device, xpos, ypos, font_mono, code, curr_hsv->primary.h, curr_hsv->primary.s,
-                                peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v, curr_hsv->secondary.h,
-                                curr_hsv->secondary.s, peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0),
+                xpos += MAX(qp_drawtext_recolor(device, xpos, ypos, font_oled, get_keyode_character(keycode, &key),
+                                                curr_hsv->primary.h, curr_hsv->primary.s,
+                                                peek_matrix_layer_map(lm_y, lm_x) ? 0 : curr_hsv->primary.v,
+                                                curr_hsv->secondary.h, curr_hsv->secondary.s,
+                                                peek_matrix_layer_map(lm_y, lm_x) ? curr_hsv->secondary.v : 0),
                             6);
                 xpos += qp_drawtext_recolor(device, xpos, ypos, font, " ", 0, 0, 0, 0, 0, 0);
             }
@@ -1145,16 +1136,15 @@ char* truncate_text(const char* text, uint16_t max_width, painter_font_handle_t 
  */
 static const char* test_text[] = {
     // did intentionally skip PROGMEM here :)
-    "abcdefghijklmnopqrstuvwxyz",
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    "01234567890 !@#$%^&*()",
-    "__+-=[]{}\\|;:'\",.<>/?¶‽⸮",
+    "abcdefghijklmnopqrstuvwxyz  1234567890",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ  !@#$%^&*()",
+    "__+-=[]{}\\|;:'\",.<>/?¶‽⸮«»˚‣⇤↕↓↲←▼→⇥▲♪",
 };
 
 void render_character_set(painter_device_t display, uint16_t* x_offset, uint16_t* max_pos, uint16_t* ypos,
                           painter_font_handle_t font, uint8_t hue_fg, uint8_t sat_fg, uint8_t val_fg, uint8_t hue_bg,
                           uint8_t sat_bg, uint8_t val_bg) {
-    for (uint8_t i = 0; i < 4; ++i) {
+    for (uint8_t i = 0; i < ARRAY_SIZE(test_text); ++i) {
         uint16_t width = qp_drawtext_recolor(display, *x_offset, *ypos, font, test_text[i], hue_fg, sat_fg, val_fg,
                                              hue_bg, sat_bg, val_bg);
 
