@@ -227,6 +227,34 @@ NOTE: These are all the same length.  If you do a search/replace
 #define _______________MINIMAK_12_R3_______________       KC_J,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH
 
 
+#define ____________GALLIUM_ROWSTAG_L1_____________       KC_B,    KC_L,    KC_D,    KC_C,    KC_V
+#define ____________GALLIUM_ROWSTAG_L2_____________       KC_N,    KC_R,    KC_T,    KC_S,    KC_G
+#define ____________GALLIUM_ROWSTAG_L3_____________       KC_X,    KC_Q,    KC_M,    KC_W,    KC_Z
+
+#define ____________GALLIUM_ROWSTAG_R1_____________       KC_J,    KC_F,    KC_O,    KC_U,    KC_COMM
+#define ____________GALLIUM_ROWSTAG_R2_____________       KC_Y,    KC_H,    KC_A,    KC_E,    KC_I,   KC_SLSH
+#define ____________GALLIUM_ROWSTAG_R3_____________       KC_K,    KC_P,    KC_QUOT, KC_SCLN, KC_DOT
+
+
+#define ____________GALLIUM_COLSTAG_L1_____________       KC_B,    KC_L,    KC_D,    KC_C,    KC_V
+#define ____________GALLIUM_COLSTAG_L2_____________       KC_N,    KC_R,    KC_T,    KC_S,    KC_G
+#define ____________GALLIUM_ROWSTAG_L3_____________       KC_X,    KC_Q,    KC_M,    KC_W,    KC_Z
+
+#define ____________GALLIUM_COLSTAG_R1_____________       KC_J,    KC_Y,    KC_O,    KC_U,    KC_COMM
+#define ____________GALLIUM_COLSTAG_R2_____________       KC_P,    KC_H,    KC_A,    KC_E,    KC_I,   KC_SLSH
+#define ____________GALLIUM_COLSTAG_R3_____________       KC_K,    KC_P,    KC_QUOT, KC_SCLN, KC_DOT
+
+
+#define _________________NERPS_L1__________________       KC_X,    KC_L,    KC_D,    KC_C,    KC_V
+#define _________________NERPS_L2__________________       KC_N,    KC_R,    KC_T,    KC_S,    KC_G
+#define _________________NERPS_L3__________________       KC_Q,    KC_J,    KC_M,    KC_C,    KC_W
+
+#define _________________NERPS_R1__________________       KC_Z,    KC_K,    KC_O,    KC_U,    KC_COMM
+#define _________________NERPS_R2__________________       KC_Y,    KC_H,    KC_E,    KC_I,    KC_A,   KC_SLSH
+#define _________________NERPS_R3__________________       KC_B,    KC_F,    KC_QUOT, KC_SCLN, KC_DOT
+
+
+
 #define ________________NUMBER_LEFT________________       KC_1,    KC_2,    KC_3,    KC_4,    KC_5
 #define ________________NUMBER_RIGHT_______________       KC_6,    KC_7,    KC_8,    KC_9,    KC_0
 #define _________________FUNC_LEFT_________________       KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5
