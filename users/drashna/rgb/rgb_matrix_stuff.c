@@ -84,10 +84,6 @@ void housekeeping_task_rgb_matrix(void) {
         rgb_matrix_mode_noeeprom(RGB_MATRIX_REST_MODE);
     }
 #endif // RGB_MATRIX_FRAMEBUFFER_EFFECTS
-#if defined(COMMUNITY_MODULE_LUMINO_ENABLE) && defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)
-    void housekeeping_task_lumino_user(void);
-    housekeeping_task_lumino_user();
-#endif // COMMUNITY_MODULE_LUMINO_ENABLE && RGBLIGHT_ENABLE && RGBLIGHT_CUSTOM
 }
 
 void keyboard_post_init_rgb_matrix(void) {
