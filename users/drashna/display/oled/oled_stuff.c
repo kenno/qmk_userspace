@@ -55,7 +55,6 @@ static char display_keylogger_string[OLED_KEYLOGGER_LENGTH + 1] = {
     [0 ... OLED_KEYLOGGER_LENGTH - 1] = '_',
     [OLED_KEYLOGGER_LENGTH]           = '\0',
 };
-#endif // DISPLAY_KEYLOGGER_ENABLE
 
 static const char PROGMEM code_to_name[256] = {
     // clang-format off
@@ -79,7 +78,6 @@ static const char PROGMEM code_to_name[256] = {
     // clang-format on
 };
 
-#ifdef DISPLAY_KEYLOGGER_ENABLE
 /**
  * @brief parses pressed keycodes and saves to buffer
  *
