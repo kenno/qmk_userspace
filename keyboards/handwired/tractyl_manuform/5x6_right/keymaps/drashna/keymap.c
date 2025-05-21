@@ -33,17 +33,17 @@ keypos_t layer_remap[LAYER_MAP_ROWS][LAYER_MAP_COLS] = {
 
 #ifdef ENCODER_MAP_ENABLE
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [_DEFAULT_LAYER_1] = { ENCODER_CCW_CW( KC_DOWN, KC_UP   ), ENCODER_CCW_CW( KC_RGHT, KC_LEFT ) },
+    [_DEFAULT_LAYER_1] = { ENCODER_CCW_CW( KC_UP,   KC_DOWN ), ENCODER_CCW_CW( KC_LEFT, KC_RGHT ) },
     [_DEFAULT_LAYER_2] = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_DEFAULT_LAYER_3] = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_DEFAULT_LAYER_4] = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_GAMEPAD]         = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
     [_DIABLO]          = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
-    [_MOUSE]           = { ENCODER_CCW_CW( KC_WH_D, KC_WH_U ), ENCODER_CCW_CW( KC_WH_R, KC_WH_L ) },
+    [_MOUSE]           = { ENCODER_CCW_CW( KC_WH_D, KC_WH_U ), ENCODER_CCW_CW( KC_WH_L, KC_WH_R ) },
     [_MEDIA]           = { ENCODER_CCW_CW( _______, _______ ), ENCODER_CCW_CW( _______, _______ ) },
-    [_RAISE]           = { ENCODER_CCW_CW( KC_DOWN, KC_UP   ), ENCODER_CCW_CW( KC_RGHT, KC_LEFT ) },
-    [_LOWER]           = { ENCODER_CCW_CW( UG_NEXT, UG_PREV ), ENCODER_CCW_CW( KC_PGDN, KC_PGUP ) },
-    [_ADJUST]          = { ENCODER_CCW_CW( RM_NEXT, RM_PREV ), ENCODER_CCW_CW( RM_HUEU, RM_HUEU ) },
+    [_RAISE]           = { ENCODER_CCW_CW( KC_UP,   KC_DOWN ), ENCODER_CCW_CW( KC_LEFT, KC_RGHT ) },
+    [_LOWER]           = { ENCODER_CCW_CW( KC_PGUP, KC_PGDN ), ENCODER_CCW_CW( UG_PREV, UG_NEXT ) },
+    [_ADJUST]          = { ENCODER_CCW_CW( RM_HUEU, RM_HUED ), ENCODER_CCW_CW( RM_PREV, RM_NEXT ) },
 };
 #endif
 // clang-format on
