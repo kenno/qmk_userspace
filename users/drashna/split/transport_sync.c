@@ -13,7 +13,9 @@
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
 #    include "display_menu.h"
 #endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
-
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef UNICODE_COMMON_ENABLE
 #    include "process_unicode_common.h"
 extern unicode_config_t unicode_config;
@@ -55,6 +57,7 @@ typedef enum PACKED extended_id_t {
     RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE,
     RPC_ID_EXTENDED_SUSPEND_STATE,
     RPC_ID_EXTENDED_OLED_KEYLOGGER_STR,
+    RPC_ID_EXTENDED_RTC_CONFIG,
     NUM_EXTENDED_IDS,
 } extended_id_t;
 
@@ -107,14 +110,9 @@ void recv_autocorrect_string(const uint8_t* data, uint8_t size) {
 }
 
 void recv_keylogger_string_sync(const uint8_t* data, uint8_t size) {
-#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE)
-#    ifdef CUSTOM_QUANTUM_PAINTER_ENABLE
+#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
     split_sync_keylogger_str(data, size);
-#    endif // CUSTOM_QUANTUM_PAINTER_ENABLE
-#    ifdef OLED_ENABLE
-    split_sync_oled_keylogger_str(data, size);
-#    endif // OLED_ENABLE
-#endif     // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
 }
 
 void recv_keymap_config(const uint8_t* data, uint8_t size) {
@@ -237,6 +235,22 @@ void recv_device_suspend_state(const uint8_t* data, uint8_t size) {
     }
 }
 
+void recv_oled_keylogger_string_sync(const uint8_t* data, uint8_t size) {
+#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE) && defined(OLED_ENABLE)
+    split_sync_oled_keylogger_str(data, size);
+#endif // DISPLAY_DRIVER_ENABLE && DISPLAY_KEYLOGGER_ENABLE
+}
+
+void recv_rtc_config(const uint8_t* data, uint8_t size) {
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+    static rtc_time_t rtc_time;
+    if (memcmp(data, &rtc_time, sizeof(rtc_time_t)) != 0) {
+        memcpy(&rtc_time, data, sizeof(rtc_time_t));
+        rtc_set_time(rtc_time);
+    }
+#endif // COMMUNITY_MODULE_RTC_ENABLE
+}
+
 static const handler_fn_t handlers[NUM_EXTENDED_IDS] = {
     [RPC_ID_EXTENDED_WPM_GRAPH_DATA]          = recv_wpm_graph_data,
     [RPC_ID_EXTENDED_AUTOCORRECT_STR]         = recv_autocorrect_string,
@@ -246,6 +260,8 @@ static const handler_fn_t handlers[NUM_EXTENDED_IDS] = {
     [RPC_ID_EXTENDED_USERSPACE_CONFIG]        = recv_userspace_config,
     [RPC_ID_EXTENDED_USERSPACE_RUNTIME_STATE] = recv_userspace_runtime_state,
     [RPC_ID_EXTENDED_SUSPEND_STATE]           = recv_device_suspend_state,
+    [RPC_ID_EXTENDED_OLED_KEYLOGGER_STR]      = recv_oled_keylogger_string_sync,
+    [RPC_ID_EXTENDED_RTC_CONFIG]              = recv_rtc_config,
 };
 
 /**
@@ -628,6 +644,26 @@ void sync_layer_map(void) {
 }
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+/**
+ * @brief Synchronizes the RTC date and time between split keyboard halves.
+ *
+ * This function ensures that the RTC date and time are consistent across both halves of a split keyboard.
+ */
+void sync_rtc_config(void) {
+    extern bool     rtc_needs_sync;
+    static uint16_t last_sync_time = 0;
+
+    if (rtc_needs_sync || timer_elapsed(last_sync_time) >= 10000) {
+        rtc_time_t rtc_time = rtc_read_time_struct();
+        if (send_extended_message_handler(RPC_ID_EXTENDED_RTC_CONFIG, &rtc_time, sizeof(rtc_time_t))) {
+            rtc_needs_sync = false;
+            last_sync_time = timer_read();
+        }
+    }
+}
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+
 /**
  * @brief Initialize the transport sync
  *
@@ -676,5 +712,8 @@ void housekeeping_task_transport_sync(void) {
 #ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
         sync_layer_map();
 #endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+        sync_rtc_config();
+#endif // COMMUNITY_MODULE_RTC_ENABLE
     }
 }

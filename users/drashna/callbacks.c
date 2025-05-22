@@ -35,6 +35,9 @@ void keyboard_post_init_unicode(void);
 #if defined(CUSTOM_RGB_MATRIX)
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // CUSTOM_RGB_MATRIX
+#ifdef COMMUNITY_MODULE_RTC_ENABLE
+#    include "rtc.h"
+#endif // COMMUNITY_MODULE_RTC_ENABLE
 #ifdef CUSTOM_TAP_DANCE_ENABLE
 #    include "keyrecords/custom_tap_dance.h"
 #endif // CUSTOM_TAP_DANCE_ENABLE
@@ -397,7 +400,8 @@ void                       housekeeping_task_user(void) {
 }
 
 #ifdef COMMUNITY_MODULE_RTC_ENABLE
-#    include "rtc.h"
+bool rtc_needs_sync = false;
+
 void rtc_check_dst_format(rtc_time_t *time) {
 #    ifdef DS1307_RTC_DRIVER_ENABLE
     time->is_dst = userspace_config.rtc.is_dst;
@@ -422,6 +426,9 @@ bool rtc_set_time_user(rtc_time_t *time) {
     userspace_config.rtc.timezone   = time->timezone;
     userspace_config.rtc.format_24h = time->format;
     eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    if (is_keyboard_master()) {
+        rtc_needs_sync = rtc_is_connected();
+    }
     return true;
 }
 #endif
