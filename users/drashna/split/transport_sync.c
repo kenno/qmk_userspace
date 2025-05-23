@@ -651,14 +651,12 @@ void sync_layer_map(void) {
  * This function ensures that the RTC date and time are consistent across both halves of a split keyboard.
  */
 void sync_rtc_config(void) {
-    extern bool     rtc_needs_sync;
-    static uint16_t last_sync_time = 0;
+    extern bool rtc_needs_sync;
 
-    if (rtc_needs_sync || timer_elapsed(last_sync_time) >= 10000) {
+    if (rtc_needs_sync) {
         rtc_time_t rtc_time = rtc_read_time_struct();
         if (send_extended_message_handler(RPC_ID_EXTENDED_RTC_CONFIG, &rtc_time, sizeof(rtc_time_t))) {
             rtc_needs_sync = false;
-            last_sync_time = timer_read();
         }
     }
 }
