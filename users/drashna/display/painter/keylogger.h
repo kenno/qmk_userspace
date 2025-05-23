@@ -33,6 +33,13 @@ const char *get_keylogger_str(void);
 bool is_keylogger_dirty(void);
 
 /**
+ * Set the keylog dirty state.
+ *
+ * This is used to force a redraw of the keylogger string.
+ */
+void keylogger_set_dirty(bool dirty);
+
+/**
  * Takes a basic string representation of a keycode and
  * replace it with a prettier one. Eg: ``KC_A`` becomes ``A``
  */

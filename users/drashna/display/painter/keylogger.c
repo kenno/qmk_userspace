@@ -303,6 +303,10 @@ bool is_keylogger_dirty(void) {
     return keylog_dirty;
 }
 
+void keylogger_set_dirty(bool dirty) {
+    keylog_dirty = dirty;
+}
+
 const char *get_keylogger_str(void) {
     return display_keylogger_string;
 }

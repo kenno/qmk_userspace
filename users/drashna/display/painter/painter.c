@@ -747,6 +747,7 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
         y += font->line_height + 4;
         qp_drawtext_recolor(device, x, y, font, truncate_text(get_keylogger_str(), 150, font, true, false),
                             curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 255, 0);
+        keylogger_set_dirty(false);
     }
 #endif
 }
@@ -770,14 +771,9 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
 void painter_render_autocorrect(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                                 uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
 #ifdef AUTOCORRECT_ENABLE
-    extern bool     autocorrect_str_has_changed;
-    extern char     autocorrected_str_raw[2][21];
-    char            buf[50]           = {0};
-    static uint32_t autocorrect_timer = 0;
-    if (timer_elapsed(autocorrect_timer) > 125) {
-        autocorrect_timer           = timer_read();
-        autocorrect_str_has_changed = true;
-    }
+    extern bool autocorrect_str_has_changed;
+    extern char autocorrected_str_raw[2][21];
+    char        buf[50] = {0};
 
     if (force_redraw || autocorrect_str_has_changed) {
         qp_drawtext_recolor(device, x, y, font, "Autocorrected: ", curr_hsv->primary.h, curr_hsv->primary.s,

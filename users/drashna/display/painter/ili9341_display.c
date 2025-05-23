@@ -367,7 +367,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 
             static uint8_t last_am_layer = 0xFF;
             if (hue_redraw || last_am_layer != get_auto_mouse_layer() || auto_mouse_redraw) {
-                last_am_state = get_auto_mouse_layer();
+                last_am_layer = get_auto_mouse_layer();
                 xpos          = 5;
                 snprintf(buf, sizeof(buf), "%12s", layer_name(get_auto_mouse_layer()));
                 qp_drawtext_recolor(display, xpos, ypos, font_oled,
