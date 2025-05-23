@@ -36,7 +36,7 @@ bool is_keylogger_dirty(void);
  * Takes a basic string representation of a keycode and
  * replace it with a prettier one. Eg: ``KC_A`` becomes ``A``
  */
-void keycode_repr(const char **str);
+void keycode_repr(const char **str, const uint8_t mods);
 
 void        split_sync_keylogger_str(const uint8_t *data, uint8_t size);
 const char *get_keyode_character(uint16_t keycode, keypos_t *key);

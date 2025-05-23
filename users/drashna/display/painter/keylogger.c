@@ -307,9 +307,9 @@ const char *get_keylogger_str(void) {
     return display_keylogger_string;
 }
 
-void keycode_repr(const char **str) {
+void keycode_repr(const char **str, const uint8_t mods) {
     skip_prefix(str);
-    maybe_symbol(str, get_mods() | get_oneshot_mods());
+    maybe_symbol(str, mods);
 }
 
 void keylogger_process(uint16_t keycode, keyrecord_t *record) {
@@ -323,6 +323,8 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
     if ((IS_QK_LAYER_TAP(keycode) && !record->tap.count)
         || (keycode >= QK_USER && (keycode != UC_IRNY && keycode != UC_CLUE))
         || IS_RGB_KEYCODE(keycode)
+        || IS_QK_ONE_SHOT_LAYER(keycode)
+        || IS_QK_ONE_SHOT_MOD(keycode)
         || IS_QK_LAYER_MOD(keycode)
         || IS_QK_MOMENTARY(keycode)
         || IS_QK_DEF_LAYER(keycode)
@@ -334,11 +336,20 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
     }
 
     keylog_dirty = true;
-
-    const char *str = get_keycode_string(keycode);
-
     uint8_t mods = get_mods();
-    bool    ctrl = mods & MOD_MASK_CTRL;
+#ifndef NO_ACTION_ONESHOT
+    mods |= get_oneshot_mods();
+#endif // NO_ACTION_ONESHOT
+
+    const char *str = NULL;
+    if (IS_QK_MODS(keycode) && QK_MODS_GET_MODS(keycode) & MOD_LSFT) {
+        str = get_keycode_string(QK_MODS_GET_BASIC_KEYCODE(keycode));
+        mods |= QK_MODS_GET_MODS(keycode);
+    } else {
+        str = get_keycode_string(keycode);
+    }
+
+    bool ctrl = mod_config(mods) & MOD_MASK_CTRL;
 
     // delete from tail
     if (strstr(str, "BSPC") != NULL) {
@@ -359,7 +370,7 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
     }
 
     // convert string into symbols
-    keycode_repr(&str);
+    keycode_repr(&str, mods);
 
     // casing is separate so that drawing keycodes on screen is always uppercase
     apply_casing(&str);

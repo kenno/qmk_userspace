@@ -741,15 +741,12 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
 void painter_render_keylogger(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
                               uint16_t width, bool force_redraw, dual_hsv_t* curr_hsv) {
 #ifdef DISPLAY_KEYLOGGER_ENABLE
-    char buf[50] = {0};
-
     if (is_keylogger_dirty() || force_redraw) {
-        snprintf(buf, sizeof(buf), "%s", get_keylogger_str());
         qp_drawtext_recolor(device, x, y, font, "Keylogger: ", curr_hsv->primary.h, curr_hsv->primary.s,
                             curr_hsv->primary.v, 0, 0, 0);
         y += font->line_height + 4;
-        qp_drawtext_recolor(device, x, y, font, buf, curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0,
-                            255, 0);
+        qp_drawtext_recolor(device, x, y, font, truncate_text(get_keylogger_str(), 150, font, true, false),
+                            curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 255, 0);
     }
 #endif
 }
