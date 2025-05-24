@@ -334,15 +334,13 @@ __attribute__((weak)) void ili9341_draw_user(void) {
 #    if (defined(KEYBOARD_bastardkb_charybdis) || defined(KEYBOARD_handwired_tractyl_manuform))
 #        include QMK_KEYBOARD_H
 
-            static uint16_t last_cpi = {0xFFFF};
-            uint16_t        curr_cpi = charybdis_get_pointer_sniping_enabled() ? charybdis_get_pointer_sniping_dpi()
-                                                                               : charybdis_get_pointer_default_dpi();
-            if (hue_redraw || last_cpi != curr_cpi) {
-                last_cpi = curr_cpi;
+            static uint16_t last_cpi = 0xFFFF;
+            if (hue_redraw || last_cpi != charybdis_get_pointer_default_dpi()) {
+                last_cpi = charybdis_get_pointer_default_dpi();
                 xpos     = 5;
                 xpos += qp_drawtext_recolor(display, xpos, ypos, font_oled, "CPI:   ", curr_hsv.primary.h,
                                             curr_hsv.primary.s, curr_hsv.primary.v, 0, 0, 0);
-                snprintf(buf, sizeof(buf), "%5u", curr_cpi);
+                snprintf(buf, sizeof(buf), "%5u", last_cpi);
                 xpos += qp_drawtext_recolor(display, xpos, ypos, font_oled, buf, curr_hsv.secondary.h,
                                             curr_hsv.secondary.s, curr_hsv.secondary.v, 0, 0, 0);
             }
@@ -395,10 +393,28 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                     charybdis_get_pointer_dragscroll_enabled() ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
             }
             ypos += font_oled->line_height + 4;
+#    endif // (defined(KEYBOARD_bastardkb_charybdis) || defined(KEYBOARD_handwired_tractyl_manuform))
 
+#    ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Pointing Device Sniping mode
+            bool pointing_device_accel_get_enabled(void);
 
+            static bool last_accel_state = false;
+
+            if (hue_redraw || last_accel_state != pointing_device_accel_get_enabled()) {
+                last_accel_state = pointing_device_accel_get_enabled();
+                xpos             = 5;
+                xpos += qp_drawtext_recolor(display, xpos, ypos, font_oled, "Acceleration",
+                                            last_accel_state ? curr_hsv.secondary.h : curr_hsv.primary.h,
+                                            last_accel_state ? curr_hsv.secondary.s : curr_hsv.primary.s,
+                                            last_accel_state ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
+            }
+            ypos += font_oled->line_height + 4;
+
+#    elif defined(KEYBOARD_bastardkb_charybdis) || defined(KEYBOARD_handwired_tractyl_manuform)
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Pointing Device Sniping mode
             static uint8_t last_sp_state = 0xFF;
 
             if (hue_redraw || last_sp_state != charybdis_get_pointer_sniping_enabled()) {
@@ -411,7 +427,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                     charybdis_get_pointer_sniping_enabled() ? curr_hsv.primary.v : disabled_val, 0, 0, 0);
             }
             ypos += font_oled->line_height + 4;
-#    endif
+#    endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+
             static bool last_jiggle_enabled = false;
             if (hue_redraw || last_jiggle_enabled != userspace_config.pointing.mouse_jiggler.enable) {
                 last_jiggle_enabled = userspace_config.pointing.mouse_jiggler.enable;
