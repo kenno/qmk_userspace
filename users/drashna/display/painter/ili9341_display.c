@@ -323,7 +323,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             ypos = 84;
             xpos = 84;
 
-            painter_render_keylogger(display, font_oled, xpos, ypos, 160, hue_redraw, &curr_hsv);
+            painter_render_keylogger(display, font_oled, xpos, ypos, 150, hue_redraw, &curr_hsv);
 #endif // DISPLAY_KEYLOGGER_ENABLE
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

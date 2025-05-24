@@ -745,7 +745,8 @@ void painter_render_keylogger(painter_device_t device, painter_font_handle_t fon
         qp_drawtext_recolor(device, x, y, font, "Keylogger: ", curr_hsv->primary.h, curr_hsv->primary.s,
                             curr_hsv->primary.v, 0, 0, 0);
         y += font->line_height + 4;
-        qp_drawtext_recolor(device, x, y, font, truncate_text(get_keylogger_str(), 150, font, true, false),
+        qp_rect(device, x, y, x + width - 1, y + font->line_height + 2, 0, 0, 0, true);
+        qp_drawtext_recolor(device, x, y, font, truncate_text(get_keylogger_str(), width, font, true, false),
                             curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 255, 0);
         keylogger_set_dirty(false);
     }
