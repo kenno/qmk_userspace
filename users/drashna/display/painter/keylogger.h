@@ -27,6 +27,8 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record);
  */
 const char *get_keylogger_str(void);
 
+const int32_t *get_keylogger_str_raw(void);
+
 /**
  * Whether anything has been written since keylog was last fetched.
  */

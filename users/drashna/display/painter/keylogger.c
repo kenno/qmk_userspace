@@ -5,6 +5,7 @@
 #include "keylogger_helper.h"
 #include "keyrecords/process_records.h"
 #include "drashna_util.h"
+#include "utf8.h"
 
 #include <ctype.h>
 #include <quantum/quantum.h>
@@ -14,8 +15,8 @@
 
 #define BIT(x) ((uint8_t)1 << (x))
 
-static bool keylog_dirty                                           = true;
-static char display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH + 1] = {
+static bool    keylog_dirty                                           = true;
+static int32_t display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH + 1] = {
     [0 ... DISPLAY_KEYLOGGER_LENGTH - 1] = '_',
     [DISPLAY_KEYLOGGER_LENGTH]           = '\0',
 }; // extra space for terminator
@@ -151,14 +152,6 @@ static const replacements_t replacements[] = {
 };
 // clang-format on
 
-bool is_utf8(char chr) {
-    return (chr & BIT(7)) != 0; // 1xxx xxxx
-}
-
-bool is_utf8_continuation(char chr) {
-    return is_utf8(chr) && (BIT(6) == 0); // 10xx xxxx
-}
-
 static void skip_prefix(const char **str) {
     char *prefixes[] = {"KC_", "RGB_", "QK_", "TD_", "TL_", "UC_"};
 
@@ -257,45 +250,45 @@ static void apply_casing(const char **str) {
 
 static void keylog_clear(void) {
     // spaces (not 0) so `qp_drawtext` actually renders something
-    memset(display_keylogger_string, '_', DISPLAY_KEYLOGGER_LENGTH);
+    for (int i = 0; i < DISPLAY_KEYLOGGER_LENGTH; i++) {
+        display_keylogger_string[i] = '_';
+    }
     display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH] = '\0';
 }
 
-static void keylog_shift_right_one_byte(void) {
-    memmove(display_keylogger_string + 1, display_keylogger_string, DISPLAY_KEYLOGGER_LENGTH - 1);
+static void keylog_shift_right_one_char(void) {
+    memmove(display_keylogger_string + 1, display_keylogger_string, (DISPLAY_KEYLOGGER_LENGTH - 1) * sizeof(int32_t));
     display_keylogger_string[0] = '_';
 }
 
 static void keylog_shift_right(void) {
-    // pop all utf-continuation bytes
-    while (is_utf8_continuation(display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH - 1])) {
-        keylog_shift_right_one_byte();
-    }
-
-    // this is either an ascii char or the heading byte of utf
-    keylog_shift_right_one_byte();
+    // With int32_t, each element is a complete character, so just shift one position
+    keylog_shift_right_one_char();
 }
 
 static void keylog_shift_left(uint8_t len) {
-    memmove(display_keylogger_string, display_keylogger_string + len, DISPLAY_KEYLOGGER_LENGTH - len);
+    memmove(display_keylogger_string, display_keylogger_string + len,
+            (DISPLAY_KEYLOGGER_LENGTH - len) * sizeof(int32_t));
 
-    uint8_t counter = 0;
-    while (is_utf8_continuation(display_keylogger_string[0])) {
-        memmove(display_keylogger_string, display_keylogger_string + 1, DISPLAY_KEYLOGGER_LENGTH - 1);
-        ++counter;
+    // Fill the end with spaces
+    for (int i = DISPLAY_KEYLOGGER_LENGTH - len; i < DISPLAY_KEYLOGGER_LENGTH; i++) {
+        display_keylogger_string[i] = ' ';
     }
-
-    // pad buffer to the right, to align after a utf8 symbol is deleted
-    memmove(display_keylogger_string + counter, display_keylogger_string, DISPLAY_KEYLOGGER_LENGTH - counter);
-    memset(display_keylogger_string, ' ', counter);
 }
 
 static void keylog_append(const char *str) {
-    uint8_t len = strlen(str);
+    // Convert UTF-8 string to Unicode code points
+    uint8_t char_count = 0;
+    int32_t unicode_chars[8]; // Temporary buffer for conversion
 
-    keylog_shift_left(len);
-    for (uint8_t i = 0; i < len; ++i) {
-        display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH - len + i] = str[i];
+    const char *ptr = str;
+    while (*ptr) {
+        ptr = decode_utf8(ptr, &unicode_chars[char_count++]);
+    }
+
+    keylog_shift_left(char_count);
+    for (uint8_t i = 0; i < char_count; i++) {
+        display_keylogger_string[DISPLAY_KEYLOGGER_LENGTH - char_count + i] = unicode_chars[i];
     }
 }
 
@@ -307,7 +300,67 @@ void keylogger_set_dirty(bool dirty) {
     keylog_dirty = dirty;
 }
 
+/**
+ * @brief Converts Unicode code points to UTF-8 encoded string for display
+ *
+ * This function takes an array of Unicode code points stored in display_keylogger_string
+ * and converts them to a UTF-8 encoded C string suitable for display purposes.
+ * The conversion handles all valid Unicode ranges:
+ * - ASCII (U+0000 to U+007F): 1 byte encoding
+ * - U+0080 to U+07FF: 2 byte encoding
+ * - U+0800 to U+FFFF: 3 byte encoding
+ * - U+10000 to U+10FFFF: 4 byte encoding
+ *
+ * Invalid Unicode code points are replaced with '?' character.
+ * The function uses a static buffer to store the converted string, so the
+ * returned pointer remains valid until the next call to this function.
+ *
+ * @return const char* Pointer to null-terminated UTF-8 encoded string.
+ *                     The string is valid until the next call to this function.
+ *
+ * @note The function assumes display_keylogger_string contains valid Unicode
+ *       code points and DISPLAY_KEYLOGGER_LENGTH defines the array size.
+ * @note Maximum output string length is DISPLAY_KEYLOGGER_LENGTH * 4 bytes
+ *       plus null terminator.
+ */
 const char *get_keylogger_str(void) {
+    // Convert int32_t Unicode code points back to UTF-8 char* for display
+    static char converted_string[DISPLAY_KEYLOGGER_LENGTH * 4 + 1]; // Allow up to 4 bytes per Unicode character
+    int         pos = 0;
+
+    for (int i = 0; i < DISPLAY_KEYLOGGER_LENGTH && pos < sizeof(converted_string) - 4; i++) {
+        int32_t codepoint = display_keylogger_string[i];
+
+        if (codepoint <= 0x7F) {
+            // ASCII (1 byte)
+            converted_string[pos++] = (char)codepoint;
+        } else if (codepoint <= 0x7FF) {
+            // 2-byte UTF-8
+            converted_string[pos++] = 0xC0 | (codepoint >> 6);
+            converted_string[pos++] = 0x80 | (codepoint & 0x3F);
+        } else if (codepoint <= 0xFFFF) {
+            // 3-byte UTF-8
+            converted_string[pos++] = 0xE0 | (codepoint >> 12);
+            converted_string[pos++] = 0x80 | ((codepoint >> 6) & 0x3F);
+            converted_string[pos++] = 0x80 | (codepoint & 0x3F);
+        } else if (codepoint <= 0x10FFFF) {
+            // 4-byte UTF-8
+            converted_string[pos++] = 0xF0 | (codepoint >> 18);
+            converted_string[pos++] = 0x80 | ((codepoint >> 12) & 0x3F);
+            converted_string[pos++] = 0x80 | ((codepoint >> 6) & 0x3F);
+            converted_string[pos++] = 0x80 | (codepoint & 0x3F);
+        } else {
+            // Invalid Unicode code point, use replacement character
+            converted_string[pos++] = '?';
+        }
+    }
+    converted_string[pos] = '\0';
+
+    return converted_string;
+}
+
+const int32_t *get_keylogger_str_raw(void) {
+    // Return the raw int32_t array for direct access
     return display_keylogger_string;
 }
 
@@ -316,11 +369,23 @@ void keycode_repr(const char **str, const uint8_t mods) {
     maybe_symbol(str, mods);
 }
 
+/**
+ * Processes key events for the keylogger.
+ *
+ * This function handles keypress events, determines whether the key should be logged,
+ * and updates the keylogger display accordingly. It skips certain keycodes, processes
+ * modifiers, and applies casing and symbol replacements to the logged key string.
+ *
+ * @param keycode The keycode of the key being processed.
+ * @param record  The key event record containing information about the key event.
+ */
 void keylogger_process(uint16_t keycode, keyrecord_t *record) {
     // nothing on release (for now)
     if (!record->event.pressed) {
         return;
     }
+
+    keycode = extract_basic_keycode(keycode, record, true);
 
     // dont want to show some keycodes
     // clang-format off
@@ -329,6 +394,8 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
         || IS_RGB_KEYCODE(keycode)
         || IS_QK_ONE_SHOT_LAYER(keycode)
         || IS_QK_ONE_SHOT_MOD(keycode)
+        || IS_QK_LIGHTING(keycode)
+        || IS_QK_AUDIO(keycode)
         || IS_QK_LAYER_MOD(keycode)
         || IS_QK_MOMENTARY(keycode)
         || IS_QK_DEF_LAYER(keycode)
@@ -344,13 +411,11 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
 #ifndef NO_ACTION_ONESHOT
     mods |= get_oneshot_mods();
 #endif // NO_ACTION_ONESHOT
+    const char *str = get_keycode_string(keycode);
 
-    const char *str = NULL;
     if (IS_QK_MODS(keycode) && QK_MODS_GET_MODS(keycode) & MOD_LSFT) {
         str = get_keycode_string(QK_MODS_GET_BASIC_KEYCODE(keycode));
         mods |= QK_MODS_GET_MODS(keycode);
-    } else {
-        str = get_keycode_string(keycode);
     }
 
     bool ctrl = mod_config(mods) & MOD_MASK_CTRL;
@@ -383,8 +448,9 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
 }
 
 void split_sync_keylogger_str(const uint8_t *data, uint8_t size) {
-    if (memcmp(data, display_keylogger_string, size) != 0) {
-        memcpy(display_keylogger_string, data, size);
+    // Convert incoming data to int32_t
+    if (memcmp(data, display_keylogger_string, size * sizeof(int32_t)) != 0) {
+        memcpy(display_keylogger_string, data, sizeof(display_keylogger_string));
         keylog_dirty = true;
     }
 }

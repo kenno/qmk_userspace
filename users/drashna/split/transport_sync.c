@@ -109,6 +109,11 @@ void recv_autocorrect_string(const uint8_t* data, uint8_t size) {
 #endif
 }
 
+#if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
+_Static_assert((DISPLAY_KEYLOGGER_LENGTH * sizeof(int32_t)) <= RPC_EXTENDED_TRANSACTION_BUFFER_SIZE,
+               "Display keylogger string larger than buffer size!");
+#endif
+
 void recv_keylogger_string_sync(const uint8_t* data, uint8_t size) {
 #if defined(DISPLAY_DRIVER_ENABLE) && defined(DISPLAY_KEYLOGGER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
     split_sync_keylogger_str(data, size);
@@ -454,18 +459,18 @@ void sync_keylogger_string(void) {
     {
         bool            needs_sync                                = false;
         static uint16_t last_sync                                 = 0;
-        static char     keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
-        const char*     keylogger_str                             = get_keylogger_str();
-        if (memcmp(keylogger_str, keylog_temp, (DISPLAY_KEYLOGGER_LENGTH + 1))) {
+        static int32_t  keylog_temp[DISPLAY_KEYLOGGER_LENGTH + 1] = {0};
+        const int32_t*  keylogger_str                             = get_keylogger_str_raw();
+        if (memcmp(keylogger_str, keylog_temp, (DISPLAY_KEYLOGGER_LENGTH + 1) * sizeof(int32_t))) {
             needs_sync = true;
-            memcpy(keylog_temp, keylogger_str, (DISPLAY_KEYLOGGER_LENGTH + 1));
+            memcpy(keylog_temp, keylogger_str, (DISPLAY_KEYLOGGER_LENGTH + 1) * sizeof(int32_t));
         }
-        if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS) {
+        if (timer_elapsed(last_sync) > FORCED_SYNC_THROTTLE_MS * 10000) {
             needs_sync = true;
         }
         if (needs_sync) {
             if (send_extended_message_handler(RPC_ID_EXTENDED_DISPLAY_KEYLOG_STR, keylogger_str,
-                                              (DISPLAY_KEYLOGGER_LENGTH + 1))) {
+                                              (DISPLAY_KEYLOGGER_LENGTH + 1) * sizeof(int32_t))) {
                 last_sync = timer_read();
             }
         }
