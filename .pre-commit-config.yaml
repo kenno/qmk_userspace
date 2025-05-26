@@ -22,11 +22,6 @@ repos:
     hooks:
       - id: clang-format
         types_or: [c++, c]
-        exclude: |
-          (?x)^(
-              users/drashna/autocorrect_data.h|
-              users/drashna/callbacks.c
-          )$
         args:
           - -i
   - repo: https://github.com/pre-commit/mirrors-prettier

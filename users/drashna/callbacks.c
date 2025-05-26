@@ -325,9 +325,6 @@ void matrix_scan_user(void) {
  *
  */
 #ifdef SPLIT_KEYBOARD
-__attribute__((weak)) void matrix_slave_scan_keymap(void) {}
-void                       matrix_slave_scan_user(void) {
-    matrix_scan_rate_task();
 #    if defined(AUDIO_ENABLE) && defined(AUDIO_INIT_DELAY)
 #        if defined(SPLIT_WATCHDOG_ENABLE) && !defined(SPLIT_WATCHDOG_TIMEOUT)
 #            if defined(SPLIT_USB_TIMEOUT)
@@ -335,8 +332,15 @@ void                       matrix_slave_scan_user(void) {
 #            else
 #                define SPLIT_WATCHDOG_TIMEOUT 3000
 #            endif
-#        endif
-                          if (!is_keyboard_master()) {
+#        endif // SPLIT_WATCHDOG_ENABLE && !defined(SPLIT_WATCHDOG_TIMEOUT)
+#    endif     // AUDIO_ENABLE && AUDIO_INIT_DELAY
+
+__attribute__((weak)) void matrix_slave_scan_keymap(void) {}
+void                       matrix_slave_scan_user(void) {
+    matrix_scan_rate_task();
+
+#    if defined(AUDIO_ENABLE) && defined(AUDIO_INIT_DELAY)
+    if (!is_keyboard_master()) {
         static bool     delayed_tasks_run  = false;
         static uint16_t delayed_task_timer = 0;
         if (!delayed_tasks_run) {
@@ -347,7 +351,7 @@ void                       matrix_slave_scan_user(void) {
                 delayed_tasks_run = true;
             }
         }
-                          }
+    }
 #    endif // AUDIO_ENABLE && AUDIO_INIT_DELAY
     matrix_slave_scan_keymap();
 }
