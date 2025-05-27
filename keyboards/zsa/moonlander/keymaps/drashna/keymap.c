@@ -210,7 +210,6 @@ bool rgb_matrix_indicators_advanced_keymap(uint8_t led_min, uint8_t led_max) {
     void rgb_matrix_indicators_render_layer(uint8_t led_min, uint8_t led_max);
 
     rgb_matrix_indicators_render_layer(led_min, led_max);
-    draw_indicators(led_min, led_max);
     return false;
 #    endif
     return true;
