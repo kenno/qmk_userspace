@@ -2,6 +2,7 @@
     "modules": [
         "drashna/keyboard_lock",
         "drashna/watchdog",
-        "getreuer/sentence_case"
+        "getreuer/sentence_case",
+        "getreuer/lumino"
     ]
 }

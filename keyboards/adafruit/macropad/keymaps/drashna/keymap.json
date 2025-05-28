@@ -2,6 +2,7 @@
     "modules": [
         "drashna/keyboard_lock",
         "drashna/rtc",
-        "drashna/watchdog"
+        "drashna/watchdog",
+        "getreuer/lumino"
     ]
 }

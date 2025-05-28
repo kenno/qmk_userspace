@@ -53,13 +53,6 @@
 #ifndef QUANTUM_PAINTER_ILI9488_ENABLE
 #    define QUANTUM_PAINTER_DISPLAY_TIMEOUT 600000
 #endif
-#ifdef COMMUNITY_MODULE_LUMINO_ENABLE
-#    define LUMINO_LONG_TIMEOUT 1000 * 60 * 10 // = 10 minutes.
-#    define LUMINO_SOON_TIMEOUT 1000 * 5       // = 5 seconds.
-#    define LUMINO_TRANSITION   1500           // = 1.5s/1500 ms.
-#else
-#    define RGB_MATRIX_TIMEOUT 600000
-#endif
 #define SPLIT_USB_TIMEOUT      500
 #define SPLIT_WATCHDOG_TIMEOUT 700
 #define AUDIO_INIT_DELAY

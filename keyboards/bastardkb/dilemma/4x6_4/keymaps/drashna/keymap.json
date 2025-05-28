@@ -3,6 +3,7 @@
         "drashna/keyboard_lock",
         "drashna/unicode_typing",
         "drashna/watchdog",
-        "getreuer/sentence_case"
+        "getreuer/sentence_case",
+        "getreuer/lumino"
     ]
 }
