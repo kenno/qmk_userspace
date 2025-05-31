@@ -153,6 +153,15 @@ void recv_userspace_config(const uint8_t* data, uint8_t size) {
 #    endif // OLED_ENABLE
         }
 #endif // DISPLAY_DRIVER_ENABLE
+#if defined(COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE)
+#    include "pointing_device_accel.h"
+        if (memcmp(&g_pointing_device_accel_config, &userspace_config.pointing.accel,
+                   sizeof(pointing_device_accel_config_t)) != 0) {
+            memcpy(&g_pointing_device_accel_config, &userspace_config.pointing.accel,
+                   sizeof(pointing_device_accel_config_t));
+            pointing_device_config_update(&g_pointing_device_accel_config);
+        }
+#endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
     }
 }
 

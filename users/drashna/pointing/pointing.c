@@ -236,15 +236,11 @@ const uint16_t PROGMEM pointing_mode_maps[POINTING_MODE_MAP_COUNT][POINTING_NUM_
 #    include "pointing_device_accel.h"
 
 void pointing_device_config_read(pointing_device_accel_config_t* config) {
-    if (memcmp(config, &userspace_config.pointing.accel, sizeof(pointing_device_accel_config_t)) != 0) {
-        memcpy(config, &userspace_config.pointing.accel, sizeof(pointing_device_accel_config_t));
-    }
+    memcpy(config, &userspace_config.pointing.accel, sizeof(pointing_device_accel_config_t));
 }
 
 void pointing_device_config_update(pointing_device_accel_config_t* config) {
-    if (memcmp(config, &userspace_config.pointing.accel, sizeof(pointing_device_accel_config_t)) != 0) {
-        memcpy(&userspace_config.pointing.accel, config, sizeof(pointing_device_accel_config_t));
-        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
-    }
+    memcpy(&userspace_config.pointing.accel, config, sizeof(pointing_device_accel_config_t));
+    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 }
 #endif
