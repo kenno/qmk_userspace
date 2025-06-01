@@ -50,7 +50,7 @@ static const replacements_t replacements[] = {
     replacement("1",       NULL,  "!",  NULL),
     replacement("2",       NULL,  "@", NULL),
     replacement("3",       NULL,  "#", NULL), // · breaks keylog
-    replacement("4",       NULL,  "$",  "~" ),
+    replacement("4",       NULL,  "$",  NULL),
     replacement("5",       NULL,  "%",  NULL),
     replacement("6",       NULL,  "^",  NULL),
     replacement("7",       NULL,  "&",  NULL),
@@ -75,7 +75,7 @@ static const replacements_t replacements[] = {
     replacement("RCBR",    "}",   NULL, NULL),
     replacement("PLUS",    "+",   NULL,  NULL),
     replacement("PIPE",    "|",   NULL, NULL),
-    replacement("QUOT",    "'",   "?",  NULL),
+    replacement("QUOT",    "'",   "\"",  NULL),
     replacement("SPC",     " ",   NULL, NULL),
     replacement("SCLN",    ";",   ":",  NULL),
     replacement("SLSH",    "/",   "?",  NULL),
