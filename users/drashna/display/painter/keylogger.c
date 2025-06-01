@@ -46,16 +46,16 @@ typedef struct PACKED {
 
 // clang-format off
 static const replacements_t replacements[] = {
-    replacement("0",       NULL,  ")",  NULL),
-    replacement("1",       NULL,  "!",  NULL),
-    replacement("2",       NULL,  "@", NULL),
-    replacement("3",       NULL,  "#", NULL), // · breaks keylog
-    replacement("4",       NULL,  "$",  NULL),
-    replacement("5",       NULL,  "%",  NULL),
-    replacement("6",       NULL,  "^",  NULL),
-    replacement("7",       NULL,  "&",  NULL),
-    replacement("8",       NULL,  "*",  NULL),
-    replacement("9",       NULL,  "(",  NULL),
+    replacement("0",        NULL,  ")",  NULL),
+    replacement("1",        NULL,  "!",  NULL),
+    replacement("2",        NULL,  "@",  NULL),
+    replacement("3",        NULL,  "#",  NULL),
+    replacement("4",        NULL,  "$",  NULL),
+    replacement("5",        NULL,  "%",  NULL),
+    replacement("6",        NULL,  "^",  NULL),
+    replacement("7",        NULL,  "&",  NULL),
+    replacement("8",        NULL,  "*",  NULL),
+    replacement("9",        NULL,  "(",  NULL),
     replacement("_______", "__",  NULL, NULL),
     replacement("AT",      "@",   NULL, NULL),
     replacement("BSLS",    "\\",  "|",  NULL),
@@ -67,15 +67,15 @@ static const replacements_t replacements[] = {
     replacement("ENT",     "↲",   NULL, NULL),
     replacement("GRV",     "`",   "~",  NULL),
     replacement("HASH",    "#",   NULL, NULL),
-    replacement("LBRC",    "[",   "{", NULL),
+    replacement("LBRC",    "[",   "{",  NULL),
     replacement("LCBR",    "{",   NULL, NULL),
     replacement("MINS",    "-",   "_",  NULL),
 
     replacement("RBRC",    "]",   "}", NULL),
     replacement("RCBR",    "}",   NULL, NULL),
-    replacement("PLUS",    "+",   NULL,  NULL),
+    replacement("PLUS",    "+",   NULL, NULL),
     replacement("PIPE",    "|",   NULL, NULL),
-    replacement("QUOT",    "'",   "\"",  NULL),
+    replacement("QUOT",    "'",   "\"", NULL),
     replacement("SPC",     " ",   NULL, NULL),
     replacement("SCLN",    ";",   ":",  NULL),
     replacement("SLSH",    "/",   "?",  NULL),
@@ -198,11 +198,19 @@ static void maybe_symbol(const char **str, uint8_t mods) {
 
         case MOD_BIT_LSHIFT:
         case MOD_BIT_RSHIFT:
-            target = replacement.strings[SHIFT];
+            if (replacement.strings[SHIFT] == NULL) {
+                target = replacement.strings[NO_MODS];
+            } else {
+                target = replacement.strings[SHIFT];
+            }
             break;
 
         case MOD_BIT_RALT:
-            target = replacement.strings[AL_GR];
+            if (replacement.strings[AL_GR] == NULL) {
+                target = replacement.strings[NO_MODS];
+            } else {
+                target = replacement.strings[AL_GR];
+            }
             break;
 
         default:
