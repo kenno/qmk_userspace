@@ -10,7 +10,6 @@
 #    define OLED_DISPLAY_128X128
 #    define OLED_PRE_CHARGE_PERIOD 0x22
 #    define OLED_VCOM_DETECT       0x35
-#    define OLED_DISPLAY_FORCE_SCREENSAVER
 #endif
 
 #ifdef RGBLIGHT_ENABLE
