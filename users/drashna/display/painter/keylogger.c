@@ -269,7 +269,7 @@ static void keylog_shift_right_one_char(void) {
     display_keylogger_string[0] = '_';
 }
 
-static void keylog_shift_right(void) {
+void keylog_shift_right(void) {
     // With int32_t, each element is a complete character, so just shift one position
     keylog_shift_right_one_char();
 }
@@ -506,4 +506,21 @@ const char *get_keyode_character(uint16_t keycode, keypos_t *key) {
     }
 
     return str;
+}
+
+void add_keycode_to_keylogger_str(uint8_t keycode, uint8_t mods) {
+    keylogger_set_dirty(true);
+    const char *str = get_keycode_string(keycode);
+    // unknown keycode, quit
+    if (str == NULL) {
+        return;
+    }
+
+    // convert string into symbols
+    keycode_repr(&str, mods);
+
+    // casing is separate so that drawing keycodes on screen is always uppercase
+    apply_casing(&str);
+
+    keylog_append(str);
 }

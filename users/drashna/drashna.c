@@ -10,43 +10,6 @@
 
 userspace_config_t userspace_config;
 
-#if defined(AUTOCORRECT_ENABLE)
-#    if defined(AUDIO_ENABLE)
-#        ifdef USER_SONG_LIST
-float autocorrect_song[][2] = SONG(MARIO_GAMEOVER);
-#        else  // USER_SONG_LIST
-float autocorrect_song[][2] = SONG(PLOVER_GOODBYE_SOUND);
-#        endif // USER_SONG_LISTq
-#    endif
-// 2 strings, 2q chars each + null terminator. max autocorrect length is 19 chars but 128px/6 supports 21 chars
-char autocorrected_str[2][21]     = {"    automatically\0", "      corrected\0"};
-char autocorrected_str_raw[2][21] = {"automatically\0", "corrected\0"};
-bool autocorrect_str_has_changed  = false;
-
-bool apply_autocorrect(uint8_t backspaces, const char *str, char *typo, char *correct) {
-    if (is_gaming_layer_active(layer_state)) {
-        return false;
-    }
-    strncpy(autocorrected_str_raw[0], typo, sizeof(autocorrected_str_raw[0]) - 1);
-    strncpy(autocorrected_str_raw[1], correct, sizeof(autocorrected_str_raw[1]) - 1);
-
-    center_text(typo, autocorrected_str[0], sizeof(autocorrected_str[0]) - 1);
-    center_text(correct, autocorrected_str[1], sizeof(autocorrected_str[1]) - 1);
-    // printf("Autocorrected %s to %s (original: %s)\n", typo, correct, str);
-    autocorrect_str_has_changed = true;
-#    if defined(WPM_ENABLE) && defined(WPM_ALLOW_COUNT_REGRESSION)
-    for (uint8_t i = 0; i < backspaces; i++) {
-        update_wpm(KC_BSPC);
-    }
-#    endif // WPM_ENABLE
-
-#    if defined(AUDIO_ENABLE)
-    audio_play_melody(&autocorrect_song, NOTE_ARRAY_SIZE(autocorrect_song), false);
-#    endif // AUDIO_ENABLE
-    return true;
-}
-#endif
-
 #if defined(CAPS_WORD_ENABLE)
 bool caps_word_press_user(uint16_t keycode) {
     switch (keycode) {

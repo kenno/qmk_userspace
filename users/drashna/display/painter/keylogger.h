@@ -49,3 +49,5 @@ void keycode_repr(const char **str, const uint8_t mods);
 
 void        split_sync_keylogger_str(const uint8_t *data, uint8_t size);
 const char *get_keyode_character(uint16_t keycode, keypos_t *key);
+void        add_keycode_to_keylogger_str(uint8_t keycode, uint8_t mods);
+void        keylog_shift_right(void);
