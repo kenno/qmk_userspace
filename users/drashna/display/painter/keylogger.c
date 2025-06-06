@@ -387,13 +387,13 @@ void keycode_repr(const char **str, const uint8_t mods) {
  * @param keycode The keycode of the key being processed.
  * @param record  The key event record containing information about the key event.
  */
-void keylogger_process(uint16_t keycode, keyrecord_t *record) {
+void keylogger_process(uint16_t code, keyrecord_t *record) {
     // nothing on release (for now)
     if (!record->event.pressed) {
         return;
     }
 
-    keycode = extract_basic_keycode(keycode, record, true);
+    uint16_t keycode = extract_basic_keycode(code, record, true);
 
     // dont want to show some keycodes
     // clang-format off
@@ -421,9 +421,9 @@ void keylogger_process(uint16_t keycode, keyrecord_t *record) {
 #endif // NO_ACTION_ONESHOT
     const char *str = get_keycode_string(keycode);
 
-    if (IS_QK_MODS(keycode) && QK_MODS_GET_MODS(keycode) & MOD_LSFT) {
-        str = get_keycode_string(QK_MODS_GET_BASIC_KEYCODE(keycode));
-        mods |= QK_MODS_GET_MODS(keycode);
+    if (IS_QK_MODS(code) && QK_MODS_GET_MODS(code) & MOD_LSFT) {
+        str = get_keycode_string(QK_MODS_GET_BASIC_KEYCODE(code));
+        mods |= QK_MODS_GET_MODS(code);
     }
 
     bool ctrl = mod_config(mods) & MOD_MASK_CTRL;
