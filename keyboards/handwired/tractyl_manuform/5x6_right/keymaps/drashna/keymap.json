@@ -10,8 +10,9 @@
         "drashna/rtc",
         "drashna/unicode_typing",
         "drashna/watchdog",
-        "getreuer/sentence_case",
         "getreuer/lumino",
+        "getreuer/palettefx",
+        "getreuer/sentence_case",
         "tzarc/konami_code"
     ]
 }
