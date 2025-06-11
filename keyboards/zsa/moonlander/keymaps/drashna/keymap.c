@@ -54,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAMEPAD] = LAYOUT_moonlander_wrapper(
         KC_ESC,  XXXXXXX, KC_1,    KC_2,    KC_3,    KC_4, HYPR(KC_Q),                 _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  XXXXXXX, KC_NO,
         KC_F1,   KC_K,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                    UC_SHRG, UC_DISA, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
-        KC_TAB,  KC_G,    KC_A,    KC_S,    KC_D,    KC_F,    _______,            TG_GAME, KC_I,    KC_O,    XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
+        KC_TAB,  ALT_T(KC_G),KC_A, KC_S,    KC_D,    KC_F,    _______,            TG_GAME, KC_I,    KC_O,    XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
         KC_LCTL, KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,                                      KC_N,    KC_M,    XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
         KC_GRV,  KC_U,    KC_I,    KC_Y,    KC_T,             KC_PSCR,                 _______,          KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_NO,
                                             KC_V,    KC_SPC,  KC_H,                    KC_NO, XXXXXXX,KC_SWAP_NUM
