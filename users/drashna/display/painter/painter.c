@@ -86,6 +86,7 @@ deferred_token         nyan_token = INVALID_DEFERRED_TOKEN;
 
 painter_image_array_t screen_saver_image[] = {
     {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
+#if !defined(QMK_MCU_STM32F411)
     {gfx_anime_girl_jacket_240x320, "Anime Girl"},
     {gfx_asuka_240x320, "Asuka"},
     {gfx_neon_genesis_evangelion_initial_machine_00_240x320, "Eva Unit 00"},
@@ -95,6 +96,7 @@ painter_image_array_t screen_saver_image[] = {
     {gfx_neon_genesis_evangelion_initial_machine_04_240x320, "Eva Unit 04"},
     {gfx_neon_genesis_evangelion_initial_machine_05_240x320, "Eva Unit 05"},
     {gfx_neon_genesis_evangelion_initial_machine_06_240x320, "Eva Unit 06"},
+#endif // QMK_MCU_STM32F411
 };
 
 const uint8_t screensaver_image_size = ARRAY_SIZE(screen_saver_image);
