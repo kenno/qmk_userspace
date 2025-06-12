@@ -457,7 +457,7 @@ void painter_render_haptic(painter_device_t device, painter_font_handle_t font, 
  */
 void painter_render_totp(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y, uint16_t width,
                          bool force_redraw, dual_hsv_t* curr_hsv, bool wide_load) {
-#if defined(RTC_ENABLE) && defined(RTC_TOTP_ENABLE) && __has_include("rtc_secrets.h")
+#if defined(COMMUNITY_MODULE_RTC_ENABLE) && defined(RTC_TOTP_ENABLE) && __has_include("rtc_secrets.h")
 #    include "rtc_secrets.h"
     uint32_t    get_totp_code(const uint8_t* hmackey, const uint8_t keylength, const uint32_t timestep);
     static bool is_rtc_connected = false;
