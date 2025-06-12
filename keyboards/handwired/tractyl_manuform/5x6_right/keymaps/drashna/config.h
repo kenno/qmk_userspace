@@ -38,6 +38,11 @@
 #    define RGBLIGHT_LIMIT_VAL 255
 #    undef RGB_MATRIX_MAXIMUM_BRIGHTNESS
 #    define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255
+#elif defined(KEYBOARD_handwired_tractyl_manuform_5x6_right_f411)
+#    undef SPLIT_HAND_PIN
+#    define SPLIT_HAND_PIN A9
+#    define ILI9341_CS_PIN B10
+#    define ILI9341_DC_PIN B2
 #endif
 #ifdef WEAR_LEVELING_SPI_FLASH
 #    undef WEAR_LEVELING_LOGICAL_SIZE

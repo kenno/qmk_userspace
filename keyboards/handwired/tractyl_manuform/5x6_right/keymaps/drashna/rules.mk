@@ -16,9 +16,12 @@ ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f411)
     BOOTLOADER        = tinyuf2
     OVERLOAD_FEATURES = yes
 
-    HAPTIC_DRIVER     = drv2605l
-    OLED_ENABLE       = yes
-    RTC_DRIVER        = ds3231
+    HAPTIC_ENABLE                         = no
+    HAPTIC_DRIVER                         = drv2605l
+    RTC_DRIVER                            = vendor
+    QUANTUM_PAINTER_ENABLE                = yes
+    CUSTOM_QUANTUM_PAINTER_ENABLE         = yes
+    CUSTOM_QUANTUM_PAINTER_ILI9341        = yes
     # This is stupid, and you shouldn't do this
     KEYMAP_JSON       = $(MAIN_KEYMAP_PATH_5)/keymap_f411.json
 endif
@@ -27,6 +30,7 @@ ifeq ($(strip $(KEYBOARD)), handwired/tractyl_manuform/5x6_right/f405)
     OVERLOAD_FEATURES                     = yes
 
     BACKLIGHT_ENABLE                      = yes
+    HAPTIC_ENABLE                         = yes
     RGB_MATRIX_ENABLE                     = yes
     RGBLIGHT_DRIVER                       = custom
     QUANTUM_PAINTER_ENABLE                = yes
@@ -49,7 +53,6 @@ ifeq ($(strip $(OVERLOAD_FEATURES)), yes)
     DISPLAY_KEYLOGGER_ENABLE      = yes
     ENCODER_ENABLE                = yes
     ENCODER_MAP_ENABLE            = yes
-    HAPTIC_ENABLE                 = yes
     LTO_ENABLE                    = yes
     MULTITHREADED_LIGHTING_ENABLE = yes
     MULTITHREADED_PAINTER_ENABLE  = no
