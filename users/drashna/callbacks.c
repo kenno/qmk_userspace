@@ -407,19 +407,11 @@ void                       housekeeping_task_user(void) {
 bool rtc_needs_sync = false;
 
 void rtc_check_dst_format(rtc_time_t *time) {
-#    ifdef DS1307_RTC_DRIVER_ENABLE
-    time->is_dst = userspace_config.rtc.is_dst;
-#    endif // DS1307_RTC_DRIVER_ENABLE
-#    ifdef DS3231_RTC_DRIVER_ENABLE
-    time->is_dst = userspace_config.rtc.is_dst;
-#    endif // DS3231_RTC_DRIVER_ENABLE
-#    ifdef PCF8523_RTC_DRIVER_ENABLE
-    time->is_dst = userspace_config.rtc.is_dst;
-#    endif // PCF8523_RTC_DRIVER_ENABLE
 #    ifdef VENDOR_RTC_DRIVER_ENABLE
     time->format = userspace_config.rtc.format_24h;
 #    endif // VENDOR_RTC_DRIVER_ENABLE
     time->timezone = userspace_config.rtc.timezone;
+    time->is_dst   = userspace_config.rtc.is_dst;
 }
 
 bool rtc_set_time_user(rtc_time_t *time) {
