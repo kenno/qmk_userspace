@@ -33,13 +33,7 @@ void reset_keyboard(void);
 #    endif // DEBOUNCE
 #endif     // BOOTMAGIC_DEBOUNCE
 
-void bootmagic_scan(void) {
-    bool perform_reset = false;
-    // We need multiple scans because debouncing can't be turned off.
-    matrix_scan();
-    wait_ms(BOOTMAGIC_DEBOUNCE);
-    matrix_scan();
-
+__attribute__((weak)) bool bootmagic_should_reset(void) {
     // If the configured key (commonly Esc) is held down on power up,
     // reset the EEPROM valid state and jump to bootloader.
     // This isn't very generalized, but we need something that doesn't
@@ -52,7 +46,7 @@ void bootmagic_scan(void) {
 #if defined(SPLIT_KEYBOARD) && defined(KEYBOARD_handwired_tractyl_manuform)
     bool check_user_button_state(void);
     if (is_keyboard_master() && check_user_button_state()) {
-        perform_reset = true;
+        return true;
     }
 #endif // SPLIT_KEYBOARD
 #if defined(BOOTMAGIC_ROW_RIGHT) && defined(BOOTMAGIC_COLUMN_RIGHT)
@@ -71,38 +65,40 @@ void bootmagic_scan(void) {
 #if defined(BOOTMAGIC_EEPROM_ROW) && defined(BOOTMAGIC_EEPROM_COLUMN)
     if (matrix_get_row(row_e) & (1 << col_e)) {
         eeconfig_disable();
-        perform_reset = true;
+        return true;
     }
 #endif // BOOTMAGIC_EEPROM_ROW && BOOTMAGIC_EEPROM_COLUMN
     if (matrix_get_row(row) & (1 << col)) {
-        perform_reset = true;
+        return true;
     }
 #ifdef BOOTLOADER_RESET_PIN
     if (!gpio_read_pin(BOOTLOADER_RESET_PIN)) {
-        perform_reset = true;
+        return true;
     }
 #endif // BOOTLOADER_RESET_PIN
 
-    if (perform_reset) {
+    return false;
+}
+
+__attribute__((weak)) void bootmagic_reset_eeprom(void) {
 #ifdef RGBLIGHT_ENABLE
-        rgblight_init();
+    rgblight_init();
 #endif // RGBLIGHT_ENABLE
 #ifdef RGB_MATRIX_ENABLE
-        rgb_matrix_init();
+    rgb_matrix_init();
 #endif // RGB_MATRIX_ENABLE
 #ifdef LED_MATRIX_ENABLE
-        led_matrix_init();
+    led_matrix_init();
 #endif // LED_MATRIX_ENABLE
 #ifdef BACKLIGHT_ENABLE
-        backlight_init_ports();
+    backlight_init_ports();
 #endif // BACKLIGHT_ENABLE
 #ifdef OLED_ENABLE
-        oled_init(OLED_ROTATION_0);
+    oled_init(OLED_ROTATION_0);
 #endif // OLED_ENABLE
 #ifdef CUSTOM_QUANTUM_PAINTER_ENABLE
-        void keyboard_post_init_quantum_painter(void);
-        keyboard_post_init_quantum_painter();
+    void keyboard_post_init_quantum_painter(void);
+    keyboard_post_init_quantum_painter();
 #endif
-        reset_keyboard();
-    }
+    reset_keyboard();
 }
