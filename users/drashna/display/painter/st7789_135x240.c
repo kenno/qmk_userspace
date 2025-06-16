@@ -43,7 +43,7 @@
 #    endif // DISPLAY_SPI_MODE
 #endif     // ST7789_MINI_SPI_MODE
 
-static painter_device_t st7789_135x240_display;
+painter_device_t st7789_135x240_display;
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 static painter_device_t st7789_135x240_surface_display;
 static uint8_t          display_buffer[SURFACE_REQUIRED_BUFFER_BYTE_SIZE(135, 240, 16)];
@@ -65,15 +65,15 @@ void init_display_st7789_135x240_inversion(void) {
 
 void init_display_st7789_135x240_rotation(void) {
     qp_init(st7789_135x240_display, userspace_config.display.rotation ? QP_ROTATION_0 : QP_ROTATION_180);
-    qp_set_viewport_offsets(st7789_135x240_display, 52, 40);
+    // qp_set_viewport_offsets(st7789_135x240_display, 52, 40);
     qp_clear(st7789_135x240_display);
-    qp_rect(st7789_135x240_display, 0, 0, 170 - 1, 320 - 1, 0, 0, 0, true);
+    qp_rect(st7789_135x240_display, 0, 0, 240 - 1, 320 - 1, 0, 0, 0, true);
 
-#ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
-    extern menu_state_t menu_state;
-    menu_state.is_in_menu     = true;
-    menu_state.selected_child = 0;
-#endif
+    // #ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    //     extern menu_state_t menu_state;
+    //     menu_state.is_in_menu     = true;
+    //     menu_state.selected_child = 0;
+    // #endif
     // if needs inversion, run it only after the clear and rect functions or otherwise it won't work
     init_display_st7789_135x240_inversion();
 
@@ -87,7 +87,7 @@ void init_display_st7789_135x240_rotation(void) {
 
 void init_display_st7789_135x240(void) {
     st7789_135x240_display =
-        qp_st7789_make_spi_device(170, 320, ST7789_MINI_CS_PIN, ST7789_MINI_DC_PIN, ST7789_MINI_RST_PIN,
+        qp_st7789_make_spi_device(240, 320, ST7789_MINI_CS_PIN, ST7789_MINI_DC_PIN, ST7789_MINI_RST_PIN,
                                   ST7789_MINI_SPI_DIVIDER, ST7789_MINI_SPI_MODE);
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
     st7789_135x240_surface_display = qp_make_rgb565_surface(135, 240, display_buffer);
@@ -99,12 +99,9 @@ void init_display_st7789_135x240(void) {
     qp_init(st7789_135x240_surface_display, QP_ROTATION_0);
 
     qp_rect(st7789_135x240_surface_display, 0, 0, 135 - 1, 240 - 1, HSV_BLACK, true);
-    qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 0, 0, 0);
-#else  // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
-    qp_rect(st7789_135x240_display, 0, 0, 135 - 1, 240 - 1, HSV_BLACK, true);
 #endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
 
-    qp_flush(st7789_135x240_display);
+    st7789_135x240_draw_user();
 }
 
 void st7789_135x240_display_power(bool on) {
@@ -112,18 +109,46 @@ void st7789_135x240_display_power(bool on) {
 }
 
 __attribute__((weak)) void st7789_135x240_draw_user(void) {
-    uint16_t width  = 135;
-    uint16_t height = 240;
-    qp_get_geometry(st7789_135x240_surface_display, &width, &height, NULL, NULL, NULL);
+    static uint16_t last_activity = UINT16_MAX - 9999;
 
 #ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
-    painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, width, height, false,
-                        userspace_config.display.painter.hsv.primary, userspace_config.display.painter.hsv.secondary);
-#endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+#    ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+    if (!painter_render_menu(st7789_135x240_surface_display, font_oled, 0, 0, 135, 240, false,
+                             userspace_config.display.painter.hsv.primary,
+                             userspace_config.display.painter.hsv.secondary))
+#    else  // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+    if (!painter_render_menu(st7789_135x240_display, font_oled, 50, 40, 240, 320, false,
+                             userspace_config.display.painter.hsv.primary,
+                             userspace_config.display.painter.hsv.secondary))
+#    endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+#endif     // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
+    {
+        extern painter_image_array_t screen_saver_image[];
+        extern const uint8_t         screensaver_image_size;
+        painter_image_handle_t       screen_saver = NULL;
 
+        static uint8_t screensaver = 0;
+
+        if (timer_elapsed(last_activity) > 1000) {
+            screensaver++;
+            if (screensaver >= screensaver_image_size) {
+                screensaver = 0;
+            }
+
+            screen_saver = qp_load_image_mem(screen_saver_image[screensaver].data);
+
+            if (screen_saver != NULL) {
+                qp_drawimage(st7789_135x240_display, 0, 0, screen_saver);
+                qp_close_image(screen_saver);
+                last_activity = timer_read();
+            }
+        }
+    } else {
 #ifdef QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
-    qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 0, 0, 0);
-#endif // QUANTUM_PAINTER_DRIVERS_ST7789_135X240_SURFACE
+        qp_surface_draw(st7789_135x240_surface_display, st7789_135x240_display, 52, 40, 0);
+#endif
+        // last_activity = UINT16_MAX - 9999;
+    }
 
     qp_flush(st7789_135x240_display);
 }

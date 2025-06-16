@@ -86,8 +86,8 @@ deferred_token         nyan_token = INVALID_DEFERRED_TOKEN;
 
 painter_image_array_t screen_saver_image[] = {
     {gfx_samurai_cyberpunk_minimal_dark_8k_b3_240x320, "Samurai Cyberpunk"},
-#if !defined(QMK_MCU_STM32F411)
     {gfx_anime_girl_jacket_240x320, "Anime Girl"},
+#if !defined(QMK_MCU_STM32F411)
     {gfx_asuka_240x320, "Asuka"},
     {gfx_neon_genesis_evangelion_initial_machine_00_240x320, "Eva Unit 00"},
     {gfx_neon_genesis_evangelion_initial_machine_01_240x320, "Eva Unit 01"},
