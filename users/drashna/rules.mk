@@ -69,6 +69,12 @@ ifeq ($(strip $(HARDWARE_DEBUG_ENABLE)), yes)
     SEGGER_RTT_DRIVER_REQUIRED = yes
 endif
 
+ifeq ($(strip $(HEAVY_OPTIMIZATION_ENABLE)), yes)
+    OPT_DEFS += -DHEAVY_OPTIMIZATION_ENABLE -ffast-math -funroll-all-loops \
+                -fno-tree-vectorize -fno-signed-zeros -fno-math-errno \
+                -fno-common -fomit-frame-pointer -fno-exceptions -fno-unwind-tables
+endif
+
 SRC += $(USER_PATH)/sendchar.c
 
 ifeq ($(strip $(DEBUG_MATRIX_SCAN_RATE_ENABLE)), yes)
