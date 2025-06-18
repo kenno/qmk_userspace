@@ -16,3 +16,4 @@
 // #include "rgb/anim/alpha_mod_homerow_cycle.h"
 // #include "rgb/anim/tetris_falling.h"
 // #include "rgb/anim/tetris_falling_horizontal.h"
+#include "rgb/anim/solid_reactive_custom.h"
