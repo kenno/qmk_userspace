@@ -6,7 +6,7 @@
 RGB_MATRIX_EFFECT(SOLID_REACTIVE_SIMPLE_CUSTOM)
 #        ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
-static hsv_t SOLID_REACTIVE_SIMPLE_math(hsv_t hsv, uint16_t offset) {
+static hsv_t SOLID_REACTIVE_SIMPLE_CUSTOM_math(hsv_t hsv, uint16_t offset) {
 #            ifdef RGB_MATRIX_SOLID_REACTIVE_GRADIENT_MODE
     hsv.h = scale16by8(g_rgb_timer, qadd8(rgb_matrix_config.speed, 8) >> 4);
 #            endif
@@ -14,8 +14,8 @@ static hsv_t SOLID_REACTIVE_SIMPLE_math(hsv_t hsv, uint16_t offset) {
     return hsv;
 }
 
-bool SOLID_REACTIVE_SIMPLE(effect_params_t* params) {
-    return effect_runner_reactive(params, &SOLID_REACTIVE_SIMPLE_math);
+bool SOLID_REACTIVE_SIMPLE_CUSTOM(effect_params_t* params) {
+    return effect_runner_reactive(params, &SOLID_REACTIVE_SIMPLE_CUSTOM_math);
 }
 
 #        endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
