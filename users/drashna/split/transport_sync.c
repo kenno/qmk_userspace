@@ -140,9 +140,13 @@ void recv_userspace_config(const uint8_t* data, uint8_t size) {
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #if defined(DISPLAY_DRIVER_ENABLE)
         static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
-        if (userspace_config.display.inverted != last_inverted || userspace_config.display.rotation != last_rotation) {
-            last_inverted = userspace_config.display.inverted;
-            last_rotation = userspace_config.display.rotation;
+        const uint8_t  current_inverted = is_keyboard_left() ? userspace_config.display.painter.left.inverted
+                                                             : userspace_config.display.painter.right.inverted;
+        const uint8_t  current_rotation = is_keyboard_left() ? userspace_config.display.painter.left.rotation
+                                                             : userspace_config.display.painter.right.rotation;
+        if (current_inverted != last_inverted || current_rotation != last_rotation) {
+            last_inverted = current_inverted;
+            last_rotation = current_rotation;
 #    if defined(QUANTUM_PAINTER_ILI9341_ENABLE)
             void init_display_ili9341_rotation(void);
             init_display_ili9341_rotation();

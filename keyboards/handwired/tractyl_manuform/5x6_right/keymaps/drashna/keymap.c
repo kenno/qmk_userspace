@@ -54,7 +54,7 @@ void render_oled_title(bool side) {
 }
 #endif
 void eeconfig_init_keymap(void) {
-    userspace_config.display.rotation = 1; // OLED_ROTATION_180;
+    userspace_config.display.oled.rotation = 1; // OLED_ROTATION_180;
 }
 
 #if defined(RGB_MATRIX_ENABLE) && defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_CUSTOM)

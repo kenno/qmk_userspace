@@ -17,6 +17,15 @@ typedef struct PACKED {
     hsv_t secondary;
 } dual_hsv_t;
 
+typedef struct {
+    // 3 bits gets 8 modes, 4 bits gets 16, etc
+    bool    inverted           : 1;
+    uint8_t rotation           : 2;
+    uint8_t display_mode       : 3;
+    uint8_t display_logo       : 4;
+    bool    display_logo_cycle : 1;
+} painter_options_t;
+
 typedef union PACKED {
     uint8_t raw[EECONFIG_USER_DATA_SIZE];
     struct {
@@ -31,12 +40,11 @@ typedef union PACKED {
             bool song_enable      : 1;
         } gaming;
         struct {
-            bool    inverted         : 1;
-            uint8_t rotation         : 2;
             uint8_t menu_render_side : 2;
             struct {
                 uint8_t brightness  : 8;
                 bool    screen_lock : 1;
+                uint8_t rotation    : 2;
                 struct {
                     uint8_t index       : 2;
                     uint8_t sleep_speed : 8;
@@ -45,14 +53,9 @@ typedef union PACKED {
                 } pet;
             } oled;
             struct {
-                // 3 bits gets 8 modes, 4 bits gets 16, etc
-                uint8_t    display_mode_left        : 3;
-                uint8_t    display_mode_right       : 3;
-                uint8_t    display_logo_left        : 4;
-                uint8_t    display_logo_right       : 4;
-                bool       display_logo_cycle_left  : 1;
-                bool       display_logo_cycle_right : 1;
-                dual_hsv_t hsv;
+                painter_options_t left;
+                painter_options_t right;
+                dual_hsv_t        hsv;
             } painter;
         } display;
         struct {

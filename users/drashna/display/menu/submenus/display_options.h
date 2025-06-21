@@ -3,6 +3,8 @@
 // Display options
 
 #ifdef SPLIT_KEYBOARD
+void display_rotate_screen(bool clockwise, bool is_left);
+
 bool menu_handler_display_menu_location(menu_input_t input) {
     switch (input) {
         case menu_input_left:
@@ -43,25 +45,23 @@ __attribute__((weak)) void display_handler_display_menu_location(char *text_buff
 }
 #endif // SPLIT_KEYBOARD
 
-bool menu_handler_display_rotation(menu_input_t input) {
-    void display_rotate_screen(bool clockwise);
-
+bool menu_handler_display_rotation_left(menu_input_t input) {
     switch (input) {
         case menu_input_left:
-            display_rotate_screen(false);
+            display_rotate_screen(false, true);
             return false;
         case menu_input_right:
         case menu_input_enter:
-            display_rotate_screen(true);
+            display_rotate_screen(true, true);
             return false;
         default:
             return true;
     }
 }
 
-__attribute__((weak)) void display_handler_display_rotation(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_rotation_left(char *text_buffer, size_t buffer_len) {
 #if defined(DISPLAY_FULL_ROTATION_ENABLE)
-    switch (userspace_config.display.rotation) {
+    switch (userspace_config.display.painter.left.rotation) {
         case 0:
             strncpy(text_buffer, "0", buffer_len - 1);
             return;
@@ -76,7 +76,45 @@ __attribute__((weak)) void display_handler_display_rotation(char *text_buffer, s
             return;
     }
 #else
-    strncpy(text_buffer, userspace_config.display.rotation ? "Flipped" : "Normal", buffer_len - 1);
+    strncpy(text_buffer, userspace_config.display.painter.left.rotation ? "Flipped" : "Normal", buffer_len - 1);
+    return;
+#endif
+
+    strncpy(text_buffer, "Unknown", buffer_len);
+}
+
+bool menu_handler_display_rotation_right(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            display_rotate_screen(false, false);
+            return false;
+        case menu_input_right:
+        case menu_input_enter:
+            display_rotate_screen(true, false);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_rotation_right(char *text_buffer, size_t buffer_len) {
+#if defined(DISPLAY_FULL_ROTATION_ENABLE)
+    switch (userspace_config.display.painter.right.rotation) {
+        case 0:
+            strncpy(text_buffer, "0", buffer_len - 1);
+            return;
+        case 1:
+            strncpy(text_buffer, "90", buffer_len - 1);
+            return;
+        case 2:
+            strncpy(text_buffer, "180", buffer_len - 1);
+            return;
+        case 3:
+            strncpy(text_buffer, "270", buffer_len - 1);
+            return;
+    }
+#else
+    strncpy(text_buffer, userspace_config.display.painter.right.rotation ? "Flipped" : "Normal", buffer_len - 1);
     return;
 #endif
 
@@ -90,12 +128,12 @@ void init_display_ili9341_inversion(void);
 void init_display_ili9488_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
 
-bool menu_handler_display_inverted(menu_input_t input) {
+bool menu_handler_display_inverted_left(menu_input_t input) {
     switch (input) {
         case menu_input_left:
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.inverted = !userspace_config.display.inverted;
+            userspace_config.display.painter.left.inverted = !userspace_config.display.painter.left.inverted;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
             init_display_ili9341_inversion();
@@ -113,8 +151,35 @@ bool menu_handler_display_inverted(menu_input_t input) {
     }
 }
 
-__attribute__((weak)) void display_handler_display_inverted(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, userspace_config.display.inverted ? "Inverted" : "Normal", buffer_len - 1);
+__attribute__((weak)) void display_handler_display_inverted_left(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.display.painter.left.inverted ? "Inverted" : "Normal", buffer_len - 1);
+}
+
+bool menu_handler_display_inverted_right(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+        case menu_input_enter:
+            userspace_config.display.painter.right.inverted = !userspace_config.display.painter.right.inverted;
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+#ifdef QUANTUM_PAINTER_ILI9341_ENABLE
+            init_display_ili9341_inversion();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef QUANTUM_PAINTER_ILI9488_ENABLE
+            init_display_ili9488_inversion();
+#endif // QUANTUM_PAINTER_ILI9341_ENABLE
+#ifdef OLED_ENABLE
+            void oled_post_init(void);
+            oled_post_init();
+#endif // OLED_ENABLE;
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_inverted_right(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.display.painter.right.inverted ? "Inverted" : "Normal", buffer_len - 1);
 }
 
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
@@ -301,12 +366,12 @@ static char *display_handler_display_mode(uint8_t mode) {
 }
 
 __attribute__((weak)) void display_handler_display_mode_left(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_left),
+    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.left.display_mode),
             buffer_len - 1);
 }
 
 __attribute__((weak)) void display_handler_display_mode_right(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.display_mode_right),
+    strncpy(text_buffer, display_handler_display_mode(userspace_config.display.painter.right.display_mode),
             buffer_len - 1);
 }
 
@@ -333,20 +398,20 @@ static bool menu_handler_display_mode(menu_input_t input, uint8_t *mode, uint8_t
 }
 
 bool menu_handler_display_mode_left(menu_input_t input) {
-    uint8_t temp       = userspace_config.display.painter.display_mode_left;
+    uint8_t temp       = userspace_config.display.painter.left.display_mode;
     bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
-    if (userspace_config.display.painter.display_mode_left != temp) {
-        userspace_config.display.painter.display_mode_left = temp;
+    if (userspace_config.display.painter.left.display_mode != temp) {
+        userspace_config.display.painter.left.display_mode = temp;
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
     return pass_along;
 }
 
 bool menu_handler_display_mode_right(menu_input_t input) {
-    uint8_t temp       = userspace_config.display.painter.display_mode_right;
+    uint8_t temp       = userspace_config.display.painter.right.display_mode;
     bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
-    if (userspace_config.display.painter.display_mode_right != temp) {
-        userspace_config.display.painter.display_mode_right = temp;
+    if (userspace_config.display.painter.right.display_mode != temp) {
+        userspace_config.display.painter.right.display_mode = temp;
         eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     }
     return pass_along;
@@ -358,19 +423,19 @@ bool menu_handler_display_image_left(menu_input_t input) {
     }
     switch (input) {
         case menu_input_left:
-            userspace_config.display.painter.display_logo_left =
-                (userspace_config.display.painter.display_logo_left - 1) % screensaver_image_size;
-            if (userspace_config.display.painter.display_logo_left > (screensaver_image_size - 1)) {
-                userspace_config.display.painter.display_logo_left = (screensaver_image_size - 1);
+            userspace_config.display.painter.left.display_logo =
+                (userspace_config.display.painter.left.display_logo - 1) % screensaver_image_size;
+            if (userspace_config.display.painter.left.display_logo > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.left.display_logo = (screensaver_image_size - 1);
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.painter.display_logo_left =
-                (userspace_config.display.painter.display_logo_left + 1) % screensaver_image_size;
-            if (userspace_config.display.painter.display_logo_left > (screensaver_image_size - 1)) {
-                userspace_config.display.painter.display_logo_left = 0;
+            userspace_config.display.painter.left.display_logo =
+                (userspace_config.display.painter.left.display_logo + 1) % screensaver_image_size;
+            if (userspace_config.display.painter.left.display_logo > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.left.display_logo = 0;
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
@@ -384,7 +449,7 @@ __attribute__((weak)) void display_handler_display_image_left(char *text_buffer,
         strncpy(text_buffer, "No Images", buffer_len - 1);
         return;
     }
-    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.display_logo_left].name, buffer_len - 1);
+    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.left.display_logo].name, buffer_len - 1);
 }
 
 bool menu_handler_display_image_right(menu_input_t input) {
@@ -393,19 +458,19 @@ bool menu_handler_display_image_right(menu_input_t input) {
     }
     switch (input) {
         case menu_input_left:
-            userspace_config.display.painter.display_logo_right =
-                (userspace_config.display.painter.display_logo_right - 1) % screensaver_image_size;
-            if (userspace_config.display.painter.display_logo_right > (screensaver_image_size - 1)) {
-                userspace_config.display.painter.display_logo_right = (screensaver_image_size - 1);
+            userspace_config.display.painter.right.display_logo =
+                (userspace_config.display.painter.right.display_logo - 1) % screensaver_image_size;
+            if (userspace_config.display.painter.right.display_logo > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.right.display_logo = (screensaver_image_size - 1);
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.painter.display_logo_right =
-                (userspace_config.display.painter.display_logo_right + 1) % screensaver_image_size;
-            if (userspace_config.display.painter.display_logo_right > (screensaver_image_size - 1)) {
-                userspace_config.display.painter.display_logo_right = 0;
+            userspace_config.display.painter.right.display_logo =
+                (userspace_config.display.painter.right.display_logo + 1) % screensaver_image_size;
+            if (userspace_config.display.painter.right.display_logo > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.right.display_logo = 0;
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
@@ -419,7 +484,7 @@ __attribute__((weak)) void display_handler_display_image_right(char *text_buffer
         strncpy(text_buffer, "No Images", buffer_len - 1);
         return;
     }
-    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.display_logo_right].name, buffer_len - 1);
+    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.right.display_logo].name, buffer_len - 1);
 }
 
 bool menu_handler_display_image_cycle_left(menu_input_t input) {
@@ -427,8 +492,8 @@ bool menu_handler_display_image_cycle_left(menu_input_t input) {
         case menu_input_left:
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.painter.display_logo_cycle_left =
-                !userspace_config.display.painter.display_logo_cycle_left;
+            userspace_config.display.painter.left.display_logo_cycle =
+                !userspace_config.display.painter.left.display_logo_cycle;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
@@ -437,7 +502,7 @@ bool menu_handler_display_image_cycle_left(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_display_image_cycle_left(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, userspace_config.display.painter.display_logo_cycle_left ? "Enabled" : "Disabled",
+    strncpy(text_buffer, userspace_config.display.painter.left.display_logo_cycle ? "Enabled" : "Disabled",
             buffer_len - 1);
 }
 
@@ -446,8 +511,8 @@ bool menu_handler_display_image_cycle_right(menu_input_t input) {
         case menu_input_left:
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.painter.display_logo_cycle_right =
-                !userspace_config.display.painter.display_logo_cycle_right;
+            userspace_config.display.painter.right.display_logo_cycle =
+                !userspace_config.display.painter.right.display_logo_cycle;
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
@@ -456,7 +521,7 @@ bool menu_handler_display_image_cycle_right(menu_input_t input) {
 }
 
 __attribute__((weak)) void display_handler_display_image_cycle_right(char *text_buffer, size_t buffer_len) {
-    strncpy(text_buffer, userspace_config.display.painter.display_logo_cycle_right ? "Enabled" : "Disabled",
+    strncpy(text_buffer, userspace_config.display.painter.right.display_logo_cycle ? "Enabled" : "Disabled",
             buffer_len - 1);
 }
 
@@ -574,14 +639,18 @@ menu_entry_t oled_pets_entries[] = {
 
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE) && defined(SPLIT_KEYBOARD)
 menu_entry_t display_options_left[] = {
+    MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation_left),
+    MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted_left),
     MENU_ENTRY_CHILD("Mode", "Mode", display_mode_left),
-    MENU_ENTRY_CHILD("Image", "Image", display_image_cycle_left),
+    MENU_ENTRY_CHILD("Image", "Image", display_image_left),
     MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_right),
 };
 
 menu_entry_t display_options_right[] = {
+    MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation_right),
+    MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted_right),
     MENU_ENTRY_CHILD("Mode", "Mode", display_mode_right),
-    MENU_ENTRY_CHILD("Image", "Image", display_image_cycle_right),
+    MENU_ENTRY_CHILD("Image", "Image", display_image_right),
     MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_right),
 };
 #endif
@@ -590,9 +659,9 @@ menu_entry_t display_option_entries[] = {
 #ifdef SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Menu Location", "Side", display_menu_location),
 #endif // SPLIT_KEYBOARD
+#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
     MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation),
     MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted),
-#if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
     MENU_ENTRY_CHILD("Brightness", "Brightness", oled_brightness),
     MENU_ENTRY_CHILD("Screen Lock", "Lock", oled_lock),
     MENU_ENTRY_MULTI("Pet Animation", "Pet", oled_pets_entries, oled_pet_animation),

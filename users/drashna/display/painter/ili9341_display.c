@@ -78,7 +78,10 @@ static bool has_run = false, forced_reinit = false;
 
 void init_display_ili9341_inversion(void) {
     qp_comms_start(display);
-    qp_comms_command(display, userspace_config.display.inverted ? ILI9XXX_CMD_INVERT_ON : ILI9XXX_CMD_INVERT_OFF);
+    qp_comms_command(display, (is_keyboard_left() ? userspace_config.display.painter.left.inverted
+                                                  : userspace_config.display.painter.right.inverted)
+                                  ? ILI9XXX_CMD_INVERT_ON
+                                  : ILI9XXX_CMD_INVERT_OFF);
     qp_comms_stop(display);
     if (has_run) {
         forced_reinit = true;
@@ -89,7 +92,10 @@ void init_display_ili9341_rotation(void) {
     uint16_t width;
     uint16_t height;
 
-    qp_init(display, userspace_config.display.rotation ? QP_ROTATION_0 : QP_ROTATION_180);
+    qp_init(display, (is_keyboard_left() ? userspace_config.display.painter.left.rotation
+                                         : userspace_config.display.painter.right.rotation)
+                         ? QP_ROTATION_0
+                         : QP_ROTATION_180);
     qp_get_geometry(display, &width, &height, NULL, NULL, NULL);
     qp_clear(display);
     qp_rect(display, 0, 0, width - 1, height - 1, 0, 0, 0, true);
@@ -174,16 +180,16 @@ __attribute__((weak)) void ili9341_draw_user(void) {
     if (screen_saver_sanity_checks()) {
         static uint16_t screen_saver_timer = 0;
         static uint8_t  display_mode_ref   = 0;
-        uint8_t         display_mode       = ((is_keyboard_left() ? userspace_config.display.painter.display_logo_left
-                                                                  : userspace_config.display.painter.display_logo_right) +
+        uint8_t         display_mode       = ((is_keyboard_left() ? userspace_config.display.painter.left.display_logo
+                                                                  : userspace_config.display.painter.right.display_logo) +
                                 display_mode_ref) %
                                screensaver_image_size;
 
         if (!screen_saver_redraw) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
-        if (((is_keyboard_left() && userspace_config.display.painter.display_logo_cycle_left) ||
-             (!is_keyboard_left() && userspace_config.display.painter.display_logo_cycle_right)) &&
+        if (((is_keyboard_left() && userspace_config.display.painter.left.display_logo_cycle) ||
+             (!is_keyboard_left() && userspace_config.display.painter.right.display_logo_cycle)) &&
             timer_elapsed32(screen_saver_timer) > 10000) { // 10 seconds
             static uint8_t last_display_mode = 0;
             if (last_display_mode != display_mode) {

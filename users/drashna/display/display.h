@@ -11,7 +11,7 @@ extern bool layer_map_has_updated;
 
 bool process_record_display_driver(uint16_t keycode, keyrecord_t* record);
 void keyboard_post_init_display_driver(void);
-void display_rotate_screen(bool clockwise);
+void display_rotate_screen(bool clockwise, bool is_left);
 
 #ifndef DISPLAY_CONSOLE_LOG_LINE_NUM
 #    if defined(OLED_ENABLE) && !defined(QUANTUM_PAINTER_ENABLE)

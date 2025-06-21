@@ -162,25 +162,40 @@ void display_sendchar_hook(uint8_t c) {
     }
 }
 
-void display_rotate_screen(bool clockwise) {
+void display_rotate_screen(bool clockwise, bool is_left) {
+#ifdef QUANTUM_PAINTER_ENABLE
+    uint8_t temp_rotation =
+        is_left ? userspace_config.display.painter.left.rotation : userspace_config.display.painter.right.rotation;
+#else
+    uint8_t temp_rotation = userspace_config.display.oled.rotation;
+#endif // QUANTUM_PAINTER_ENABLE
 #if defined(COMMUNITY_MODULE_DISPLAY_MENU_ENABLE)
     display_menu_set_dirty(true);
 #endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
 #if defined(DISPLAY_FULL_ROTATION_ENABLE)
     if (clockwise) {
-        userspace_config.display.rotation = (userspace_config.display.rotation + 1) % 4;
-        if (userspace_config.display.rotation > 3) {
-            userspace_config.display.rotation = 0;
+        temp_rotation = (temp_rotation + 1) % 4;
+        if (temp_rotation > 3) {
+            temp_rotation = 0;
         }
     } else {
-        userspace_config.display.rotation = (userspace_config.display.rotation - 1) % 4;
-        if (userspace_config.display.rotation > 3) {
-            userspace_config.display.rotation = 3;
+        temp_rotation = (temp_rotation - 1) % 4;
+        if (temp_rotation > 3) {
+            temp_rotation = 3;
         }
     }
 #else
-    userspace_config.display.rotation = !userspace_config.display.rotation;
+    temp_rotation = !temp_rotation;
 #endif
+#ifdef QUANTUM_PAINTER_ENABLE
+    if (is_left) {
+        userspace_config.display.painter.left.rotation = temp_rotation;
+    } else {
+        userspace_config.display.painter.right.rotation = temp_rotation;
+    }
+#else
+    userspace_config.display.oled.rotation = temp_rotation;
+#endif // QUANTUM_PAINTER_ENABLE
     eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     init_display_ili9341_rotation();
