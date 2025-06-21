@@ -177,7 +177,10 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         }
         if (screen_saver_redraw == false) {
             screen_saver_redraw = true;
-            screen_saver = qp_load_image_mem(screen_saver_image[userspace_config.display.painter.display_logo].data);
+            screen_saver        = qp_load_image_mem(
+                screen_saver_image[is_keyboard_left() ? userspace_config.display.painter.display_logo_left
+                                                             : userspace_config.display.painter.display_logo_right]
+                    .data);
             if (screen_saver != NULL) {
                 qp_drawimage(display, 0, 0, screen_saver);
                 qp_close_image(screen_saver);

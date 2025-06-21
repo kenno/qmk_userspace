@@ -123,9 +123,12 @@ __attribute__((weak)) void st7789_170x320_draw_user(void) {
     } else
 #endif // COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
     {
-        static uint8_t display_logo = 0xFF;
-        if (display_logo != (userspace_config.display.painter.display_logo)) {
-            display_logo = userspace_config.display.painter.display_logo;
+        static uint8_t display_logo     = 0xFF;
+        const uint8_t  display_logo_ref = is_keyboard_left() ? userspace_config.display.painter.display_logo_left
+                                                             : userspace_config.display.painter.display_logo_right;
+
+        if (display_logo != display_logo_ref) {
+            display_logo = display_logo_ref;
             force_redraw = true;
         }
         if (force_redraw) {

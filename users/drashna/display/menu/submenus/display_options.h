@@ -352,25 +352,25 @@ bool menu_handler_display_mode_right(menu_input_t input) {
     return pass_along;
 }
 
-bool menu_handler_display_image(menu_input_t input) {
+bool menu_handler_display_image_left(menu_input_t input) {
     if (screensaver_image_size == 0) {
         return true;
     }
     switch (input) {
         case menu_input_left:
-            userspace_config.display.painter.display_logo =
-                (userspace_config.display.painter.display_logo - 1) % screensaver_image_size;
-            if (userspace_config.display.painter.display_logo > (screensaver_image_size - 1)) {
-                userspace_config.display.painter.display_logo = (screensaver_image_size - 1);
+            userspace_config.display.painter.display_logo_left =
+                (userspace_config.display.painter.display_logo_left - 1) % screensaver_image_size;
+            if (userspace_config.display.painter.display_logo_left > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.display_logo_left = (screensaver_image_size - 1);
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
-            userspace_config.display.painter.display_logo =
-                (userspace_config.display.painter.display_logo + 1) % screensaver_image_size;
-            if (userspace_config.display.painter.display_logo > (screensaver_image_size - 1)) {
-                userspace_config.display.painter.display_logo = 0;
+            userspace_config.display.painter.display_logo_left =
+                (userspace_config.display.painter.display_logo_left + 1) % screensaver_image_size;
+            if (userspace_config.display.painter.display_logo_left > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.display_logo_left = 0;
             }
             eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
@@ -379,12 +379,47 @@ bool menu_handler_display_image(menu_input_t input) {
     }
 }
 
-__attribute__((weak)) void display_handler_display_image(char *text_buffer, size_t buffer_len) {
+__attribute__((weak)) void display_handler_display_image_left(char *text_buffer, size_t buffer_len) {
     if (screensaver_image_size == 0) {
         strncpy(text_buffer, "No Images", buffer_len - 1);
         return;
     }
-    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.display_logo].name, buffer_len - 1);
+    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.display_logo_left].name, buffer_len - 1);
+}
+
+bool menu_handler_display_image_right(menu_input_t input) {
+    if (screensaver_image_size == 0) {
+        return true;
+    }
+    switch (input) {
+        case menu_input_left:
+            userspace_config.display.painter.display_logo_right =
+                (userspace_config.display.painter.display_logo_right - 1) % screensaver_image_size;
+            if (userspace_config.display.painter.display_logo_right > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.display_logo_right = (screensaver_image_size - 1);
+            }
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            return false;
+        case menu_input_right:
+        case menu_input_enter:
+            userspace_config.display.painter.display_logo_right =
+                (userspace_config.display.painter.display_logo_right + 1) % screensaver_image_size;
+            if (userspace_config.display.painter.display_logo_right > (screensaver_image_size - 1)) {
+                userspace_config.display.painter.display_logo_right = 0;
+            }
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_image_right(char *text_buffer, size_t buffer_len) {
+    if (screensaver_image_size == 0) {
+        strncpy(text_buffer, "No Images", buffer_len - 1);
+        return;
+    }
+    strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.display_logo_right].name, buffer_len - 1);
 }
 
 bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
@@ -515,9 +550,10 @@ menu_entry_t display_option_entries[] = {
     MENU_ENTRY_CHILD("Display (Left)", "Left", display_mode_left),
     MENU_ENTRY_CHILD("Display (Right)", "Right", display_mode_right),
 #    else  // SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Display", "Displayn", display_mode_master),
+    MENU_ENTRY_CHILD("Display", "Display", display_mode_left),
 #    endif // SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Image", "Image", display_image),
+    MENU_ENTRY_CHILD("Left Image", "Image(L)", display_image_left),
+    MENU_ENTRY_CHILD("Right Image", "Image(R)", display_image_right),
     MENU_ENTRY_CHILD("Primary Hue", "P Hue", display_hue_primary),
     MENU_ENTRY_CHILD("Primary Saturation", "P Sat", display_sat_primary),
     MENU_ENTRY_CHILD("Primary Value", "P Val", display_val_primary),

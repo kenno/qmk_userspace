@@ -46,9 +46,12 @@ typedef union PACKED {
             } oled;
             struct {
                 // 3 bits gets 8 modes, 4 bits gets 16, etc
-                uint8_t    display_mode_left  : 3;
-                uint8_t    display_mode_right : 3;
-                uint8_t    display_logo       : 4;
+                uint8_t    display_mode_left        : 3;
+                uint8_t    display_mode_right       : 3;
+                uint8_t    display_logo_left        : 4;
+                uint8_t    display_logo_right       : 4;
+                bool       display_logo_cycle_left  : 1;
+                bool       display_logo_cycle_right : 1;
                 dual_hsv_t hsv;
             } painter;
         } display;
