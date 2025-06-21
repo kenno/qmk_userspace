@@ -422,6 +422,44 @@ __attribute__((weak)) void display_handler_display_image_right(char *text_buffer
     strncpy(text_buffer, screen_saver_image[userspace_config.display.painter.display_logo_right].name, buffer_len - 1);
 }
 
+bool menu_handler_display_image_cycle_left(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+        case menu_input_enter:
+            userspace_config.display.painter.display_logo_cycle_left =
+                !userspace_config.display.painter.display_logo_cycle_left;
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_image_cycle_left(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.display.painter.display_logo_cycle_left ? "Enabled" : "Disabled",
+            buffer_len - 1);
+}
+
+bool menu_handler_display_image_cycle_right(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+        case menu_input_enter:
+            userspace_config.display.painter.display_logo_cycle_right =
+                !userspace_config.display.painter.display_logo_cycle_right;
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_image_cycle_right(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.display.painter.display_logo_cycle_right ? "Enabled" : "Disabled",
+            buffer_len - 1);
+}
+
 bool menu_handler_display_hue(menu_input_t input, bool painter_is_primary) {
     switch (input) {
         case menu_input_left:
@@ -534,6 +572,20 @@ menu_entry_t oled_pets_entries[] = {
 #endif
 };
 
+#if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE) && defined(SPLIT_KEYBOARD)
+menu_entry_t display_options_left[] = {
+    MENU_ENTRY_CHILD("Mode", "Mode", display_mode_left),
+    MENU_ENTRY_CHILD("Image", "Image", display_image_cycle_left),
+    MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_right),
+};
+
+menu_entry_t display_options_right[] = {
+    MENU_ENTRY_CHILD("Mode", "Mode", display_mode_right),
+    MENU_ENTRY_CHILD("Image", "Image", display_image_cycle_right),
+    MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_right),
+};
+#endif
+
 menu_entry_t display_option_entries[] = {
 #ifdef SPLIT_KEYBOARD
     MENU_ENTRY_CHILD("Menu Location", "Side", display_menu_location),
@@ -547,13 +599,13 @@ menu_entry_t display_option_entries[] = {
 #endif // OLED_ENABLE && CUSTOM_OLED_DRIVER
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
 #    ifdef SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Display (Left)", "Left", display_mode_left),
-    MENU_ENTRY_CHILD("Display (Right)", "Right", display_mode_right),
+    MENU_ENTRY_MULTI("Left Display Options", "Options(L)", display_options_left, display_mode_left),
+    MENU_ENTRY_MULTI("Right Display Options", "Options(R)", display_options_right, display_mode_right),
 #    else  // SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Display", "Display", display_mode_left),
+    MENU_ENTRY_CHILD("Mode", "Mode", display_mode_left),
+    MENU_ENTRY_CHILD("Image", "Image", display_image_cycle_left),
+    MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_right),
 #    endif // SPLIT_KEYBOARD
-    MENU_ENTRY_CHILD("Left Image", "Image(L)", display_image_left),
-    MENU_ENTRY_CHILD("Right Image", "Image(R)", display_image_right),
     MENU_ENTRY_CHILD("Primary Hue", "P Hue", display_hue_primary),
     MENU_ENTRY_CHILD("Primary Saturation", "P Sat", display_sat_primary),
     MENU_ENTRY_CHILD("Primary Value", "P Val", display_val_primary),
