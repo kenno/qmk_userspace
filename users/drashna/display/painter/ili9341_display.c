@@ -172,15 +172,25 @@ __attribute__((weak)) void ili9341_draw_user(void) {
     qp_get_geometry(display, &width, &height, NULL, NULL, NULL);
 
     if (screen_saver_sanity_checks()) {
+        static uint16_t screen_saver_timer = 0;
+        static uint8_t  display_mode_ref   = 0;
         if (!screen_saver_redraw) {
             dprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
+        if (((is_keyboard_left() && userspace_config.display.painter.display_logo_cycle_left) ||
+             (!is_keyboard_left() && userspace_config.display.painter.display_logo_cycle_right)) &&
+            timer_elapsed32(screen_saver_timer) > 10000) { // 10 seconds
+            display_mode_ref++;
+            screen_saver_redraw = false;
+            screen_saver_timer  = timer_read32();
+        }
         if (screen_saver_redraw == false) {
-            screen_saver_redraw = true;
-            screen_saver        = qp_load_image_mem(
-                screen_saver_image[is_keyboard_left() ? userspace_config.display.painter.display_logo_left
-                                                             : userspace_config.display.painter.display_logo_right]
-                    .data);
+            screen_saver_redraw  = true;
+            uint8_t display_mode = ((is_keyboard_left() ? userspace_config.display.painter.display_logo_left
+                                                        : userspace_config.display.painter.display_logo_right) +
+                                    display_mode_ref) %
+                                   screensaver_image_size;
+            screen_saver = qp_load_image_mem(screen_saver_image[display_mode].data);
             if (screen_saver != NULL) {
                 qp_drawimage(display, 0, 0, screen_saver);
                 qp_close_image(screen_saver);
