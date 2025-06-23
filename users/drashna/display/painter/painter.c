@@ -1471,6 +1471,16 @@ void keyboard_post_init_quantum_painter(void) {
 #else
     painter_init_user();
 #endif // MULTITHREADED_PAINTER_ENABLE
+    if (userspace_config.display.painter.left.display_logo >= screensaver_image_size) {
+        userspace_config.display.painter.left.display_logo = 0;
+        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    }
+#ifdef SPLIT_KEYBOARD
+    if (userspace_config.display.painter.right.display_logo >= screensaver_image_size) {
+        userspace_config.display.painter.right.display_logo = 0;
+        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    }
+#endif
 }
 
 void suspend_power_down_quantum_painter(void) {
