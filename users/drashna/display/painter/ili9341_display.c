@@ -180,30 +180,40 @@ __attribute__((weak)) void ili9341_draw_user(void) {
     if (screen_saver_sanity_checks()) {
         static uint16_t screen_saver_timer = 0;
         static uint8_t  display_mode_ref   = 0;
-        uint8_t         display_mode       = is_keyboard_left() ? userspace_config.display.painter.left.display_logo
-                                                                : userspace_config.display.painter.right.display_logo;
+        uint8_t         display_logo_index = 0;
+        bool            display_logo_cycle = false;
 
         if (!screen_saver_redraw) {
             xprintf("Screen saver: %lu\n", last_input_activity_elapsed());
         }
-        if (((is_keyboard_left() && userspace_config.display.painter.left.display_logo_cycle) ||
-             (!is_keyboard_left() && userspace_config.display.painter.right.display_logo_cycle)) &&
-            timer_elapsed(screen_saver_timer) > 10000) { // 10 seconds
+        if (is_keyboard_left()) {
+            display_logo_index = userspace_config.display.painter.left.display_logo;
+            display_logo_cycle = userspace_config.display.painter.left.display_logo_cycle;
+        } else {
+            display_logo_index = userspace_config.display.painter.right.display_logo;
+            display_logo_cycle = userspace_config.display.painter.right.display_logo_cycle;
+        }
+        if (display_logo_cycle && timer_elapsed(screen_saver_timer) > 5000)
+        {
             static uint8_t last_display_mode = 0;
-            if (last_display_mode != display_mode) {
-                last_display_mode = display_mode;
+            if (last_display_mode != display_logo_index) {
+                last_display_mode = display_logo_index;
                 display_mode_ref  = 0; // reset the reference
+                xprintf("Screen saver: %d, reset at %u\n", display_mode_ref, screen_saver_timer);
             } else {
                 display_mode_ref++;
-                dprintf("Screen saver: %d, incremented at %u\n", display_mode_ref, screen_saver_timer);
+                xprintf("Screen saver: %d, incremented at %u\n", display_mode_ref, screen_saver_timer);
             }
             screen_saver_redraw = false;
             screen_saver_timer  = timer_read();
+        } else if (!display_logo_cycle) {
+            display_mode_ref = 0; // reset the reference
+            // xprintf("Screen saver: %d, reset at %u\n", display_mode_ref, screen_saver_timer);
         }
         if (screen_saver_redraw == false) {
             screen_saver_redraw = true;
-            screen_saver =
-                qp_load_image_mem(screen_saver_image[(display_mode + display_mode_ref) % screensaver_image_size].data);
+            screen_saver        = qp_load_image_mem(
+                screen_saver_image[(display_logo_index + display_mode_ref) % screensaver_image_size].data);
             if (screen_saver != NULL) {
                 qp_drawimage(display, 0, 0, screen_saver);
                 qp_close_image(screen_saver);
@@ -564,7 +574,7 @@ __attribute__((weak)) void ili9341_draw_user(void) {
                                RGBLIGHT_LIMIT_VAL);
 #    endif // RGBLIGHT_ENABLE
             static bool is_showing_nuke = true;
-            if (is_showing_nuke != userspace_config.nuke_switch || screen_saver_redraw) {
+            if (is_showing_nuke != userspace_config.nuke_switch || hue_redraw) {
                 is_showing_nuke = userspace_config.nuke_switch;
                 if (is_showing_nuke) {
                     qp_rect(display, 2, 32, 79, 170, 0, 0, 0, true);

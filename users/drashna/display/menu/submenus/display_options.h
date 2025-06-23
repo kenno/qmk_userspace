@@ -643,7 +643,7 @@ menu_entry_t display_options_left[] = {
     MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted_left),
     MENU_ENTRY_CHILD("Mode", "Mode", display_mode_left),
     MENU_ENTRY_CHILD("Image", "Image", display_image_left),
-    MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_right),
+    MENU_ENTRY_CHILD("Cycle", "Cycle", display_image_cycle_left),
 };
 
 menu_entry_t display_options_right[] = {
