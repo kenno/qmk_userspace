@@ -156,7 +156,12 @@ __attribute__((weak)) bool screen_saver_sanity_checks(void) {
         return false;
     }
     // if last activity has been been a third of the timeout, believe.
-    if (now > ((QUANTUM_PAINTER_DISPLAY_TIMEOUT) / 3)) {
+#ifdef SCREENSAVER_TESTING_ENABLE
+    if (now > 5000)
+#else
+    if (now > ((QUANTUM_PAINTER_DISPLAY_TIMEOUT) / 3))
+#endif
+    {
         return true;
     }
 
@@ -193,7 +198,11 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             display_logo_index = userspace_config.display.painter.right.display_logo;
             display_logo_cycle = userspace_config.display.painter.right.display_logo_cycle;
         }
+#ifdef SCREENSAVER_TESTING_ENABLE
+        if (display_logo_cycle && timer_elapsed(screen_saver_timer) > 1000)
+#else
         if (display_logo_cycle && timer_elapsed(screen_saver_timer) > 5000)
+#endif
         {
             static uint8_t last_display_mode = 0;
             if (last_display_mode != display_logo_index) {
