@@ -188,9 +188,6 @@ __attribute__((weak)) void ili9341_draw_user(void) {
         uint8_t         display_logo_index = 0;
         bool            display_logo_cycle = false;
 
-        if (!screen_saver_redraw) {
-            xprintf("Screen saver: %lu\n", last_input_activity_elapsed());
-        }
         if (is_keyboard_left()) {
             display_logo_index = userspace_config.display.painter.left.display_logo;
             display_logo_cycle = userspace_config.display.painter.left.display_logo_cycle;
@@ -208,10 +205,8 @@ __attribute__((weak)) void ili9341_draw_user(void) {
             if (last_display_mode != display_logo_index) {
                 last_display_mode = display_logo_index;
                 display_mode_ref  = 0; // reset the reference
-                xprintf("Screen saver: %d, reset at %u\n", display_mode_ref, screen_saver_timer);
             } else {
                 display_mode_ref++;
-                xprintf("Screen saver: %d, incremented at %u\n", display_mode_ref, screen_saver_timer);
             }
             screen_saver_redraw = false;
             screen_saver_timer  = timer_read();
