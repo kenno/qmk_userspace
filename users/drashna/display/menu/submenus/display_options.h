@@ -121,6 +121,61 @@ __attribute__((weak)) void display_handler_display_rotation_right(char *text_buf
     strncpy(text_buffer, "Unknown", buffer_len);
 }
 
+bool menu_handler_display_rotation_oled(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+            display_rotate_screen(false, true);
+            return false;
+        case menu_input_right:
+        case menu_input_enter:
+            display_rotate_screen(true, true);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_rotation_oled(char *text_buffer, size_t buffer_len) {
+#if defined(DISPLAY_FULL_ROTATION_ENABLE)
+    switch (userspace_config.display.oled.rotation) {
+        case 0:
+            strncpy(text_buffer, "0", buffer_len - 1);
+            return;
+        case 1:
+            strncpy(text_buffer, "90", buffer_len - 1);
+            return;
+        case 2:
+            strncpy(text_buffer, "180", buffer_len - 1);
+            return;
+        case 3:
+            strncpy(text_buffer, "270", buffer_len - 1);
+            return;
+    }
+#else
+    strncpy(text_buffer, userspace_config.display.oled.rotation ? "Flipped" : "Normal", buffer_len - 1);
+    return;
+#endif
+
+    strncpy(text_buffer, "Unknown", buffer_len);
+}
+
+bool menu_handler_display_inverted_oled(menu_input_t input) {
+    switch (input) {
+        case menu_input_left:
+        case menu_input_right:
+        case menu_input_enter:
+            userspace_config.display.oled.inverted = !userspace_config.display.oled.inverted;
+            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            return false;
+        default:
+            return true;
+    }
+}
+
+__attribute__((weak)) void display_handler_display_inverted_oled(char *text_buffer, size_t buffer_len) {
+    strncpy(text_buffer, userspace_config.display.oled.inverted ? "Flipped" : "Normal", buffer_len - 1);
+}
+
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
 void init_display_ili9341_inversion(void);
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
@@ -660,8 +715,8 @@ menu_entry_t display_option_entries[] = {
     MENU_ENTRY_CHILD("Menu Location", "Side", display_menu_location),
 #endif // SPLIT_KEYBOARD
 #if defined(OLED_ENABLE) && defined(CUSTOM_OLED_DRIVER)
-    MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation),
-    MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted),
+    MENU_ENTRY_CHILD("Rotation", "Rotation", display_rotation_oled),
+    MENU_ENTRY_CHILD("Inverted", "Inverted", display_inverted_oled),
     MENU_ENTRY_CHILD("Brightness", "Brightness", oled_brightness),
     MENU_ENTRY_CHILD("Screen Lock", "Lock", oled_lock),
     MENU_ENTRY_MULTI("Pet Animation", "Pet", oled_pets_entries, oled_pet_animation),

@@ -45,6 +45,7 @@ typedef union PACKED {
                 uint8_t brightness  : 8;
                 bool    screen_lock : 1;
                 uint8_t rotation    : 2;
+                bool    inverted    : 1;
                 struct {
                     uint8_t index       : 2;
                     uint8_t sleep_speed : 8;

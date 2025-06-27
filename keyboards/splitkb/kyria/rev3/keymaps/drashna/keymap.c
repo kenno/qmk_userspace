@@ -122,9 +122,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 void eeconfig_init_keymap(void) {
 #if !defined(OLED_DISPLAY_128X64)
-    userspace_config.display.rotation = 0; // OLED_ROTATION_180;
+    userspace_config.display.oled.rotation = 0; // OLED_ROTATION_180;
 #else
-    userspace_config.display.rotation = 1; // OLED_ROTATION_180;
+    userspace_config.display.oled.rotation = 1; // OLED_ROTATION_180;
 #endif
 }
 
