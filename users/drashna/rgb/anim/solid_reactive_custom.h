@@ -11,11 +11,8 @@ static hsv_t SOLID_REACTIVE_SIMPLE_INC_math(hsv_t hsv, uint16_t offset) {
     return hsv;
 }
 static hsv_t SOLID_REACTIVE_SIMPLE_DEC_math(hsv_t hsv, uint16_t offset) {
-    uint8_t temp = hsv.v;
-    hsv.v        = scale8(255 - offset, hsv.v);
-    if (hsv.v == (temp - 1)) {
-        hsv.v = 0;
-    }
+    // start at 257 so that non-reactive keys are out of bounds and treated as 0
+    hsv.v = scale8(257 - offset, hsv.v);
     return hsv;
 }
 
