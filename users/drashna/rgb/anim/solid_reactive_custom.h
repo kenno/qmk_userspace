@@ -2,22 +2,29 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifdef RGB_MATRIX_KEYREACTIVE_ENABLED
-#    ifdef ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE
-RGB_MATRIX_EFFECT(SOLID_REACTIVE_SIMPLE_CUSTOM)
-#        ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+RGB_MATRIX_EFFECT(SOLID_REACTIVE_SIMPLE_INCREASE)
+RGB_MATRIX_EFFECT(SOLID_REACTIVE_SIMPLE_DECREASE)
+#    ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
-static hsv_t SOLID_REACTIVE_SIMPLE_CUSTOM_math(hsv_t hsv, uint16_t offset) {
-#            ifdef RGB_MATRIX_SOLID_REACTIVE_GRADIENT_MODE
-    hsv.h = scale16by8(g_rgb_timer, qadd8(rgb_matrix_config.speed, 8) >> 4);
-#            endif
+static hsv_t SOLID_REACTIVE_SIMPLE_INC_math(hsv_t hsv, uint16_t offset) {
     hsv.v = scale8(offset - 1, hsv.v);
     return hsv;
 }
-
-bool SOLID_REACTIVE_SIMPLE_CUSTOM(effect_params_t* params) {
-    return effect_runner_reactive(params, &SOLID_REACTIVE_SIMPLE_CUSTOM_math);
+static hsv_t SOLID_REACTIVE_SIMPLE_DEC_math(hsv_t hsv, uint16_t offset) {
+    uint8_t temp = hsv.v;
+    hsv.v        = scale8(255 - offset, hsv.v);
+    if (hsv.v == (temp - 1)) {
+        hsv.v = 0;
+    }
+    return hsv;
 }
 
-#        endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
-#    endif     // ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE
-#endif         // RGB_MATRIX_KEYREACTIVE_ENABLED
+bool SOLID_REACTIVE_SIMPLE_INCREASE(effect_params_t* params) {
+    return effect_runner_reactive(params, &SOLID_REACTIVE_SIMPLE_INC_math);
+}
+bool SOLID_REACTIVE_SIMPLE_DECREASE(effect_params_t* params) {
+    return effect_runner_reactive(params, &SOLID_REACTIVE_SIMPLE_DEC_math);
+}
+
+#    endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+#endif     // RGB_MATRIX_KEYREACTIVE_ENABLED
