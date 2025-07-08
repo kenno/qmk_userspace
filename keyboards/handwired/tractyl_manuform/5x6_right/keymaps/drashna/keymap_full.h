@@ -109,7 +109,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         VRSN,    _________________ADJUST_L1_________________,                        _________________ADJUST_R1_________________, EE_CLR,
         KEYLOCK, _________________ADJUST_L2_________________,                        _________________ADJUST_R2_________________, TG_MODS,
         UC_NEXT, _________________ADJUST_L3_________________,                        _________________ADJUST_R3_________________, KC_MPLY,
-        _______, _______, TG(_DIABLOII), AC_TOGG,                                                      TG_GAME, TG_DBLO, _______, _______,
+        KC_PSCR, _______, TG(_DIABLOII), AC_TOGG,                                                      TG_GAME, TG_DBLO, _______, _______,
                                             _______, QK_RBT,                                  KC_NUKE,
                                                      HF_TOGG, _______,               US_MSRP,
                                                      _______, _______,      KC_NUKE, _______
