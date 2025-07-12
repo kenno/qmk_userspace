@@ -163,6 +163,7 @@ const uint8_t led_mapping[RGBLIGHT_LED_COUNT] = {0,  1,  2,  3,  4,  9,  14, 19,
 #        include "elpekenin/indicators.h"
 
 const indicator_t PROGMEM indicators[] = {
+#        if __GNUC__ > 8
     // clang-format off
     KEYCODE_WITH_MOD_INDICATOR(OSM(MOD_LSFT), MOD_BIT_LSHIFT, HSV_COLOR(HSV_CYAN)),
     KEYCODE_WITH_MOD_INDICATOR(OSM(MOD_RSFT), MOD_BIT_RSHIFT, HSV_COLOR(HSV_CYAN)),
@@ -201,7 +202,8 @@ const indicator_t PROGMEM indicators[] = {
     KEYCODE_IN_LAYER_INDICATOR(KC_A, _GAMEPAD, HSV_COLOR(HSV_CYAN)),
     KEYCODE_IN_LAYER_INDICATOR(KC_S, _GAMEPAD, HSV_COLOR(HSV_CYAN)),
     KEYCODE_IN_LAYER_INDICATOR(KC_D, _GAMEPAD, HSV_COLOR(HSV_CYAN)), // 32
-    // clang-format on
+// clang-format on
+#        endif
 };
 #    endif
 
