@@ -203,6 +203,8 @@ const indicator_t PROGMEM indicators[] = {
     KEYCODE_IN_LAYER_INDICATOR(KC_S, _GAMEPAD, HSV_COLOR(HSV_CYAN)),
     KEYCODE_IN_LAYER_INDICATOR(KC_D, _GAMEPAD, HSV_COLOR(HSV_CYAN)), // 32
 // clang-format on
+#        else
+    NULL
 #        endif
 };
 #    endif
