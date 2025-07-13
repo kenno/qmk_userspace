@@ -53,9 +53,8 @@ jobs:
 
       - name: Install QMK CLI
         run: |
-          python3 -m pip install --upgrade qmk
-          python3 -m pip install -r qmk_firmware/requirements.txt
-          # python3 -m pip install milc==1.8.0
+          python3 -m pip install --upgrade qmk --break-system-packages
+          python3 -m pip install -r qmk_firmware/requirements.txt --break-system-packages
 
       - name: Configure QMK CLI
         run: |
