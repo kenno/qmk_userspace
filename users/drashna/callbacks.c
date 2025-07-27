@@ -57,7 +57,7 @@ userspace_runtime_state_t userspace_runtime_state;
 __attribute__((weak)) void keyboard_pre_init_keymap(void) {}
 void                       keyboard_pre_init_user(void) {
     print_set_sendchar(drashna_sendchar);
-    eeconfig_read_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_read_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     if (!eeconfig_is_user_datablock_valid() || !userspace_config.check) {
         eeconfig_init_user();
     }
@@ -305,7 +305,7 @@ void                       eeconfig_init_user(void) {
     eeconfig_update_keymap(&keymap_config);
 
     eeconfig_init_keymap();
-    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
     void eeconfig_init_pointing_device(void);
     eeconfig_init_pointing_device();
@@ -421,7 +421,7 @@ bool rtc_set_time_user(rtc_time_t *time) {
     userspace_config.rtc.is_dst     = time->is_dst;
     userspace_config.rtc.timezone   = time->timezone;
     userspace_config.rtc.format_24h = time->format;
-    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     if (is_keyboard_master()) {
         rtc_needs_sync = rtc_is_connected();
     }

@@ -173,7 +173,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
 #    endif // CUSTOM_RGB_MATRIX && RGB_MATRIX_FRAMEBUFFER_EFFECTS
                 if (is_eeprom_updated) {
-                    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+                    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
                 }
             }
             break;
@@ -189,7 +189,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
 #    endif // CUSTOM_RGB_MATRIX && RGB_MATRIX_FRAMEBUFFER_EFFECTS
                 if (is_eeprom_updated) {
-                    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+                    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
                 }
             }
             break;
@@ -210,7 +210,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case US_MATRIX_SCAN_RATE_PRINT:
             if (record->event.pressed) {
                 userspace_config.debug.matrix_scan_print ^= 1;
-                eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+                eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             }
             break;
         case US_I2C_SCAN_ENABLE:
@@ -218,7 +218,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 userspace_config.debug.i2c_scanner_enable = !userspace_config.debug.i2c_scanner_enable;
                 i2c_scanner_set_enabled(userspace_config.debug.i2c_scanner_enable);
-                eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+                eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             }
 #endif
             break;
@@ -226,7 +226,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef AUDIO_ENABLE
             if (record->event.pressed) {
                 userspace_config.gaming.song_enable = !userspace_config.gaming.song_enable;
-                eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+                eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
                 set_doom_song(layer_state);
             }
 #endif // AUDIO_ENABLE
@@ -321,7 +321,7 @@ void                       post_process_record_user(uint16_t keycode, keyrecord_
 void rgb_layer_indication_toggle(void) {
     userspace_config.rgb.layer_change ^= 1;
     dprintf("rgblight layer change [EEPROM]: %u\n", userspace_config.rgb.layer_change);
-    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
     if (userspace_config.rgb.layer_change) {
 #if defined(CUSTOM_RGB_MATRIX)
         rgb_matrix_set_flags(LED_FLAG_UNDERGLOW | LED_FLAG_KEYLIGHT | LED_FLAG_INDICATOR);

@@ -137,7 +137,7 @@ void recv_debug_config(const uint8_t* data, uint8_t size) {
 void recv_userspace_config(const uint8_t* data, uint8_t size) {
     if (memcmp(data, &userspace_config, size) != 0) {
         memcpy(&userspace_config, data, size);
-        eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+        eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #if defined(DISPLAY_DRIVER_ENABLE)
         static uint8_t last_inverted = 0xFF, last_rotation = 0xFF;
         const uint8_t  current_inverted = is_keyboard_left() ? userspace_config.display.painter.left.inverted

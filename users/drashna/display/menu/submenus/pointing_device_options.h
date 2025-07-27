@@ -11,7 +11,7 @@ bool menu_handler_auto_mouse_enable(menu_input_t input) {
         case menu_input_right:
         case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.enable = !userspace_config.pointing.auto_mouse_layer.enable;
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             set_auto_mouse_enable(userspace_config.pointing.auto_mouse_layer.enable);
             return false;
         default:
@@ -30,14 +30,14 @@ bool menu_handler_auto_mouse_layer(menu_input_t input) {
             userspace_config.pointing.auto_mouse_layer.layer =
                 (userspace_config.pointing.auto_mouse_layer.layer - 1) % MAX_USER_LAYERS;
             set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.layer =
                 (userspace_config.pointing.auto_mouse_layer.layer + 1) % MAX_USER_LAYERS;
             set_auto_mouse_layer(userspace_config.pointing.auto_mouse_layer.layer);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;
@@ -55,14 +55,14 @@ bool menu_handler_auto_mouse_timeout(menu_input_t input) {
             userspace_config.pointing.auto_mouse_layer.timeout =
                 (userspace_config.pointing.auto_mouse_layer.timeout - 10);
             set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.timeout =
                 (userspace_config.pointing.auto_mouse_layer.timeout + 10);
             set_auto_mouse_timeout(userspace_config.pointing.auto_mouse_layer.timeout);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;
@@ -79,14 +79,14 @@ bool menu_handler_auto_mouse_debounce(menu_input_t input) {
             userspace_config.pointing.auto_mouse_layer.debounce =
                 (userspace_config.pointing.auto_mouse_layer.debounce - 1);
             set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
             userspace_config.pointing.auto_mouse_layer.debounce =
                 (userspace_config.pointing.auto_mouse_layer.debounce + 1);
             set_auto_mouse_debounce(userspace_config.pointing.auto_mouse_layer.debounce);
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;
@@ -120,14 +120,14 @@ bool menu_handler_mouse_jiggler_timeout(menu_input_t input) {
             if (userspace_config.pointing.mouse_jiggler.timeout != 0) {
                 userspace_config.pointing.mouse_jiggler.timeout--;
             }
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         case menu_input_right:
         case menu_input_enter:
             if (userspace_config.pointing.mouse_jiggler.timeout != 255) {
                 userspace_config.pointing.mouse_jiggler.timeout++;
             }
-            eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+            eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
             return false;
         default:
             return true;

@@ -211,7 +211,7 @@ void pointing_device_mouse_jiggler_toggle(void) {
     mouse_jiggler_timer          = timer_read();
     mouse_jiggler_debounce_timer = timer_read32() + (userspace_config.pointing.mouse_jiggler.timeout - 5) * 1000;
     userspace_config.pointing.mouse_jiggler.enable = !userspace_config.pointing.mouse_jiggler.enable;
-    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 }
 
 #ifdef POINTING_MODE_MAP_ENABLE
@@ -241,6 +241,6 @@ void pointing_device_config_read(pointing_device_accel_config_t* config) {
 
 void pointing_device_config_update(pointing_device_accel_config_t* config) {
     memcpy(&userspace_config.pointing.accel, config, sizeof(pointing_device_accel_config_t));
-    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 }
 #endif

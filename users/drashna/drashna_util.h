@@ -15,5 +15,3 @@ bool     is_device_suspended(void);
 void     set_is_device_suspended(bool status);
 uint16_t extract_basic_keycode(uint16_t keycode, keyrecord_t *record, bool check_hold);
 uint16_t extract_non_basic_keycode(uint16_t keycode, keyrecord_t *record, bool check_hold);
-uint32_t eeconfig_update_user_datablock_handler(const void *data, uint8_t offset, uint8_t size);
-uint32_t eeconfig_read_user_datablock_handler(void *data, uint8_t offset, uint8_t size);

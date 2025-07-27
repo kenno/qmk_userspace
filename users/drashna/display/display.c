@@ -196,7 +196,7 @@ void display_rotate_screen(bool clockwise, bool is_left) {
 #else
     userspace_config.display.oled.rotation = temp_rotation;
 #endif // QUANTUM_PAINTER_ENABLE
-    eeconfig_update_user_datablock_handler(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
+    eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
 #ifdef QUANTUM_PAINTER_ILI9341_ENABLE
     init_display_ili9341_rotation();
 #endif // QUANTUM_PAINTER_ILI9341_ENABLE
