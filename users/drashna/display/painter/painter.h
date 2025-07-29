@@ -17,6 +17,13 @@ typedef struct {
 extern painter_image_array_t screen_saver_image[];
 extern const uint8_t         screensaver_image_size;
 
+typedef struct {
+    void (*painter_function)(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                             uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv);
+    const char* name;
+} painter_display_menu_block_mode_t;
+extern const uint8_t painter_display_menu_block_modes_count;
+
 extern painter_font_handle_t font_thintel, font_mono, font_oled;
 
 void housekeeping_task_display_menu_user(void);
@@ -73,6 +80,8 @@ void render_life(painter_device_t display, uint16_t xpos, uint16_t ypos, dual_hs
 bool qp_draw_graph_l(painter_device_t device, uint16_t graph_x, uint16_t graph_y, uint16_t graph_width,
                      uint16_t graph_height, dual_hsv_t* curr_hsv, uint8_t* graph_data, uint8_t graph_segments,
                      uint8_t scale_to);
+void painter_render_pd_accel_graph(painter_device_t device, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+                                   bool force_redraw, dual_hsv_t* curr_hsv);
 
 dual_hsv_t painter_get_dual_hsv(void);
 void       painter_sethsv(uint8_t hue, uint8_t sat, uint8_t val, bool primary);

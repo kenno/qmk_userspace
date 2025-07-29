@@ -113,6 +113,71 @@ painter_image_array_t screen_saver_image[] = {
 
 const uint8_t screensaver_image_size = ARRAY_SIZE(screen_saver_image);
 
+void painter_render_menu_block_console(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                       uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    painter_render_console(device, font, x + 2, y + 2, width, force_redraw, &curr_hsv->primary,
+                           DISPLAY_CONSOLE_LOG_LINE_START, DISPLAY_CONSOLE_LOG_LINE_NUM);
+}
+
+void painter_render_menu_block_fonts(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                     uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    static uint16_t              max_font_xpos[3][4] = {0};
+    extern painter_font_handle_t font_thintel, font_mono, font_oled;
+    x += 3;
+    y += 2;
+    render_character_set(device, &x, max_font_xpos[0], &y, font_thintel, curr_hsv->primary.h, curr_hsv->primary.s,
+                         curr_hsv->primary.v, 0, 0, 0);
+    render_character_set(device, &x, max_font_xpos[1], &y, font_mono, curr_hsv->primary.h, curr_hsv->primary.s,
+                         curr_hsv->primary.v, 0, 0, 0);
+    render_character_set(device, &x, max_font_xpos[2], &y, font_oled, curr_hsv->primary.h, curr_hsv->primary.s,
+                         curr_hsv->primary.v, 0, 0, 0);
+}
+
+void painter_render_menu_block_qmk_info(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                        uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    painter_render_qmk_info(device, font, x, y + 5, width, force_redraw, curr_hsv);
+}
+
+void painter_render_menu_block_nyan_cat(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                        uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    if (nyan_token == INVALID_DEFERRED_TOKEN) {
+        nyan_token =
+            qp_animate(device, x + (width - nyan_cat->width) / 2, y + (height - nyan_cat->height) / 2, nyan_cat);
+    }
+}
+
+void painter_render_menu_block_game_of_life(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                            uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    render_life(device, x, y, curr_hsv, force_redraw);
+}
+
+void painter_render_menu_block_layer_map(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
+                                         uint16_t width, uint16_t height, bool force_redraw, dual_hsv_t* curr_hsv) {
+    painter_render_layer_map(device, font, x, y, width, force_redraw, curr_hsv);
+}
+
+void painter_render_menu_block_pd_accel_graph(painter_device_t device, painter_font_handle_t font, uint16_t x,
+                                              uint16_t y, uint16_t width, uint16_t height, bool force_redraw,
+                                              dual_hsv_t* curr_hsv) {
+    painter_render_pd_accel_graph(device, x, y, width, height, force_redraw, curr_hsv);
+}
+
+painter_display_menu_block_mode_t painter_display_menu_block_modes[] = {
+    {painter_render_menu_block_console, "Console"},
+    {painter_render_menu_block_fonts, "Fonts"},
+    {painter_render_menu_block_qmk_info, "QMK Info"},
+    {painter_render_menu_block_nyan_cat, "Nyan Cat"},
+    {painter_render_menu_block_game_of_life, "Game of Life"},
+#ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+    {painter_render_menu_block_layer_map, "Layer Map"},
+#endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
+#ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+    {painter_render_menu_block_pd_accel_graph, "PD Accel Curve"},
+#endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+};
+
+const uint8_t painter_display_menu_block_modes_count = ARRAY_SIZE(painter_display_menu_block_modes);
+
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
 bool rgb_redraw = false;
 #endif
@@ -734,9 +799,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     } else
 #endif
     {
-        bool     block_redraw = false;
-        uint16_t surface_ypos = y + 2, surface_xpos = x + 3;
-
+        bool    block_redraw         = false;
         uint8_t current_display_mode = is_left ? userspace_config.display.painter.left.display_mode
                                                : userspace_config.display.painter.right.display_mode;
 
@@ -756,50 +819,8 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
             nyan_token = INVALID_DEFERRED_TOKEN;
         }
 
-        switch (current_display_mode) {
-            case 0:
-                painter_render_console(device, font, x + 2, surface_ypos, width, force_redraw || block_redraw,
-                                       &curr_hsv->primary, DISPLAY_CONSOLE_LOG_LINE_START,
-                                       DISPLAY_CONSOLE_LOG_LINE_NUM);
-                break;
-            case 1:
-                if (force_redraw || block_redraw) {
-                    static uint16_t              max_font_xpos[3][4] = {0};
-                    extern painter_font_handle_t font_thintel, font_mono, font_oled;
-                    render_character_set(device, &surface_xpos, max_font_xpos[0], &surface_ypos, font_thintel,
-                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
-                    render_character_set(device, &surface_xpos, max_font_xpos[1], &surface_ypos, font_mono,
-                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
-                    render_character_set(device, &surface_xpos, max_font_xpos[2], &surface_ypos, font_oled,
-                                         curr_hsv->primary.h, curr_hsv->primary.s, curr_hsv->primary.v, 0, 0, 0);
-                }
-                break;
-            case 2:
-                painter_render_qmk_info(device, font, x, y + 5, width, force_redraw || block_redraw, curr_hsv);
-                break;
-            case 3:
-                if (nyan_token == INVALID_DEFERRED_TOKEN) {
-                    nyan_token = qp_animate(device, x + (width - nyan_cat->width) / 2,
-                                            y + (height - nyan_cat->height) / 2, nyan_cat);
-                }
-                break;
-            case 4:
-                render_life(device, x, y, curr_hsv, force_redraw || block_redraw);
-                break;
-            case 5:
-                //  Layer Map render
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                painter_render_layer_map(device, font, x, y, width, force_redraw || block_redraw, curr_hsv);
-                break;
-            case 6:
-                painter_render_pd_accel_graph(device, x, y, width, height, force_redraw || block_redraw, curr_hsv);
-                break;
-            case 7:
-                painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv, true);
-                break;
-            default:
-                break;
-        }
+        painter_display_menu_block_modes[current_display_mode].painter_function(device, font, x, y, width, height,
+                                                                                force_redraw || block_redraw, curr_hsv);
     }
 }
 

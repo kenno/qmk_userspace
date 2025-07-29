@@ -396,27 +396,16 @@ __attribute__((weak)) void display_handler_oled_pet_mati_speed(char *text_buffer
 
 #if defined(QUANTUM_PAINTER_ENABLE) && defined(CUSTOM_QUANTUM_PAINTER_ENABLE)
 #    include "display/painter/painter.h"
-extern painter_image_array_t screen_saver_image[];
-extern const uint8_t         screensaver_image_size;
+extern painter_image_array_t             screen_saver_image[];
+extern const uint8_t                     screensaver_image_size;
+extern painter_display_menu_block_mode_t painter_display_menu_block_modes[];
+extern const uint8_t                     painter_display_menu_block_modes_count;
 
-extern char *display_mode_string_array[];
-= {
-    "Console",        "Fonts", "QMK Info", "Nyan Cat", "Game of Life",
-#    ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
-    "Layer Map",
-#    endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
-#    ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
-    "PD Accel Curve",
-#    endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
-};
-
-#    define MAX_MODES (sizeof(display_mode_string_array) / sizeof(display_mode_string_array[0]))
-
-static char *display_handler_display_mode(uint8_t mode) {
-    if (mode >= MAX_MODES) {
+static const char *display_handler_display_mode(uint8_t mode) {
+    if (mode >= painter_display_menu_block_modes_count) {
         return "Unknown";
     }
-    return display_mode_string_array[mode];
+    return painter_display_menu_block_modes[mode].name;
 }
 
 __attribute__((weak)) void display_handler_display_mode_left(char *text_buffer, size_t buffer_len) {
@@ -453,7 +442,7 @@ static bool menu_handler_display_mode(menu_input_t input, uint8_t *mode, uint8_t
 
 bool menu_handler_display_mode_left(menu_input_t input) {
     uint8_t temp       = userspace_config.display.painter.left.display_mode;
-    bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
+    bool    pass_along = menu_handler_display_mode(input, &temp, painter_display_menu_block_modes_count);
     if (userspace_config.display.painter.left.display_mode != temp) {
         userspace_config.display.painter.left.display_mode = temp;
         eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
@@ -463,7 +452,7 @@ bool menu_handler_display_mode_left(menu_input_t input) {
 
 bool menu_handler_display_mode_right(menu_input_t input) {
     uint8_t temp       = userspace_config.display.painter.right.display_mode;
-    bool    pass_along = menu_handler_display_mode(input, &temp, MAX_MODES);
+    bool    pass_along = menu_handler_display_mode(input, &temp, painter_display_menu_block_modes_count);
     if (userspace_config.display.painter.right.display_mode != temp) {
         userspace_config.display.painter.right.display_mode = temp;
         eeconfig_update_user_datablock(&userspace_config, 0, EECONFIG_USER_DATA_SIZE);
