@@ -399,31 +399,24 @@ __attribute__((weak)) void display_handler_oled_pet_mati_speed(char *text_buffer
 extern painter_image_array_t screen_saver_image[];
 extern const uint8_t         screensaver_image_size;
 
+extern char *display_mode_string_array[];
+= {
+    "Console",        "Fonts", "QMK Info", "Nyan Cat", "Game of Life",
+#    ifdef COMMUNITY_MODULE_LAYER_MAP_ENABLE
+    "Layer Map",
+#    endif // COMMUNITY_MODULE_LAYER_MAP_ENABLE
 #    ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
-#        define MAX_MODES 8
-#    else
-#        define MAX_MODES 7
-#    endif
+    "PD Accel Curve",
+#    endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+};
+
+#    define MAX_MODES (sizeof(display_mode_string_array) / sizeof(display_mode_string_array[0]))
 
 static char *display_handler_display_mode(uint8_t mode) {
-    switch (mode) {
-        case 0:
-            return "Console";
-        case 1:
-            return "Fonts";
-        case 2:
-            return "QMK Info";
-        case 3:
-            return "Nyan Cat";
-        case 4:
-            return "Game of Life";
-        case 5:
-            return "Layer Map";
-        case 6:
-            return "PD Accel Curve";
-        default:
-            return "Unknown";
+    if (mode >= MAX_MODES) {
+        return "Unknown";
     }
+    return display_mode_string_array[mode];
 }
 
 __attribute__((weak)) void display_handler_display_mode_left(char *text_buffer, size_t buffer_len) {
