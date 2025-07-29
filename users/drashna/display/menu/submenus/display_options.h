@@ -399,7 +399,11 @@ __attribute__((weak)) void display_handler_oled_pet_mati_speed(char *text_buffer
 extern painter_image_array_t screen_saver_image[];
 extern const uint8_t         screensaver_image_size;
 
-#    define MAX_MODES 6
+#    ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+#        define MAX_MODES 8
+#    else
+#        define MAX_MODES 7
+#    endif
 
 static char *display_handler_display_mode(uint8_t mode) {
     switch (mode) {
@@ -415,6 +419,8 @@ static char *display_handler_display_mode(uint8_t mode) {
             return "Game of Life";
         case 5:
             return "Layer Map";
+        case 6:
+            return "PD Accel Curve";
         default:
             return "Unknown";
     }

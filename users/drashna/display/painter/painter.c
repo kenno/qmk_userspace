@@ -45,6 +45,9 @@
 #else
 void display_menu_set_dirty(bool state) {}
 #endif
+#ifdef COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+#    include "pointing_device_accel.h"
+#endif // COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
 #ifdef COMMUNITY_MODULE_QP_HELPERS_ENABLE
 #    include "qp_helpers.h"
 #endif
@@ -626,6 +629,68 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
 }
 
 /**
+ * @brief Renders a pointing device acceleration graph using the painter system
+ *
+ * This function displays a visual representation of the pointing device acceleration
+ * curve as a line graph. The graph shows acceleration values plotted over a fixed
+ * number of sample points, helping visualize the current acceleration configuration.
+ *
+ * @param device The painter device to render the graph on
+ * @param x X coordinate for the top-left corner of the graph
+ * @param y Y coordinate for the top-left corner of the graph
+ * @param width Width of the graph in pixels
+ * @param height Height of the graph in pixels
+ * @param force_redraw If true, forces a complete redraw of the graph regardless of changes
+ * @param curr_hsv Pointer to dual HSV color configuration (primary for axis, secondary for line)
+ *
+ * @note This function only operates when both COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE
+ *       and COMMUNITY_MODULE_QP_HELPERS_ENABLE are defined
+ * @note The graph automatically redraws when the acceleration configuration changes
+ * @note Uses a fixed sample size of 40 data points for the acceleration curve
+ */
+#ifndef ACCEL_GRAPH_SAMPLES
+#    define ACCEL_GRAPH_SAMPLES 40
+#endif
+
+void painter_render_pd_accel_graph(painter_device_t device, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+                                   bool force_redraw, dual_hsv_t* curr_hsv) {
+#if defined(COMMUNITY_MODULE_POINTING_DEVICE_ACCEL_ENABLE) && defined(COMMUNITY_MODULE_QP_HELPERS_ENABLE)
+    static pointing_device_accel_config_t local        = {0};
+    bool                                  needs_redraw = false;
+    static uint8_t                        graph_samples[ACCEL_GRAPH_SAMPLES];
+
+    if (memcmp(&local, &g_pointing_device_accel_config, sizeof(pointing_device_accel_config_t)) != 0) {
+        local        = g_pointing_device_accel_config;
+        needs_redraw = true;
+        pointing_device_accel_plot_curve(graph_samples, ACCEL_GRAPH_SAMPLES);
+    }
+
+    if (force_redraw || needs_redraw) {
+        const graph_line_t lines[] = {
+            {
+                .data      = graph_samples,
+                .color     = curr_hsv->secondary,
+                .mode      = LINE,
+                .max_value = 127,
+            },
+            GRAPHS_END,
+        };
+
+        const graph_config_t config = {
+            .device      = device,
+            .start       = {.x = x, .y = y},
+            .size        = {.x = width, .y = height},
+            .axis        = curr_hsv->primary,
+            .background  = {.h = 0, .s = 0, .v = 0},
+            .data_points = ACCEL_GRAPH_SAMPLES,
+        };
+
+        qp_draw_graph(&config, lines);
+    }
+#endif
+}
+
+/**
  * @brief Renders a menu block on the display.
  *
  * @param device The painter device to render on.
@@ -727,6 +792,9 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
                 painter_render_layer_map(device, font, x, y, width, force_redraw || block_redraw, curr_hsv);
                 break;
             case 6:
+                painter_render_pd_accel_graph(device, x, y, width, height, force_redraw || block_redraw, curr_hsv);
+                break;
+            case 7:
                 painter_render_totp(device, font, x + 4, y + 3, width, force_redraw || block_redraw, curr_hsv, true);
                 break;
             default:
