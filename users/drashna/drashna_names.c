@@ -27,6 +27,7 @@ KEYCODE_STRING_NAMES_USER(
     {KC_SECRET_3, "SECRET_3"},
     {KC_SECRET_4, "SECRET_4"},
     {KC_SECRET_5, "SECRET_5"},
+    {KC_SECRET_6, "SECRET_6"},
     {KC_NUKE, "NUKE"},
     {UC_FLIP, "UC_FLIP"},
     {UC_TABL, "UC_TABL"},
@@ -61,6 +62,8 @@ KEYCODE_STRING_NAMES_USER(
     {CLAP_TRAP_TOGGLE, "SOCD_TG"},
     {US_I2C_SCAN_ENABLE, "I2C_SCAN"},
     {US_GAMING_SCAN_TOGGLE, "GAME_MODE"},
+    {UC_NEXT, "UC_NEXT"},
+    {UC_PREV, "UC_PREV"},
 );
 // clang-format on
 #endif

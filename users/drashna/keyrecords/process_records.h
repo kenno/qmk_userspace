@@ -15,6 +15,7 @@ enum userspace_custom_keycodes {
     KC_SECRET_3,     // test3
     KC_SECRET_4,     // test4
     KC_SECRET_5,     // test5
+    KC_SECRET_6,     // test6
     KC_NUKE,         // NUCLEAR LAUNCH DETECTED!!!
     UC_FLIP,         // (ಠ痊ಠ)┻━┻
     UC_TABL,         // ┬─┬ノ( º _ ºノ)
@@ -72,6 +73,7 @@ void rgb_layer_indication_toggle(void);
 #define KC_SEC3 KC_SECRET_3
 #define KC_SEC4 KC_SECRET_4
 #define KC_SEC5 KC_SECRET_5
+#define KC_SEC6 KC_SECRET_6
 
 #define QWERTY  PDF(_QWERTY)
 #define CLMKDH  PDF(_COLEMAK_DH)
