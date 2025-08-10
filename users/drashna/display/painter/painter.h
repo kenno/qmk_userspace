@@ -5,7 +5,10 @@
 
 #include "qp.h"
 #include "drashna_runtime.h"
-#include "display/painter/fonts.qff.h"
+#include "display/painter/fonts/font_oled.qff.h"
+#include "display/painter/fonts/font_proggy_clean.qff.h"
+#include "display/painter/fonts/font_proggy_tiny.qff.h"
+#include "display/painter/fonts/font_thintel15.qff.h"
 #include "display/painter/graphics.qgf.h"
 #include "display/painter/graphics/assets.h"
 #include "display/display.h"

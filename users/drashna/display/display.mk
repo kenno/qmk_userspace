@@ -58,8 +58,7 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
         OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ENABLE
         DISPLAY_DRIVER_REQUIRED  = yes
         POST_CONFIG_H += $(USER_PATH)/display/painter/config.h
-        SRC += $(USER_PATH)/display/painter/fonts.qff.c \
-            $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
+        SRC += $(USER_PATH)/display/painter/graphics/qmk_logo_220x220.qgf.c \
             $(USER_PATH)/display/painter/graphics/qmk_powered_by.qgf.c \
             $(USER_PATH)/display/painter/graphics/akira_explosion.qgf.c \
             $(USER_PATH)/display/painter/graphics/asuka-240x320.qgf.c \
@@ -68,6 +67,13 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
             $(USER_PATH)/display/painter/graphics/samurai-cyberpunk-minimal-dark-8k-b3-240x320.qgf.c \
             $(USER_PATH)/display/painter/graphics/large_nyan_cat.qgf.c \
             $(USER_PATH)/display/painter/graphics/nyan_cat.qgf.c
+
+        # Fonts
+        # Todo: make more moduler
+        SRC += $(USER_PATH)/display/painter/fonts/font_oled.qff.c \
+            $(USER_PATH)/display/painter/fonts/font_proggy_clean.qff.c \
+            $(USER_PATH)/display/painter/fonts/font_proggy_tiny.qff.c \
+            $(USER_PATH)/display/painter/fonts/font_thintel15.qff.c
 
         SRC += $(USER_PATH)/display/painter/painter.c \
                 $(USER_PATH)/display/painter/graphics.qgf.c
