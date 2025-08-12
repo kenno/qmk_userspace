@@ -92,6 +92,7 @@ static const replacements_t replacements[] = {
     replacement("END",     "▶",   NULL, NULL),
     replacement("PGUP",    "▲",   NULL, NULL),
     replacement("PGDN",    "▼",   NULL, NULL),
+    replacement("PSCR",    "P",   NULL, NULL),
 
     replacement("LOWR",    "▼",   NULL, NULL),
     replacement("UPPR",    "▲",   NULL, NULL),
