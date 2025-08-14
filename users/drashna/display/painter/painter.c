@@ -25,6 +25,9 @@
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
 #    include "display/painter/st7789_170x320.h"
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_76X284)
+#    include "display/painter/st7789_76x284.h"
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_76X284
 #if defined(RGB_MATRIX_ENABLE)
 #    include "rgb/rgb_matrix_stuff.h"
 #endif // defined(RGB_MATRIX_ENABLE)
@@ -579,6 +582,62 @@ void painter_render_totp(painter_device_t device, painter_font_handle_t font, ui
 #endif
 }
 
+void painter_render_frame_box(painter_device_t device, hsv_t hsv, uint16_t x_buffer, uint16_t y_buffer,
+                              int16_t x_offset, int16_t y_offset, bool top_indents, bool side_indents) {
+    uint16_t width = 0, height = 0;
+    qp_get_geometry(device, &width, &height, NULL, NULL, NULL);
+
+    width -= (x_buffer + x_offset);
+    height -= (y_buffer + y_offset);
+
+    // draw top of frame
+    qp_line(device, x_buffer + 7 + x_offset, y_buffer + y_offset, width - 7 + x_offset, y_buffer + y_offset, hsv.h,
+            hsv.s, hsv.v);
+    // draw angled bits
+    qp_line(device, x_buffer, y_buffer + 6 + y_offset, x_buffer + 6 + x_offset, y_buffer + y_offset, hsv.h, hsv.s,
+            hsv.v);
+    qp_line(device, width - 7 + x_offset, y_buffer + y_offset, width - 1 + x_offset, 6 + y_buffer + y_offset, hsv.h,
+            hsv.s, hsv.v);
+
+    if (top_indents) {
+        for (uint8_t line = 0; line < 13; line++) {
+            qp_line(device, x_buffer + 14 + line + x_offset, y_buffer + line + y_offset, width - 14 - line + x_offset,
+                    y_buffer + line + y_offset, hsv.h, hsv.s, hsv.v);
+        }
+    }
+
+    // // lines for frame sides
+    qp_line(device, x_buffer + x_offset, y_buffer + 7 + y_offset, x_buffer + x_offset, height - (7 + 2) + y_offset,
+            hsv.h, hsv.s, hsv.v);
+    qp_line(device, width - 1 + x_offset, y_buffer + 7 + y_offset, width - 1 + x_offset, height - (7 + 2) + y_offset,
+            hsv.h, hsv.s, hsv.v);
+
+    if (side_indents) {
+        for (uint8_t line = 0; line < 8; line++) {
+            qp_line(device, x_buffer + line + x_offset, y_buffer + 14 + line + y_offset, x_buffer + line + x_offset,
+                    height - 14 - line + y_offset, hsv.h, hsv.s, hsv.v);
+            qp_line(device, width - 1 - line + x_offset, y_buffer + 14 + line + y_offset, width - 1 - line + x_offset,
+                    height - 14 - line + y_offset, hsv.h, hsv.s, hsv.v);
+        }
+    }
+
+    // draw angled bits
+    qp_line(device, x_buffer + 1 + x_offset, height - 6 - 2 + y_offset, x_buffer + 6 + 1 + x_offset,
+            height - 2 + y_offset, hsv.h, hsv.s, hsv.v);
+    qp_line(device, width - 7 + x_offset, height - 2 + y_offset, width - 1 + x_offset, height - 6 - 2 + y_offset, hsv.h,
+            hsv.s, hsv.v);
+
+    if (top_indents) {
+        for (uint8_t line = 0; line < 11; line++) {
+            qp_line(device, x_buffer + 14 + line + x_offset, height - 3 - line + y_offset,
+                    width - 2 - 14 - line + x_offset, height - 3 - line + y_offset, hsv.h, hsv.s, hsv.v);
+        }
+    }
+
+    // frame bottom
+    qp_line(device, x_buffer + 8 + x_offset, height - 2 + y_offset, width - 8 + x_offset, height - 2 + y_offset, hsv.h,
+            hsv.s, hsv.v);
+}
 /**
  * @brief Renders a frame on the painter device.
  *
@@ -596,27 +655,12 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
                           bool color_side) {
     const uint16_t max_width = 240;
     uint16_t       xpos      = offset;
-    uint16_t       width     = offset + max_width;
-    uint16_t       height    = 320;
+    // uint16_t       width     = offset + max_width;
+    // uint16_t       height    = 320;
 
     hsv_t hsv = painter_get_hsv(color_side);
 
-    // frame top
-    // qp_drawimage_recolor(device, xpos + 1, 2, frame_top, hsv.h, hsv.s, hsv.v, 0, 0, 0);
-
-    // draw top of frame
-    qp_line(device, xpos + 8, 2, width - 8, 2, hsv.h, hsv.s, hsv.v);
-    // draw angled bits
-    qp_line(device, xpos + 1, 6 + 2, xpos + 6 + 1, 0 + 2, hsv.h, hsv.s, hsv.v);
-    qp_line(device, width - 6 - 2, 0 + 2, width - 2, 6 + 2, hsv.h, hsv.s, hsv.v);
-
-    for (uint8_t line = 0; line < 13; line++) {
-        qp_line(device, xpos + 14 + line, 2 + 1 + line, width - 2 - 14 - line, 2 + 1 + line, hsv.h, hsv.s, hsv.v);
-    }
-
-    // lines for frame sides
-    qp_line(device, xpos + 1, 7 + 2, xpos + 1, height - 7 - 1, hsv.h, hsv.s, hsv.v);
-    qp_line(device, width - 2, 7 + 2, width - 2, height - 7 - 1, hsv.h, hsv.s, hsv.v);
+    painter_render_frame_box(device, hsv, 1, 0, xpos, 3, true, false);
 
     // horizontal line below scan rate
     qp_line(device, xpos + 2, 30, xpos + 80, 30, hsv.h, hsv.s, hsv.v);
@@ -666,18 +710,6 @@ void painter_render_frame(painter_device_t device, painter_font_handle_t font_ti
     qp_line(device, xpos + 2, 171, xpos + 237, 171, hsv.h, hsv.s, hsv.v);
     // line above rtc
     qp_line(device, xpos + 2, 292, xpos + 237, 292, hsv.h, hsv.s, hsv.v);
-
-    // draw angled bits
-    qp_line(device, xpos + 1, height - 6 - 2, xpos + 6 + 1, height - 2, hsv.h, hsv.s, hsv.v);
-    qp_line(device, width - 6 - 2, height - 2, width - 2, height - 6 - 2, hsv.h, hsv.s, hsv.v);
-
-    for (uint8_t line = 0; line < 11; line++) {
-        qp_line(device, xpos + 14 + line, height - 3 - line, width - 2 - 14 - line, height - 3 - line, hsv.h, hsv.s,
-                hsv.v);
-    }
-
-    // frame bottom
-    qp_line(device, xpos + 8, height - 2, width - 8, height - 2, hsv.h, hsv.s, hsv.v);
 
     // qp_drawimage_recolor(device, xpos + 1, height - frame_bottom->height, frame_bottom, hsv.h, hsv.s, hsv.v, 0, 0,
     // 0);
@@ -786,6 +818,7 @@ void painter_render_menu_block(painter_device_t device, painter_font_handle_t fo
     }
 #else  // SPLIT_KEYBOARD
     const bool should_render_this_side = true;
+    (void)should_render_this_side;
 #endif // SPLIT_KEYBOARD
 
 #ifdef COMMUNITY_MODULE_DISPLAY_MENU_ENABLE
@@ -1459,6 +1492,9 @@ void painter_display_power(bool enable) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     st7789_170x320_display_power(enable);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_76X284)
+    st7789_76x284_display_power(enable);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_76X284
 }
 
 void painter_init_user(void) {
@@ -1474,6 +1510,9 @@ void painter_init_user(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     init_display_st7789_170x320();
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_76X284)
+    init_display_st7789_76x284();
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_76X284
 }
 
 void painter_render_user(void) {
@@ -1489,6 +1528,9 @@ void painter_render_user(void) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     st7789_170x320_draw_user();
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_76X284)
+    st7789_76x284_draw_user();
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_76X284
 #if defined(RGB_MATRIX_ENABLE) || defined(RGBLIGHT_ENABLE)
     rgb_redraw = false;
 #endif
@@ -1613,7 +1655,9 @@ void shutdown_quantum_painter(bool jump_to_bootloader) {
 #if defined(CUSTOM_QUANTUM_PAINTER_ST7789_170X320)
     st7789_170x320_display_shutdown(jump_to_bootloader);
 #endif // CUSTOM_QUANTUM_PAINTER_ST7789_170X320
-
+#if defined(CUSTOM_QUANTUM_PAINTER_ST7789_76X284)
+    st7789_76x284_display_shutdown(jump_to_bootloader);
+#endif // CUSTOM_QUANTUM_PAINTER_ST7789_76X284
 #ifdef BACKLIGHT_ENABLE
     qp_backlight_enable();
 #elif defined(BACKLIGHT_PIN)

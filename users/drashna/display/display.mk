@@ -48,6 +48,17 @@ ifeq ($(strip $(QUANTUM_PAINTER_ENABLE)), yes)
             QUANTUM_PAINTER_DRIVERS += surface
         endif
     endif
+    ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ST7789_76X284)),yes)
+        CUSTOM_QUANTUM_PAINTER_ST7789 := yes
+        SRC += $(USER_PATH)/display/painter/st7789_76x284.c
+        OPT_DEFS += -DCUSTOM_QUANTUM_PAINTER_ST7789_76X284
+
+        QUANTUM_PAINTER_DRIVERS_ST7789_76X284_SURFACE ?= no
+        ifeq ($(strip $(QUANTUM_PAINTER_DRIVERS_ST7789_76X284_SURFACE)),yes)
+            OPT_DEFS += -DQUANTUM_PAINTER_DRIVERS_ST7789_76X284_SURFACE
+            QUANTUM_PAINTER_DRIVERS += surface
+        endif
+    endif
     ifeq ($(strip $(CUSTOM_QUANTUM_PAINTER_ST7789)),yes)
         CUSTOM_QUANTUM_PAINTER_ENABLE = yes
         QUANTUM_PAINTER_DRIVERS += st7789_spi

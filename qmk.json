@@ -1,5 +1,5 @@
 {
-    "userspace_version": "1.0",
+    "userspace_version": "1.1",
     "build_targets": [
         ["adafruit/macropad", "drashna"],
         ["handwired/tractyl_manuform/5x6_right/f411", "drashna"],

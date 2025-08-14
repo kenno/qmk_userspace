@@ -42,6 +42,8 @@ void  render_character_set(painter_device_t display, uint16_t* x_offset, uint16_
                            uint8_t sat_bg, uint8_t val_bg);
 
 bool painter_render_side(void);
+void painter_render_frame_box(painter_device_t device, hsv_t hsv, uint16_t x_buffer, uint16_t y_buffer,
+                              int16_t x_offset, int16_t y_offset, bool top_indents, bool side_indents);
 void painter_render_frame(painter_device_t device, painter_font_handle_t font_title, bool right_side, uint16_t offset,
                           bool color_side);
 void painter_render_rtc_time(painter_device_t device, painter_font_handle_t font, uint16_t x, uint16_t y,
